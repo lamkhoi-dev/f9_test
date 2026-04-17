@@ -1,0 +1,2032 @@
+
+{
+  "header": { "home": "HOME - F9 Rendering Apps" },
+  "banner": {
+    "title": "Chào mừng đến với App F9 Rendering",
+    "subtitle": "Giải pháp toàn diện của bạn cho việc kết xuất kiến trúc và kỹ thuật bằng AI.",
+    "websiteBtn": "Trang web của chúng tôi",
+    "pageBtn": "Trang của chúng tôi",
+    "downloadBtn": "Tải ứng dụng" 
+  },
+  "cards": {
+    "allAi": "Tất cả AI",
+    "autoColoring": {
+      "title": "Tô màu bản vẽ tự động",
+      "description": "Tự động tô màu cho các bản vẽ và phác thảo kiến trúc của bạn."
+    },
+    "imageGeneration": {
+      "title": "Render ảnh Kiến trúc và Nội thất",
+      "description": "Tạo hình ảnh thực tế từ mô tả văn bản."
+    },
+    "magicEdit": {
+      "title": "Thư viện Prompt",
+      "description": "Chỉnh sửa các phần của hình ảnh một cách kỳ diệu bằng các lệnh đơn giản."
+    },
+    "3dSketch": {
+      "title": "3D thành Ảnh vẽ tay",
+      "description": "Chuyển đổi các mô hình 3D thành các bản phác thảo vẽ tay đẹp mắt."
+    },
+    "fastGeneration": {
+      "title": "Chuyển 3D thành ảnh Mô hình thực tế",
+      "description": "Chuyển 3D thành ảnh Mô hình thực tế đẹp với nhiều lựa chọn"
+    },
+    "download3d": {
+      "title": "Tải mô hình 3D",
+      "description": "Truy cập thư viện mô hình 3D khổng lồ cho các dự án của bạn."
+    }
+  },
+  "footer": {
+    "copyright": "© 2024 Auto Rendering Apps.Bản quyền được bảo lưu và thuộc về F9render.com  Team."
+  },
+  "aiAssistant": {
+    "title": "MIN F9 - Trợ lý AI",
+    "inputPlaceholder": "Gõ hoặc tải ảnh lên...",
+    "floatingLabel": "Rất vui được giúp đỡ IDOL!",
+    "error": "Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau."
+  },
+  "autoColoring": {
+    "title": "Tô màu tự động",
+    "subtitle": "Tô màu bằng AI cho bản vẽ kiến trúc",
+    "uploadLabel": "Tải lên bản vẽ của bạn",
+    "referenceUploadLabel": "Tải lên bản vẽ tham chiếu ( phong cách )",
+    "uploadPlaceholder": "Kéo và thả tệp vào đây hoặc nhấp để tải lên",
+    "uploadBtn": "Tải lên từ máy tính",
+    "createDescriptionBtn": "Tạo mô tả từ hình ảnh",
+    "styleLabel": "Phong cách thiết kế",
+    "stylePlaceholder": "Phong cách thiết kế",
+    "layoutLabel": "Tuân thủ bố cục",
+    "layoutPlaceholder": "Chọn mức độ tuân thủ bố cục",
+    "descriptionLabel": "Mô tả",
+    "descriptionPlaceholder": "Mô tả màu sắc và vật liệu mong muốn...",
+    "generateBtn": "Tạo Ảnh Ngay",
+    "resultsTab": "Kết quả",
+    "historyTab": "Lịch sử",
+    "resultsPlaceholderTitle": "Kết quả của bạn sẽ xuất hiện ở đây",
+    "resultsPlaceholderSubtitle": "Tải lên một hình ảnh và nhấp vào Tạo",
+    "outputDrawingLabel": "Bản vẽ đầu ra",
+    "outputDrawingPlaceholder": "Đổ màu 2D",
+    "coloringPrompt2D": "Từ ảnh mặt bằng/bản vẽ 2D tôi tải lên,hãy phân tích và vẽ lại thành một hình ảnh mặt bằng 2D render màu (top view floor plan) theo đúng bố cục gốc. Phong cách mặt bằng kiến trúc hiện đại, sạch, sắc nét, chuyên nghiệp như bản vẽ trình bày: tường nét đậm rõ ràng,các phòng không liệt kê nền sàn gạch sáng màu, khu phòng ngủ , phòng khách sàn gỗ ấm, wc sàn gạch đậm màu. Bố trí nội thất dạng icon 2D hiện đại đúng vị trí như đã phân tích. Giữ lại tên phòng/ký hiệu/kích thước nếu có trong ảnh gốc. Hình ảnh xuất ra độ phân giải cao, siêu sắc nét, màu sắc hài hòa, đổ bóng rất nhẹ để tạo chiều sâu nhưng vẫn đúng chuẩn 2D top-down floor plan, không phối cảnh 3D.",
+    "coloringPrompt3D": "Phân tích bản vẽ đầu vào sau đó Tạo một hình ảnh mới dựa trên bản vẽ kỹ thuật mặt bằng kiến trúc 2D này. Không được sao chép hoặc mô tả lại ảnh gốc. Hãy dựng lại bản vẽ này thành phối cảnh 3D nhìn từ trên xuống (axonometric top-view) thật chân thực. Giữ nguyên toàn bộ vị trí tường, cửa sổ và đồ nội thất đúng như bản vẽ. Không được thiết kế lại, xoay hoặc di chuyển bất kỳ chi tiết nào. Duy trì chính xác tỷ lệ các phòng, độ dày tường và bố cục mặt bằng. Áp dụng phong cách thiết kế {{designStyle}}. Sử dụng vật liệu, màu sắc, ánh sáng và tông màu theo đúng phong cách trong bộ lọc đó. Không thêm chi tiết, không đổi layout, không phối cảnh sâu quá mức. Góc máy: nhìn chéo từ trên xuống 45°, kiểu axonometric. Không méo góc, không fisheye. Hình ảnh kết quả phải là phối cảnh 3D top-view thực tế, sáng rõ, đúng bố cục bản vẽ gốc.Ánh sáng tự nhiên dịu nhẹ chiếu vào từ phía các cửa cửa sổ hoặc ban công ( nếu có), kết hợp với ánh sáng đèn nội thất ấm áp tạo hiệu ứng bóng đổ mềm mại và chiều sâu không gian. Hình ảnh render chất lượng 8K, siêu sắc nét, diễn họa chân thực các bề mặt vật liệu như vải, gỗ, đá và kính theo tiêu chuẩn diễn họa bất động sản cao cấp.Nếu AI hiểu sai yêu cầu  hãy tạo lại hình ảnh mới, tuyệt đối không được sao chép hoặc giữ nguyên ảnh gốc.",
+    "analysisPrompt": "Phân tích hình ảnh tham chiếu và tạo mô tả phong cách kiến trúc có cấu trúc. Chỉ tập trung mô tả vật liệu, ánh sáng, tông màu và phong cách trình bày. Không mô tả bố cục, chức năng hay sắp xếp nội thất.",
+    "final3DPromptPrefix": "Phân tích bản vẽ đầu vào sau đó Tạo một hình ảnh mới dựa trên bản vẽ kỹ thuật mặt bằng kiến trúc 2D này.\nKhông được sao chép hoặc mô tả lại ảnh gốc.\nHãy dựng lại bản vẽ này thành phối cảnh 3D nhìn từ trên xuống (axonometric top-view) thật chân thực.\n\nGiữ nguyên toàn bộ vị trí tường, cửa sổ và đồ nội thất đúng như bản vẽ.\nKhông được thiết kế lại, xoay hoặc di chuyển bất kỳ chi tiết nào.\nDuy trì chính xác tỷ lệ các phòng, độ dày tường và bố cục mặt bằng.Góc máy: nhìn chéo từ trên xuống 45° (axonometric).\nKhông méo góc, không fisheye, không phối cảnh sâu.\nKết quả: hình phối cảnh 3D top-view siêu thực, sáng rõ, đúng bố cục bản vẽ gốc,\nmang phong cách ánh sáng – vật liệu – tông màu của ảnh tham chiếu.",
+    "analysisError": "Không thể phân tích hình ảnh tham chiếu. Vui lòng thử lại.",
+    "analyzingMessage": "Đang phân tích phong cách...",
+    "clearImageBtn": "Xóa ảnh",
+    "downloadBtn": "Tải xuống",
+    "zoomBtn": "Phóng to",
+    "closeBtn": "Đóng",
+    "generatingMessage": "Đang tạo... Vui lòng đợi.",
+    "historyEmptyTitle": "Lịch sử trống",
+    "historyEmptySubtitle": "Các kết quả đã tạo của bạn sẽ xuất hiện ở đây.",
+    "historyItemTitle": "Mục {{index}}",
+    "historyInput": "Đầu vào",
+    "historyOutput": "Đầu ra",
+    "generationErrorTitle": "Tạo ảnh thất bại",
+    "generationErrorMessage": "Đã xảy ra lỗi không mong muốn. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.",
+    "noImageGeneratedError": "Xin lỗi, mô hình không thể tạo ảnh từ đầu vào của bạn. Vui lòng thử điều chỉnh mô tả hoặc hình ảnh."
+  },
+  "exteriorViewSuggestionsPage": {
+    "title": "Gợi ý các View Ngoại thất tự động",
+    "subtitle": "TỰ ĐỘNG GỢI Ý CÁC GÓC NHÌN NGOẠI THẤT ĐẸP CHO CÔNG TRÌNH CỦA BẠN",
+    "inputImage": "Ảnh đầu vào",
+    "inputPlaceholder": "Tải ảnh công trình cần tạo góc mới",
+    "characterReference": "Ảnh tham chiếu Nhân vật",
+    "characterPlaceholder": "Tải ảnh mẫu Nhân vật",
+    "aspectRatio": "Tỉ lệ khung hình",
+    "startCreating": "BẮT ĐẦU SÁNG TẠO",
+    "results": "Kết quả",
+    "history": "Lịch sử",
+    "noResults": "Chưa có kết quả",
+    "noResultsDesc": "Tải ảnh lên và nhấn nút BẮT ĐẦU SÁNG TẠO để AI gợi ý các góc nhìn ngoại thất mới cho công trình của bạn."
+  },
+  "download3d": {
+    "welcome": "CHÀO MỪNG ĐẾN VỚI 3DMILI.ORG",
+    "title": "Thư viện mô hình 3D",
+    "description": "Truy cập hàng ngàn mô hình 3D miễn phí cho kiến trúc và thiết kế.",
+    "accessBtn": "Truy cập ngay"
+  },
+  "3dSketch": {
+    "title": "Chuyển ảnh 3D thành tranh vẽ",
+    "subtitle": "Biến ảnh 3D thành tranh vẽ siêu đẹp with nhiều phong cách vẽ khác nhau",
+    "inputTitle": "Ảnh Input",
+    "inputSubtitle": "Hình ảnh bắt đầu",
+    "outputTitle": "Ảnh Output",
+    "outputSubtitle": "Hình ảnh kết quả",
+    "uploadPlaceholderTitle": "Tải lên ảnh 3D của bạn",
+    "generateBtn": "Tạo ảnh phác thảo",
+    "downloadBtn": "Tải xuống",
+    "zoomBtn": "Phóng to",
+    "generatingMessage": "Đang tạo ảnh phác thảo...",
+    "historyTitle": "Lịch sử",
+    "historyEmptyTitle": "Chưa có lịch sử",
+    "historyEmptySubtitle": "Các ảnh phác thảo đã tạo sẽ xuất hiện ở đây.",
+    "historyInput": "Đầu vào",
+    "historyOutput": "Đầu ra",
+    "generationErrorTitle": "Tạo ảnh thất bại",
+    "generationErrorMessage": "Đã xảy ra lỗi không mong muốn. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.",
+    "noImageGeneratedError": "Xin lỗi, mô hình không thể tạo ảnh phác thảo. Vui lòng thử một hình ảnh khác.",
+    "outputDrawingLabel": "Bản vẽ đầu ra",
+    "outputDrawingOptions": [
+      "Bản vẽ tranh chì",
+      "Bản vẽ tranh chì 2",
+      "Bản vẽ tranh màu nước",
+      "Bản vẽ phong cách hội họa Van Gogh",
+       "Bản vẽ phong cách 3dsmax,D5 render"
+    ],
+    "sketchPromptPencil": "Architectural ink and pencil hand sketch style, technical yet artistic.",
+    "sketchPromptPencil2": "Một bản vẽ chì kiến trúc cực kỳ chân thực của công trình trong ảnh, được vẽ tay trực tiếp trên một cuốn sổ sketch giấy thô màu ngà. Công trình được thể hiện hoàn toàn bằng bút chì xám, nét vẽ mảnh, chi tiết cao, không màu, không mực, không watercolor. Hình khối, tỷ lệ, và phối cảnh của công trình được giữ chính xác theo bản gốc, không thay đổi bố cục hay kiến trúc. Các chi tiết kiến trúc, cửa, mái, ban công, kết cấu bề mặt và cảnh quan xung quanh được diễn họa bằng kỹ thuật chì truyền thống với nét đan chéo (cross-hatching), tạo chiều sâu và độ chân thực. Bề mặt giấy có texture giấy vẽ rõ ràng, có bụi chì, vết tẩy, mạt chì rơi tự nhiên trên trang giấy. Có một bàn tay người thật đang cầm bút chì vẽ thêm chi tiết ở tiền cảnh, tạo cảm giác quá trình phác thảo kiến trúc đang diễn ra. Phong cách sketch kiến trúc chuyên nghiệp của kiến trúc sư, cảm giác thủ công hoàn toàn, ánh sáng tự nhiên mềm, không hiệu ứng số, không phong cách tranh minh họa kỹ thuật số.",
+    "sketchPromptWatercolor": "Architectural watercolor concept sketch with ink lines and soft wash tones.",
+    "sketchPromptVanGogh": "A portrait painting in the style of Vincent van Gogh, inspired by “The Starry Night”, featuring expressive post-impressionist brushstrokes, swirling skies, vivid blue and yellow tones, thick impasto oil texture, and emotional lighting with artistic energy.",
+    "sketchPromptd5": "Use the uploaded image as the ONLY visual reference. Do NOT change the architecture, proportions, scale, or spatial layout. Create a high-quality architectural exterior render of the referenced building, rendered in pure clay / monochrome style. Architecture Preserve the exact building geometry, massing, roof form, structural elements, openings, steps, and spatial composition from the reference image. Maintain original architectural proportions and character. Clean, precise geometry, no distortion. No added or removed elements. No modernization or stylistic alteration. Materials (Clay Render) Entire scene rendered in a single light warm gray / off-white clay material. No colors. No textures. No material differentiation. No reflections or gloss. Matte surface with subtle micro-roughness. Building, landscape, ground, vegetation, and all objects use the same clay tone. Lighting Soft overcast daylight only. Diffuse global illumination. Very soft, barely visible shadows. No direct sunlight. No dramatic lighting. No contrast lighting. Camera Eye-level camera. Clear, balanced architectural composition (frontal or reference-accurate view). Natural architectural perspective (35–50mm equivalent). Slight depth created by softly blurred foreground elements if present. Environment Minimal, neutral surroundings. Simple clay ground surface with subtle height variation. Vegetation simplified and minimal if present. Calm, quiet atmosphere. No people. No vehicles. No signage. No text. Render Quality Ultra-clean professional archviz quality. High-detail geometry. Balanced exposure. Minimal, calm, cinematic feel without stylization. Professional D5 Render / Nanobanana Pro presentation style. Output Photorealistic architectural visualization. 4K resolution. Sharp focus on the building, slightly softer foreground if applicable. STRICT NEGATIVE CONSTRAINTS no color no textures no wood texture no concrete texture no brick texture no sky texture no strong shadows no contrast lighting no people no vehicles no modern architecture (if not in reference) no stylization no fantasy no cartoon"
+  },
+  "realisticModel": {
+    "title": "CHUYỂN ẢNH 3D THÀNH ẢNH CHỤP MÔ HÌNH THỰC TẾ",
+    "subtitle": "Biến ảnh 3D thành ảnh chụp siêu thực tế with nhiều lựa chọn khác nhau",
+    "inputTitle": "ẢNH INPUT",
+    "inputSubtitle": "Hình ảnh bắt đầu",
+    "outputTitle": "ẢNH OUTPUT",
+    "outputSubtitle": "Hình ảnh kết quả",
+    "generateBtn": "Tạo ảnh Mô hình ngay",
+    "downloadBtn": "Tải xuống",
+    "zoomBtn": "Phóng to",
+    "generatingMessage": "Đang tạo ảnh...",
+    "historyTitle": "Lịch sử",
+    "historyEmptyTitle": "Chưa có lịch sử",
+    "historyEmptySubtitle": "Các ảnh đã tạo sẽ xuất hiện ở đây.",
+    "generationErrorTitle": "Tạo ảnh thất bại",
+    "generationErrorMessage": "Đã xảy ra lỗi không mong muốn. Vui lòng kiểm tra kết nối mạng hoặc thử lại sau.",
+    "noImageGeneratedError": "Xin lỗi, mô hình không thể tạo ảnh. Vui lòng thử một hình ảnh khác.",
+    "modelLabel": "Chọn mẫu Mô hình",
+    "modelPlaceholder": "Chọn một mẫu",
+    "modelOptions": [
+      "Mẫu 1 Phòng họp",
+      "Mẫu 2 Mô hình để bàn mẫu 1",
+      "Mẫu 3 Mô hình để bàn mẫu 2",
+      "Mẫu 4 Mô hình để bàn mẫu 3",
+      "Mẫu 5 Mô hình để bàn + Công trường 1",
+      "Mẫu 6 Mô hình để bàn + Công trường 2",
+      "Mẫu 7 Mô hình để bàn + Công trường 3",
+      "Mẫu 8 Mô hình Presentation Model",
+      "Mẫu 9 Mô hình Bìa giấy",
+      "Mẫu 10 Mô hình trong Bể cá",
+      "Mẫu 10 Mô hình Kiến trúc Vật  lý"
+    ],
+    "prompts": [
+      "A hyper-realistic 3D scene of a modern architectural meeting room:\n– A director in a dark suit sits at the center of a large wooden conference table, pointing at a detailed architectural model of a modern villa in the middle of the table.\n– One engineer stands on the right side, pointing at a large projection screen behind, which displays architectural blueprints and 3D renderings of the villa.\n– Another engineer stands on the left side, gesturing towards the seated participants.\n– Several engineers wearing white safety helmets sit around the table, listening attentively, some using laptops, others taking notes.\n– The table has coffee cups, rolled-up technical drawings, and open laptops.\n– The background shows floor-to-ceiling windows with a city skyline view, warm professional lighting, realistic shadows.\n– Ultra-detailed textures, cinematic perspective, photorealistic rendering, 8K resolution.",
+      "Create a 1/7 scale realistic maket of the building from the picture, in a realistic style, in a real environment. The figurine is placed on a computer desk in the natural cozy architectural environment in front of the window. The content on the computer screen is the Rhino modeling process of this figurine. Next to the computer screen is a model packaging box printed with the original artwork. The packaging features two-dimensional flat illustrations.",
+      "Using this image as the main subject, create the following image: A surreal photo of an architect's workbench, accompanied by a detailed miniature model of the building pictured above. On the desk are scattered modeling tools, small details, and instructions. In the background is a computer screen displaying a grayscale 3D wireframe model of the same building, while the colorful product box displays a rendered image of the building with the branding \"Architectural Model 3DMili Kit.\" Soft, bright lighting, cinematic composition, super detailed textures, high fidelity, professional studio shot.",
+      "Architect's desk with a detailed architectural model of a modern, two-story house. The model features a dark gray roof, white walls, and surrounding greenery, including small, carefully trimmed trees and mini bushes creating a lush landscape. In the foreground, there is a gray fence and a gate. Behind the model, on a large computer screen, is a line-art blueprint of the house, emphasizing its shape and structure. The desk is cluttered with architect's tools, including pens, glue, and scissors. The room is filled with natural light from a large window on the left side. The model from the uploaded image is placed on the green cutting mat.",
+      "Using the provided house model as the main subject, show the architect's hands carefully holding the model at desk level, slightly tilted above a large technical drawing showing a 2D elevation of the same house. Through the rear window, the building looks almost finished, with exterior finishes, scaffolding and workers putting the finishing touches. Bright daylight, realistic details, cinematic",
+      "Using the provided house model as the main subject, show the architect’s hands holding the model carefully at desk level, angled slightly above the large technical drawing sheet that shows 2D elevations of the same house. Through the window behind, the real-scale building appears almost finished, with visible exterior finishes, scaffolding, and workers adding final touches. Bright daylight, photorealistic detail, cinematic realism.",
+      "Using this image as the main subject, create the following image: An architect’s desk showing the full design journey. On the desk lies a perfectly flat large sheet of paper with detailed 2D elevation drawings of the building, including precise dimension lines and annotations like a technical construction drawing from AutoCAD. Next to it, the miniature model of the same building is displayed on a thick, transparent acrylic (mica) base, giving it a premium presentation. In the background, through a large window, the full-scale real building is visible under construction in the finishing phase, with scaffolding, workers, and raw unfinished walls without paint. The scene highlights the transition from technical drawings to model to construction reality. Bright natural lighting, photorealistic textures, cinematic composition, ultra-detailed.",
+      "Close-up of an architectural mockup model, axonometry view, depth of field, closeup, bokeh, highly detailed scale model of this space, clean materials like white foam board, wood, acrylic, precise miniature windows and structures, placed on a presentation table, soft studio lighting.",
+      "Generate an image of the uploaded architectural project as if it were a physical cardboard model. Emphasize clean volumes, simplified textures, and the look of cut and assembled cardboard pieces. Show the building's main massing, proportions, and spatial relationships clearly, highlighting its volumetry and main characteristics. Use neutral tones like kraft brown and white for a realistic cardboard model effect, with soft shadows and simple lighting to enhance the presentation",
+      "Bạn nhận ảnh công trình là ảnh gốc. Giữ nguyên 100% hình khối, tỷ lệ, bố cục, camera angle và vật liệu gốc của công trình. Không được thay đổi kiến trúc, không thêm bớt cửa – mái – tường – lan can – landscape gốc. Nhiệm vụ: Thu nhỏ công trình thành một mô hình kiến trúc tỉ lệ từ 1:50 đến 1:200 (tuỳ theo khung hình). Đặt mô hình vào trong một bể cá mini để bàn bằng kính trong suốt. Yêu cầu chi tiết về cảnh: • Bể cá để bàn bằng kính trong suốt 4 cạnh, bo góc nhẹ, đặt trên mặt bàn gỗ sáng. • Bên trong bể có nước trong, ánh sáng xanh lam nhẹ, hiệu ứng caustics dưới đáy. • Dưới đáy bể là sỏi trắng hoặc sỏi màu tự nhiên kích thước nhỏ. • Một vài cây thuỷ sinh nhỏ (anubias, java moss…), kích thước phù hợp với mô hình thu nhỏ. • Vài con cá cảnh nhỏ (neon, tetra) bơi ở mid–background, KHÔNG che kiến trúc. • Mô hình công trình đặt ở giữa hoặc hơi lệch tâm, đứng trên nền sỏi, tỷ lệ nhỏ nhưng chi tiết sắc nét. • Không đổi hình dạng công trình, chỉ thu nhỏ và đặt vào môi trường aquarium. • Ánh sáng kiểu studio, lens macro 50mm, DOF mỏng tạo cảm giác mô hình thật. • Chất lượng 8K, hyper-realistic, high micro-details, vật liệu mô hình rõ ràng. Kết quả cuối: Một mô hình thu nhỏ của công trình nằm trong bể cá mini để bàn, ánh sáng đẹp, rõ chi tiết, không thay đổi kiến trúc gốc.",
+      "Tạo hình ảnh mô hình kiến trúc thu nhỏ (architectural scale model) của một công trình bất kỳ.Công trình được thể hiện dưới dạng mô hình vật lý đặt trên mặt bàn trong không gian studio.Camera chụp ở tầm mắt người nhìn (eye-level), góc chính diện hoặc gần chính diện, song song với mặt đứng công trình.Toàn bộ công trình nằm trọn trong khung hình, không bị cắt, không méo phối cảnh, không nhìn từ trên cao.Hình khối, chi tiết kiến trúc và phong cách được giữ nguyên theo thiết kế của công trình, không áp đặt phong cách cụ thể.Bề mặt vật liệu màu trắng hoặc kem nhạt, hoàn thiện mịn, lì (matte), cảm giác mô hình kiến trúc vật lý thật.Bố trí cửa sổ lớn, khe đứng, ban công hoặc loggia có cây xanh mô hình tỉ lệ nhỏ.Ánh sáng nội thất phát ra từ bên trong công trình, lan tỏa nhẹ qua cửa sổ, khe sáng và các khoảng không gian kiến trúc.Ánh sáng tự nhiên, dịu, không gắt, không tương phản mạnh, giúp làm rõ hình khối và không gian.Hậu cảnh studio được làm mờ (độ sâu trường ảnh nông), tập trung sự chú ý vào mô hình kiến trúc.Mặt bàn trung tính, sạch sẽ, không chi tiết gây nhiễu.Phong cách hình ảnh là chụp ảnh mô hình kiến trúc chuyên nghiệp, cảm giác vật lý thật, ánh sáng cân bằng, bố cục rõ ràng.Không có người, không chữ, không logo, không watermark, không hiệu ứng phóng đại, không phong cách hoá."
+    ]
+  },
+  "imageGenerationPage": {
+    "toVideo": {
+      "uploadTitle": "Tải ảnh lên",
+      "uploadPlaceholder": "Kéo và thả hoặc nhấp để tải lên tối đa 30 ảnh",
+      "uploadBtn": "Tải ảnh của bạn",
+      "addMoreBtn": "Thêm ảnh",
+      "imageLimit": "Đã tải lên {{count}}/30 ảnh",
+      "limitReached": "Đã đạt giới hạn 30 ảnh",
+      "removeImageTooltip": "Xóa ảnh",
+      "storyFlowTitle": "2. Tóm tắt dòng chảy câu chuyện",
+      "storyFlowPlaceholder": "Tóm tắt Dòng chảy Câu chuyện sẽ xuất hiện ở đây sau khi phân tích...",
+      "analyzeBtn": "Phân tích tạo Kịch bản",
+      "analyzingScript": "Đang phân tích...",
+      "analysisPrompt": "Dựa trên loạt ảnh kiến trúc được cung cấp (được coi là đánh số từ 0 đến N-1 theo thứ tự), hãy thực hiện hai nhiệm vụ:\n1. Sắp xếp lại các ảnh theo một trình tự logic để tạo thành một kịch bản video liền mạch, kể một câu chuyện xuyên suốt về không gian.\n2. Viết một kịch bản video tóm tắt dòng chảy câu chuyện đó, từ tổng quan đến chi tiết, hoặc theo một hành trình khám phá không gian.\n\nHãy đảm bảo trả về kết quả dưới dạng một đối tượng JSON duy nhất có cấu trúc chính xác như sau:\n{\n  \"script\": \"(Nội dung kịch bản video của bạn ở đây)\",\n  \"imageOrder\": [chỉ_số_ảnh_1, chỉ_số_ảnh_2, ...]\n}\nTrong đó 'imageOrder' là một mảng chứa các chỉ số của ảnh gốc theo thứ tự đã được sắp xếp lại. Mảng này phải chứa tất cả các chỉ số từ 0 đến N-1, không trùng lặp.",
+      "analysisError": "Xin lỗi, đã có lỗi xảy ra trong quá trình phân tích. Vui lòng thử lại.",
+      "createMotionPromptBtn": "Tạo Prompt chuyển động",
+      "generatingMotionPrompts": "Đang tạo prompt chuyển động...",
+      "motionPromptGenerationPrompt": "Bạn là chuyên gia tạo prompt video cho mô hình Veo AI. Dựa trên kịch bản video được cung cấp và thực tế là có {{imageCount}} ảnh theo thứ tự, nhiệm vụ của bạn là tạo một prompt video 8 giây riêng biệt cho mỗi ảnh. Mỗi prompt phải mô tả một chuyển động máy ảnh động hoặc sự phát triển của cảnh quay phù hợp với phần tương ứng của kịch bản, tạo ra một câu chuyện hình ảnh liền mạch.\n\nKịch bản video như sau:\n'{{storyScript}}'\n\nVui lòng trả về kết quả dưới dạng một mảng JSON. Mỗi đối tượng trong mảng phải tương ứng with một ảnh và có cấu trúc sau:\n{\n  \"image_title\": \"string (ví dụ: 'Ảnh 1')\",\n  \"script_position\": \"string (Tóm tắt ngắn gọn phần kịch bản cho ảnh này)\",\n  \"video_prompt\": \"string (Prompt video Veo 8 giây được tạo ra)\"\n}\n\nHãy đảm bảo mảng chứa đúng {{imageCount}} đối tượng.",
+      "motionResultItemPosition": "Vị trí trong Kịch bản",
+      "motionResultItemPrompt": "Prompt Video",
+      "copyPromptBtn": "Sao chép",
+      "copiedPromptBtn": "Đã sao chép!"
+    },
+    "editPage": {
+      "editTitle": "Trình chỉnh sửa",
+      "finalResultTitle": "Kết quả cuối cùng",
+      "uploadPlaceholder": "Nhấp, dán, hoặc kéo & thả một hình ảnh",
+      "finalResultPlaceholder": "Ảnh cuối cùng của bạn sẽ xuất hiện ở đây",
+      "intermediateResultTitle": "Kết quả trung gian",
+      "intermediateResultPlaceholder": "Ảnh được tạo sẽ xuất hiện ở đây",
+      "referenceImageTitle": "Ảnh tham khảo",
+      "addReferenceImage": "Thêm ảnh",
+      "createImageBtn": "Tạo ảnh chỉnh sửa",
+      "createDetailZoomBtn": "Tạo Ảnh Zoom chi tiết",
+      "detailZoomPrompt": "Bạn là một chuyên gia chỉnh sửa ảnh. Người dùng đã cung cấp một hình ảnh with một vùng được che. Nhiệm vụ của bạn là thực hiện 'zoom chi tiết'. Tái tạo lại CHỈ vùng được che with chi tiết, kết cấu và độ rõ nét cao, như thể đó là một bức ảnh chụp cận cảnh. Kết quả phải trông giống như một bức ảnh mới, chất lượng cao của phần cụ thể đó. Hòa trộn vùng được tăng cường một cách liền mạch with các phần xung quanh, không bị che của hình ảnh. Nếu người dùng cung cấp một gợi ý, hãy sử dụng nó làm hướng sáng tạo cho các chi tiết. Gợi ý của người dùng: '{{suggestion}}'",
+      "detailZoomPrompt_v2": "Nhiệm vụ của bạn là nâng cấp và tái tạo lại hình ảnh đã được cắt này thành một phiên bản mới, thể hiện rõ chi tiết kiến trúc, màu sắc, vật liệu, giữ nguyên ánh sáng và bối cảnh. Hãy tưởng tượng khu vực này sẽ trông như thế nào trong một bức ảnh chụp cận cảnh, chất lượng cao. Thêm kết cấu, ánh sáng và chi tiết thực tế.cải thiện chi tiết , màu sắc,vật liệu và nâng cao chất lượng ảnh. Kết quả phải là một hình ảnh hoàn chỉnh, chất lượng cao. Nếu người dùng có gợi ý, hãy sử dụng nó: '{{suggestion}}'",
+      "combineImageBtn": "Ghép ảnh",
+      "suggestionLabel": "Gợi ý",
+      "suggestionPlaceholder": "ví dụ: Một cô gái đang tưới cấy...",
+      "toolsTitle": "Công cụ chỉnh sửa",
+      "sizeLabel": "Kích thước",
+      "blurLabel": "Độ mờ",
+      "combineOptionsTitle": "Tùy chọn ghép ảnh",
+      "combineAreaLabel": "Khu vực ghép",
+      "boundingBoxBtn": "Khung giới hạn",
+      "maskAreaBtn": "Vùng mặt nạ",
+      "expandLabel": "Mở rộng",
+      "featherEdgeLabel": "Làm mịn cạnh",
+      "enableBrushTooltip": "Bật cọ vẽ",
+      "enableEraserTooltip": "Chế độ tẩy",
+      "defineFocusAreaTooltip": "Xác định vùng tập trung",
+      "clearFocusAreaTooltip": "Xóa vùng tập trung đã xác định",
+      "clearMaskTooltip": "Xóa toàn bộ mặt nạ",
+      "fullscreenEditorTooltip": "Mở trình chỉnh sửa toàn màn hình",
+      "deleteImageTooltip": "Xóa ảnh",
+      "fullscreenCompareTooltip": "So sánh kết quả cuối cùng with bản gốc ở chế độ toàn màn hình",
+      "downloadFinalTooltip": "Tải xuống ảnh cuối cùng",
+      "useAsInputTooltip": "Sử dụng kết quả này làm ảnh đầu vào mới để chỉnh sửa thêm"
+    },
+    "comingSoon": {
+      "title": "SẮP RA MẶT",
+      "description": "Tính năng \"{{featureName}}\" hiện đang được phát triển. Chúng tôi đang nỗ lực để sớm mang nó đến cho bạn!"
+    },
+    "subtitle": "CÔNG CỤ HỖ TRỢ TẠO ẢNH SIÊU THỰC CHO RENDER KIẾN TRÚC VÀ NỘI THẤT TỪ CÁC MÔ HÌNH 3D NHƯ SKETCHUP, 3DS MAX, REVIT...",
+    "actionButtons": {
+      "exterior": "Render AI - Ngoại thất",
+      "interior": "Render AI - Nội thất",
+      "newAngle": "Tạo góc chụp mới",
+      "zoom": "2D & Sketchup",
+      "edit": "Chỉnh sửa / Zoom Ảnh",
+      "sharpen": "Tăng nét ảnh",
+      "toVideo": "Tạo kịch bản Video",
+      "utils": "Tiện ích khác",
+      "exteriorViewSuggestions": "Gợi ý các View Ngoại thất",
+      "newAngleSuggestionTitle": "Gợi ý góc chụp tự động",
+      "suggestBeautifulAngle": "Gợi ý góc chụp đẹp",
+      "suggestZoomAngle": "Gợi ý góc zoom chi tiết đẹp",
+      "suggestBeautifulInteriorAngle": "Gợi ý góc chụp Nội thất đẹp"
+    },
+    "sidebar": {
+      "inputImageTitle": "Ảnh đầu vào",
+      "outputImageTitle": "Ảnh đầu ra",
+      "outputImageTypePlaceholder": "Chọn loại ảnh đầu ra",
+      "outputImageTypes": [
+          "Ảnh thực tế của công trình",
+          "Một bức ảnh siêu thực của công trình",
+          "Cảnh cinematic của công trình",
+          "Phối cảnh render 3D của công trình"
+      ],
+      "outputImagePromptPrefixes": [
+          "Một ảnh thực tế",
+          "Một bức ảnh siêu thực",
+          "Một cảnh cinematic",
+          "Một phối cảnh render 3D"
+      ],
+      "uploadPlaceholder": "Tải ảnh của bạn",
+      "uploadBtn": "Tải ảnh của bạn",
+      "imageTypes": {
+        "default": "Ảnh mặc định",
+        "sketchup": "Ảnh phong cách 1",
+        "realistic": "Ảnh phong cách 2"
+      },
+      "inputImageNote": "* Chú ý: Nên chuyển đổi các Phong cách ảnh đầu vào để AI nhận diện 1 cách tốt nhất",
+      "referenceImageTitle": "Ảnh tham chiếu (Phong cách)",
+      "referenceUploadPlaceholder": "Kéo thả, dán, hoặc nhấp để tải lên",
+      "referenceUploadBtn": "Tải ảnh tham chiếu",
+      "referenceFilterBtn": "Tham chiếu Bộ lọc",
+      "applyNow": "Áp Dụng Ngay",
+      "applyToFilter": "Áp dụng vào Bộ lọc",
+      "referenceImageNote": "* Chức năng: Dùng để tham khảo ý tưởng , Phong cách, Ánh sáng, Vật liệu. Không tuyệt đối chính xác 100%",
+      "creativeFilterTitle": "Chi tiết bộ lọc sáng tạo",
+      "constructionTypeLabel": "Loại công trình",
+      "constructionTypePlaceholder": "biệt thự, nhà phố, shophouse",
+      "designStyleLabel": "Phong cách thiết kế",
+      "designStylePlaceholder": "ví dụ: hiện đại, tối giản, nhiệt đới",
+      "locationContextLabel": "Vị trí & bối cảnh",
+      "locationContextPlaceholder": "ví dụ: Khu dân cư hiện đại, Trung tâm thành phố, Ven biển...",
+      "appliedMaterialsLabel": "Vật liệu ứng dụng",
+      "appliedMaterialsPlaceholder": "ví dụ: Gỗ óc chó, Đá granite...",
+      "appliedMaterials": [
+        "Công trình sử dụng vật liệu như ảnh tải lên.",
+        "* Nhóm Nhà Phố *",
+        "Sơn tường ngoại thất màu trắng kem có các đường kẻ chỉ ngang, bề mặt mờ, độ phản sáng thấp.",
+       "Hệ thống hàng rào và cổng sắt sơn đen.",
+       "Gara ô tô được trang bị cửa cuốn hiện đại bằng kim loại màu trắng.",
+        "Cửa cuốn kim loại: Vật liệu là nhôm hoặc thép, tạo thành cửa cuốn cho gara. Bề mặt gồm các nan ngang, được sơn màu xám nhạt, có độ bóng nhẹ và mức độ phản sáng trung bình.",
+        "Khung nhôm hệ màu đen (black aluminum): Bề mặt sơn tĩnh điện nhẵn mịn, màu đen tuyền tạo độ tương phản cao.",
+        "Gạch lát sàn hiên nhà vân đá màu xám trung tính, bề mặt nhám nhẹ chống trượt, độ phản sáng thấp.",
+         "- Nhóm Kính",
+        "Kính cửa sổ màu xanh dương trong suốt, bề mặt phẳng bóng loáng, độ phản sáng cao.",
+        "Kính cửa sổ và vách kính: Vật liệu là kính trong suốt, có bề mặt nhẵn bóng, độ phản sáng cao, phản chiếu rõ hình ảnh của bầu trời và môi trường xung quanh.",
+         " - Nhóm Gỗ",
+         "Gỗ tự nhiên màu sáng cho cánh cửa chính, bề mặt phẳng mịn with các đường vân gỗ rõ nét được sắp xếp theo họa tiết tỏa tròn, hoàn thiện mờ.",
+        "Nhóm Biệt thự sân vườn",
+        "Vật liệu lợp mái bằng ngói màu xám đậm đến đen, bề mặt mờ with các rãnh rõ rệt, có khả năng phản chiếu ánh sáng thấp.",
+        "Ngói lợp màu xám đen than chì (charcoal grey): Bề mặt nhám mờ, không phản quang, xếp chồng theo kiểu ngói sóng hoặc vảy cá.",
+        "1 chậu cây bonsai trong sân nhà"
+      ],
+      "usageSuggestionBtn": "Gợi ý sử dụng",
+      "requiredLabel": "* Bắt buộc",
+      "noteLabel": "* Lưu ý",
+      "readCarefullyLabel": "** Chú ý đọc kĩ Mô tả",
+      "roomTypeLabel": "Loại phòng",
+      "roomTypePlaceholder": "Ví dụ: Phòng khách, Phòng ngủ, Bathroom...",
+      "interiorDesignStyleLabel": "Phong cách thiết kế",
+      "interiorDesignStylePlaceholder": "ví dụ: hiện đại, tối giản, đông dương",
+      "mainColorToneLabel": "Bảng màu chủ đạo (Color Palette)",
+      "mainColorTonePlaceholder": "ví dụ: Tone sáng dịu, tạo cảm giác tự nhiên...",
+      "cameraAngleAndCompositionLabel": "Góc chụp & Thành phần bố cục",
+      "cameraAngleAndCompositionPlaceholder": "Hãy chọn 1 góc chụp hoặc Tự mô tả 1 góc chụp mà Bạn mong muốn",
+      "cameraAngleAndCompositionSuggestions": [
+        "Góc rộng từ cửa vào: Chụp toàn cảnh không gian, thể hiện tổng thể thiết kế và cách bố trí nội thất.",
+        "Góc cận kệ trưng bày chính: Tập trung vào các sản phẩm được trưng bày, làm nổi bật chi tiết và màu sắc.",
+        "Góc ngang tầm mắt khu vực bàn thử đồ/khách ngồi: Tạo cảm giác thân thiện, thể hiện không gian trải nghiệm của khách hàng.",
+        "Góc từ trên cao nhìn xuống (bird's eye view) khu vực trung tâm: Nếu có thể, chụp từ trên cao để thấy được bố cục sàn, cách sắp xếp đồ đạc.",
+        "Góc cận các chi tiết trang trí đặc trưng (logo, tranh tường, đèn): Nhấn mạnh vào những điểm nhấn thương hiệu và trang trí độc đáo.",
+        "Góc từ bên bên trong phòng thử đồ nhìn ra: Thể hiện sự riêng tư, thoải mái và chất lượng ánh sáng bên trong phòng thử.",
+        "Góc chụp hàng hóa được sắp xếp theo màu sắc/chủ đề: Tạo ra một hình ảnh có tính thẩm mỹ cao, dễ nhìn và có tổ chức.",
+        "Góc chụp qua gương (nếu có gương lớn): Sử dụng gương để tạo hiệu ứng chiều sâu, phản chiếu không gian và thêm sự thú vị cho bức ảnh.",
+        "Góc cận chất liệu nội thất (gỗ, kim loại, vải bọc): Nhấn mạnh vào chất lượng và sự tinh tế của các vật liệu được sử dụng.",
+        "Góc chụp một phần không gian with ánh sáng tự nhiên/nhân tạo nổi bật: Tập trung vào cách ánh sáng tương tác vớinội thất, tạo điểm nhấn và bầu không khí."
+      ],
+      "renderQualityStyleLabel": "Chất lượng & phong cách Render",
+      "renderQualityStylePlaceholder": "Hãy chọn 1 Chất lượng & phong cách Render mà Bạn mong muốn",
+      "renderQualityStyles": [
+        "Photorealistic 8K – PBR Ultra Realism, render vật liệu cực thật, ánh sáng HDR, phản chiếu chính xác.",
+        "Cinematic Soft HDR – Filmic Tone, ánh sáng mềm, DOF nhẹ, grain tinh tế, giống ảnh DSLR quay phim.",
+        "Neutral Realistic – Balanced Light, ánh sáng trung tính, vật liệu chính xác, không quá tương phản.",
+        "Studio Sharp – Clear Light & Reflection, độ nét cao, đèn nhân tạo rõ, phản xạ kiểm soát.",
+        "Soft Natural – Warm Daylight Realism, ánh sáng dịu, noise tự nhiên, không gắt.",
+        "Moody Cinematic – Dark Contrast HDR, độ tương phản mạnh, ánh sáng định hướng, tone sâu.",
+        "Artistic Concept – Stylized Mood, giảm chi tiết thực, tăng ánh sáng & màu sáng tạo.",
+        "Filmic Vintage – Warm LUT + Grain, giống ảnh phim Kodak, tone ấm & contrast mềm.",
+        "Digital Clean – Minimal Clear Look, ánh sáng trắng sạch, rõ, không noise.",
+        "Hyperreal – Super Sharp + HDR Reflections, mô phỏng ánh sáng vật lý cực mạnh, chi tiết cực cao."
+      ],
+      "roomTypes": [
+        "Phòng khách",
+        "Phòng ngủ",
+        "Phòng tắm",
+        "Nhà bếp",
+        "Phòng ăn",
+        "Văn phòng tại nhà",
+        "Phòng trẻ em",
+        "Lối vào / Sảnh"
+      ],
+      "interiorDesignStyles": [
+        "Hiện đại",
+        "Tối giản (Minimalist)",
+        "Đông Dương (Indochine)",
+        "Tân cổ điển (Neoclassical)",
+        "Bắc Âu (Scandinavian)",
+        "Wabi-Sabi",
+        "Nhiệt đới (Tropical)",
+        "Công nghiệp (Industrial)",
+        "Mộc mạc (Rustic)",
+        "Bohemian"
+      ],
+      "mainColorTones": [
+        "Tone sáng dịu, tự nhiên",
+        "Ngà ấm, kem, be sáng, tông champagne, taupe trầm nhẹ, điểm nhấn kim loại brass tinh tế.",
+        "Tone ấm áp, ấm cúng (vàng, be)",
+        "Trung tính sáng – Hiện đại – Dễ dùng",
+        "Be – Gỗ – Ấm tự nhiên",
+        "Xám – Trắng – Đen (Monochrome)",
+        "Trắng – Gỗ – Xanh lá dịu",
+        "Nâu ấm – Đất – Trung tính",
+        "Trắng – Xám lạnh – Xanh ghi",
+        "Kem – Vàng nhạt – Ấm sáng",
+        "Xám – Gỗ tối – Sang trọng",
+        "Trắng – Pastel nhẹ – Dịu mắt",
+        "Trung tính + 1 màu nhấn đậm",
+        "Tone lạnh, hiện đại (trắng, xám, xanh)",
+        "Tone trung tính, thanh lịch (xám, kem)",
+        "Tone tương phản cao (đen-trắng)",
+        "Tone màu gỗ, mộc mạc",
+        "Tone pastel, nhẹ nhàng"
+      ],
+      "contextLocationView": {
+        "title": "Bối cảnh, Vị trí & Hướng nhìn",
+        "placeholder": "Ví dụ: Biệt thự nghỉ dưỡng hướng nhìn ra hồ bơi và vườn cây...",
+        "note": "Chọn theo gợi ý Bộ lọc bên dưới hoặc Tự mô tả.",
+        "promptTemplate": "Bối cảnh: Không gian nằm trong {{location}}, hướng nhìn ra {{view}}.",
+        "buildingLocationTitle": "Vị trí công trình",
+        "viewDirectionTitle": "Hướng nhìn",
+        "buildingLocations": {
+          "residential": {
+            "title": "Nhóm Nhà ở",
+            "options": ["Căn hộ chung cư", "Nhà phố", "Biệt thự", "Nhà vườn", "Penthouse/Duplex", "Resort/Villa nghỉ dưỡng", "Homestay/Bungalow", "Nhà truyền thống/Nhà cổ"]
+          },
+          "work": {
+            "title": "Nhóm Làm việc",
+            "options": ["Văn phòng hiện đại", "Studio sáng tạo/Design office", "Coworking space", "Home office"]
+          },
+          "commercial": {
+            "title": "Nhóm Dịch vụ & Thương mại",
+            "options": ["Nhà hàng/Cafe", "Showroom/Cửa hàng", "Khách sạn (Hotel / Lobby)", "Spa/Wellness", "Salon/Thẩm mỹ viện", "Gym/Fitness"]
+          },
+          "public": {
+            "title": "Nhóm Công cộng & Giáo dục",
+            "options": ["Thư viện/Phòng đọc", "Trường học/Lớp học", "Bảo tàng/Gallery"]
+          },
+          "leisure": {
+            "title": "Nhóm Nghỉ dưỡng & Giải trí",
+            "options": ["Villa biển / Beach house", "Mountain retreat / Nhà núi", "Glamping / Camping hut"]
+          },
+          "creative": {
+            "title": "Nhóm Công nghiệp & Sáng tạo",
+            "options": ["Loft / Warehouse studio", "Photo studio / Film set"]
+          }
+        },
+        "viewDirections": {
+          "nature": {
+            "title": "Nhóm Tự nhiên (Nature Views)",
+            "options": ["Vườn", "Hồ / bể bơi", "Sông", "Biển", "Núi / đồi", "Ruộng / cánh đồng", "Rừng cây / thiên nhiên xanh", "Bầu trời / ánh sáng trên cao"]
+          },
+          "urban": {
+            "title": "Nhóm Đô thị (Urban Views)",
+            "options": ["Phố", "Thành phố / skyline", "Khu dân cư", "Công viên", "Khu thương mại / shophouse", "Hẻm / ngõ nhỏ"]
+          },
+          "special": {
+            "title": "Nhóm Đặc biệt (Special Views)",
+            "options": ["Không cửa sổ / Không view", "View mở 2 hướng Hai mặt thoáng, sáng đều", "View giếng trời / skylight", "View ban công / logia", "View sân trong / patio", "View hành lang / lối đi", "View hồ cá / tiểu cảnh nước trong nhà", "View tường liền kề"]
+          }
+        }
+      },
+      "lightingSystem": {
+        "title": "Hệ thống Chiếu sáng",
+        "exampleLabel": "Ví dụ: Ánh sáng tự nhiên dịu, nguồn sáng chính từ cửa sổ lớn hướng ra hồ bơi, tone trung tính 5000K, hiệu ứng phản xạ nước, tương phản trung bình, mood thư giãn.",
+        "promptTemplate": "Ánh sáng: {{lightingCondition}}, nguồn sáng chính từ {{mainLightSource}}, tone ánh sáng {{lightTone}}, hiệu ứng {{lightEffect}}, tương phản {{contrastLevel}}, mood {{lightMood}}.",
+        "note": "*Chọn theo gợi ý Bộ lọc bên dưới hoặc Tự mô tả.",
+        "lightingTemplate": {
+          "title": "Các mẫu thiết lập ánh sáng",
+          "placeholder": "Hãy chọn 1 mẫu thiết lập ánh sáng mà Bạn mong muốn",
+          "options": [
+            "Ánh sáng nhân tạo từ đèn trần, chiếu đều toàn bộ không gian, nhiệt độ màu 4000–6000K, ánh sáng trung tính–lạnh, bóng đổ mềm, tương phản cao vừa, cảm giác sạch, hiện đại, rõ khối.",
+            "Ánh sáng tự nhiên nhẹ nhàng, khuếch tán dịu, kết hợp ánh sáng đèn ấm tạo cảm giác dễ chịu.",
+            "Ánh sáng đèn trần tông ấm 3000–3500K, khuếch tán mềm, bóng đổ nhẹ, tương phản thấp, không khí ấm áp, dễ chịu, thân thiện.",
+            "Ánh sáng tự nhiên ban ngày trời nhiều mây, ánh sáng phẳng, ít bóng đổ, tương phản thấp, thể hiện màu sắc vật liệu chính xác,nhiệt độ màu 6000K.",
+            "Ánh sáng hoàng hôn ấm, chiếu xiên, bóng đổ dài và mềm, tương phản trung bình, không khí ấm áp, giàu cảm xúc.",
+            "Ánh sáng buổi sáng dịu, cân bằng lạnh–ấm, bóng đổ nhẹ, không gian tươi mới, thoáng đãng.",
+            "Ánh sáng buổi chiều mạnh và rõ, bóng đổ rõ nét, tương phản cao, cảm giác năng động, rõ ràng.",
+            "Ánh sáng nhân tạo ban đêm trong nhà, nhiều lớp sáng, tông ấm, bóng đổ mềm, tương phản trung bình, không khí riêng tư, yên tĩnh.",
+            "Ánh sáng đô thị ban đêm kết hợp đèn đường và đèn kiến trúc, vùng sáng–tối rõ, tương phản cao, không khí điện ảnh, đô thị.",
+            "Ánh sáng LED nhấn kiến trúc, làm nổi bật đường nét và bề mặt, kiểm soát tương phản tốt, không khí hiện đại, sang trọng.",
+            "Ánh sáng phản xạ gián tiếp từ tường và trần, chuyển sắc mượt, tương phản trung bình, cảm giác cao cấp, tinh tế.",
+            "Ánh sáng studio kiểm soát hoàn toàn, tông trung tính, chiếu đều, ít bóng đổ, tương phản thấp, phong cách catalog / bán hàng.",
+            "Ánh sáng chiếu hướng mạnh, bóng đổ sâu, tương phản cao, tạo chiều sâu mạnh, không khí nghệ thuật, ấn tượng.",
+            "Ánh sáng rất mềm và khuếch tán, chuyển sắc nhẹ, tương phản thấp, không gian tĩnh, tối giản, thư giãn.",
+            "Kết hợp ánh sáng tự nhiên và ánh sáng nhân tạo, tông trung tính, bóng đổ mềm, không khí thực tế, có sức sống.",
+            "Ánh sáng tự nhiên ban ngày 6000k, phân bố đều, tông trung tính, bóng đổ mềm, tương phản trung bình, cảm giác tự nhiên và chân thực."
+          ]
+        },
+        "lightingCondition": {
+          "title": "Điều kiện ánh sáng",
+          "options": [
+            "Ánh sáng tự nhiên dịu (Soft Natural Light),Ánh sáng nhẹ, đều, không bóng gắt",
+            "Ánh sáng tự nhiên mạnh (Bright Natural Light),Cường độ cao, phản xạ rõ",
+            "Ánh sáng HDR sáng mạnh (HDR Bright Daylight),Rõ vật liệu, bóng đổ sắc nét",
+            "Ánh sáng gián tiếp (Indirect Light),Phản xạ từ tường / trần, tone mịn",
+            "Ánh sáng ban chiều vàng (Golden Hour Light),Ánh nắng vàng, bóng dài, cinematic",
+            "Ánh sáng sau mưa (Post-rain Light),Dịu, lạnh nhẹ, phản chiếu mặt sàn",
+            "Ánh sáng buổi tối (Night Ambient Light),Đèn ấm, bóng mềm, tương phản cao",
+            "Ánh sáng hỗn hợp (Mixed Light),Tự nhiên + nhân tạo kết hợp",
+            "Ánh sáng xuyên rèm (Filtered Light),Tán xạ qua rèm / cây, hoa văn mềm",
+            "Ánh sáng studio (Controlled Studio Light),Nhân tạo, trung tính, chính xác tone"
+          ]
+        },
+        "mainLightSource": {
+          "title": "Nguồn sáng chính",
+          "options": [
+            "Cửa sổ lớn (Large Window),Ánh sáng chính từ mặt tiền / view ngoài",
+            "Cửa sổ bên (Side Window),Ánh sáng xiên, tạo bóng tự nhiên",
+            "Cửa ban công (Balcony Door),Ánh sáng phản chiếu nhẹ, tone dịu",
+            "Giếng trời (Skylight),Ánh sáng từ trên xuống, đều và sạch",
+            "Đèn trần (Ceiling Light),Nguồn sáng nhân tạo chính",
+            "Đèn hắt tường (Wall Light),Ánh sáng điểm nhấn, tone vàng nhẹ",
+            "Đèn bàn / đèn sàn (Lamp Light),Ánh sáng cục bộ, ấm và mềm",
+            "Hồ bơi / mặt nước (Water Reflection),Ánh sáng phản xạ động, lung linh",
+            "Cửa kính lớn (Full-glass Facade),Ánh sáng mạnh, phản chiếu rõ",
+            "Ánh sáng phản xạ trần (Ceiling Bounce Light),Từ ánh sáng gián tiếp hắt lên trần"
+          ]
+        },
+        "lightTone": {
+          "title": "Tone ánh sáng",
+          "options": [
+            "3000K – Ánh sáng vàng ấm (Warm White),Cozy, thư giãn, sang trọng",
+            "3500K – Ánh sáng be ấm (Soft Warm),Dịu, tự nhiên, phù hợp gỗ sáng",
+            "4000K – Ánh sáng trung tính ấm (Neutral Warm),Tự nhiên nhẹ, không lạnh",
+            "4500K – Ánh sáng trung tính (Neutral White),Giống daylight thực tế",
+            "5000K – Ánh sáng trắng sáng (Pure White),Cân bằng tone tổng thể",
+            "5500K – Ánh sáng trắng lạnh (Cool White),Sạch, hiện đại",
+            "6000K – Ánh sáng lạnh mạnh (Cold White),Tone trắng xanh, minimal",
+            "6500K – Ánh sáng daylight (Daylight),Sáng rực, phản chiếu mạnh",
+            "7000K – Ánh sáng studio (Studio Cold),Lạnh, tinh khiết, sắc nét",
+            "2700K – Ánh sáng đèn tungsten (Tungsten Warm),Vàng đậm, thân mật, cổ điển"
+          ]
+        },
+        "lightEffect": {
+          "title": "Hiệu ứng ánh sáng",
+          "options": [
+            "Ánh sáng xuyên rèm (Filtered Light),Hoa văn ánh sáng qua rèm",
+            "Ánh sáng phản xạ nước (Water Reflection),Lung linh, chuyển động ánh sáng",
+            "Ánh sáng hắt tường (Wall Glow),Đèn gián tiếp phản sáng nhẹ",
+            "Ánh sáng phản chiếu sàn (Floor Reflection),Tăng chiều sâu và độ thật",
+            "Bóng đổ xiên nhẹ (Soft Shadow),Bóng mờ, mềm mại",
+            "Bóng gắt mạnh (Hard Shadow),Tương phản cao, cinematic",
+            "Hiệu ứng vàng chiều (Golden Glow),Ánh sáng cam nhẹ lúc hoàng hôn",
+            "Ánh sáng HDR (HDR Bloom),Vùng sáng mờ lan, cinematic",
+            "Ánh sáng tán xạ (Diffuse Light),Tone đều, không bóng rõ",
+            "Ánh sáng điểm nhấn (Accent Spot Light),Chiếu vật thể hoặc décor cụ thể"
+          ]
+        },
+        "contrastLevel": {
+          "title": "Mức tương phản",
+          "options": [
+            "Thấp (Low Contrast),Ánh sáng đều, ít bóng – hợp tone minimal",
+            "Trung bình (Medium Contrast),Cân bằng, có chiều sâu vừa phải",
+            "Cao (High Contrast),Ánh sáng mạnh, bóng rõ – cinematic",
+            "HDR (HDR Level),Tone sáng cao, highlight mạnh, luxury",
+            "Mềm (Soft),Ánh sáng loang nhẹ, dịu",
+            "Cứng (Hard),Tương phản gắt, đổ bóng mạnh",
+            "Cân bằng (Balanced),Giữa sáng và tối hài hòa",
+            "Cinematic (Cinematic Contrast),Bóng sâu, highlight ấm, film tone"
+          ]
+        },
+        "lightMood": {
+          "title": "Mood ánh sáng",
+          "options": [
+            "Dịu nhẹ (Soft & Calm),Ánh sáng tĩnh, dễ chịu, thư giãn",
+            "Ấm áp (Warm & Cozy),Tone vàng, gỗ, ánh sáng thân mật",
+            "Mát lạnh (Cool & Fresh),Tone xanh, trắng sáng, sạch sẽ",
+            "Trung tính (Neutral),Cân bằng tự nhiên",
+            "Cinematic (Cinematic Mood),Ánh sáng có chiều sâu, nghệ thuật",
+            "Sang trọng (Luxury Glow),Phản sáng nhẹ, đèn ấm vàng",
+            "Nghệ thuật (Artistic),Ánh sáng không đều, tạo điểm nhấn",
+            "Tự nhiên (Natural Daylight),Giống ánh sáng ngoài trời thực tế"
+          ]
+        }
+      },
+      "lightToneSystem": {
+        "title": "Tone màu của Ánh sáng",
+        "note": "*Chọn theo gợi ý Bộ lọc bên dưới hoặc Tự mô tả.",
+        "promptTemplate": "Tông màu ánh sáng: {{lightTone}}.",
+        "warmTones": {
+          "title": "Nhóm Tông Ấm",
+          "options": [
+            "Vàng ấm (Warm Yellow Tone),3000–3500K, ánh vàng nhẹ,Sang trọng, thân mật",
+            "Be ấm (Soft Beige Tone),3500–4000K, vàng pha trắng,Êm dịu, thư giãn, hiện đại",
+            "Cam vàng (Golden Amber Tone),2800–3200K, vàng cam nhẹ,Sang trọng, phong cách luxury",
+            "Nâu gỗ (Wooden Warm Tone),Phản sáng gỗ, vàng nâu,Ấm tự nhiên, tone Nhật / Indochine",
+            "Hổ phách (Amber Glow),Vàng đậm, ánh hắt tối,Cinematic, hoài cổ"
+          ]
+        },
+        "coolTones": {
+          "title": "Nhóm Tông Lạnh",
+          "options": [
+            "Trắng lạnh (Cool White),5500–6000K, ánh sáng sạch",
+            "Xanh nhẹ (Soft Blue Tone),6000–6500K, tone xanh lam,Mát, yên tĩnh, tối giản",
+            "Bạc xám (Silver Cool Tone),Trắng hơi xám, phản kim loại,Công nghiệp, minimal",
+            "Xanh lam sáng (Sky Blue Tone),6500–7000K, daylight lạnh,Tone tươi, trong trẻo",
+            "Xanh ngọc (Aqua Light),Ánh xanh lục lam,Mát dịu, resort / tropical"
+          ]
+        },
+        "neutralTones": {
+          "title": "Nhóm Tông Trung Tính",
+          "options": [
+            "Trắng trung tính (Neutral White),4500–5000K,Giống ánh sáng tự nhiên ban ngày",
+            "Xám be (Balanced Beige),Vàng + lạnh cân bằng,Tone tự nhiên, dễ phối màu",
+            "Tông sáng sạch (Clear White),5000K,Tươi, tự nhiên, daylight sạch",
+            "Tone thực tế (Realistic Tone),Giống ánh sáng chụp DSLR,Trung tính, không bias màu",
+            "Natural Daylight (Tự nhiên),Ánh sáng tự nhiên,Dịu, phản chiếu đều"
+          ]
+        },
+        "specialTones": {
+          "title": "Nhóm Tông Đặc Biệt",
+          "options": [
+            "Tone vàng chiều (Golden Hour),Ánh vàng hồng lúc hoàng hôn,Cinematic, sâu, ấm áp",
+            "Tone hồng nhẹ (Soft Pink Tone),Ánh sáng hồng pastel,Nữ tính, nghệ thuật",
+            "Tone tím lạnh (Cool Violet),Ánh sáng lam-tím nhẹ,Sang trọng, huyền ảo",
+            "Tone xanh đêm (Night Blue Tone),Ánh sáng xanh đậm ban đêm,Cinematic, yên tĩnh",
+            "Tone vàng ốp gỗ (Wood Glow Tone),Phản sáng vàng nâu từ vật liệu gỗ,Ấm, sang trọng, tự nhiên"
+          ]
+        }
+      },
+      "timeAndClimate": {
+        "title": "Thời gian và Khí hậu",
+        "exampleLabel": "Ví dụ: Thời gian: sáng sớm mùa hè, trời trong. Không khí trong lành, ánh sáng tự nhiên dịu chiếu từ cửa sổ bên trái.",
+        "note": "*Chọn theo gợi ý Bộ lọc bên dưới hoặc Tự mô tả.",
+        "timeAndClimateTemplate": {
+          "title": "Các mẫu thiết lập Thời gian & Khí hậu",
+          "placeholder": "Hãy chọn 1 mẫu thiết lập Thời gian & Khí hậu mà Bạn mong muốn",
+          "options": [
+            "Buổi sáng sớm mùa hè, trời quang đãng, không khí mát và trong lành, ánh sáng tự nhiên dịu nhẹ chiếu xiên từ bên hông.",
+            "Buổi sáng muộn, trời nắng nhẹ, không khí trong trẻo, ánh sáng tự nhiên lan tỏa đều.",
+            "Buổi trưa, trời nắng mạnh, ánh sáng trực diện rõ nét, không khí khô và sáng.",
+            "Buổi chiều, ánh nắng cao và mạnh, bóng đổ rõ, không khí nóng nhẹ, cảm giác năng động.",
+            "Buổi chiều muộn, ánh nắng xiên thấp, không khí dịu lại, ánh sáng ấm nhẹ tạo chiều sâu.",
+            "Thời điểm hoàng hôn, ánh sáng vàng ấm, chiếu xiên mạnh, không khí lắng đọng và giàu cảm xúc.",
+            "Thời điểm giao ngày–đêm, ánh sáng tự nhiên yếu dần, không khí dịu và yên tĩnh.",
+            "Ban đêm trong bối cảnh đô thị, kết hợp ánh sáng đèn đường và đèn kiến trúc, không khí sống động.",
+            "Thời tiết nhiều mây, ánh sáng khuếch tán đều, ít bóng đổ, không khí trung tính và ổn định.",
+            "Trời âm u, ánh sáng yếu và mềm, không khí ẩm nhẹ, cảm giác trầm và yên tĩnh.",
+            "Thời điểm sau mưa, không khí trong lành, ánh sáng phản chiếu nhẹ, cảm giác tươi mới và sạch.",
+            "Không khí mùa thu mát mẻ, ánh sáng dịu, không gian nhẹ nhàng và dễ chịu.",
+            "Không khí mùa đông khô và lạnh, ánh sáng thiên lạnh, cảm giác tĩnh và rõ ràng.",
+            "Khí hậu nhiệt đới, nắng mạnh kết hợp độ ẩm cao, ánh sáng tự nhiên rõ, cảm giác sinh động và đời sống.",
+            "Ban đêm trời quang, không khí mát, ánh sáng môi trường yếu, cảm giác yên bình."
+          ]
+        },
+        "timeOfDay": {
+          "title": "Thời gian trong ngày",
+          "options": [
+            "Sáng sớm (Early Morning),Ánh sáng dịu, hơi xanh,Tone mát, bóng mềm, nhẹ sương",
+            "Buổi trưa (Noon),Ánh sáng mạnh, trắng trung tính,HDR sáng, phản chiếu rõ",
+            "Chiều muộn (Late Afternoon),Ánh sáng ấm, bóng dài,Tone vàng be, cảm xúc sâu",
+            "Hoàng hôn (Sunset / Golden Hour),Ánh sáng cam – hồng,Cinematic, ấm áp",
+            "Buổi tối (Evening),Đèn nhân tạo chủ đạo,Tone vàng, contrast cao",
+            "Đêm khuya (Night),Ánh sáng yếu, tone trầm,Ánh đèn nhẹ, mood sâu",
+            "Sau mưa (After Rain),Ánh sáng dịu, lạnh nhẹ,Phản chiếu mặt sàn, tone trong",
+            "Trước bình minh (Pre-Dawn),Ánh sáng xanh lam nhạt,Mềm, nhẹ, cảm xúc"
+          ]
+        },
+        "seasonOfYear": {
+          "title": "Mùa trong năm",
+          "options": [
+            "Xuân (Spring),Ánh sáng dịu, màu sắc tươi,Tone sáng, nhẹ, hơi ấm",
+            "Hạ (Summer),Ánh sáng mạnh, trời trong,HDR sáng, phản chiếu cao",
+            "Thu (Autumn),Ánh sáng vàng, nhẹ, hơi sương,Tone ấm be, nhẹ nhàng",
+            "Đông (Winter),Ánh sáng lạnh, ít độ chói,Tone lạnh, sạch, hiện đại",
+            "Mùa mưa (Rainy Season),Ánh sáng tán xạ, phản xạ mặt sàn,Tone xanh xám, dịu, phản sáng nước"
+          ]
+        },
+        "weatherCondition": {
+          "title": "Tình trạng thời tiết",
+          "options": [
+            "Trời trong (Clear Sky),Nắng, sáng mạnh,Bóng rõ, HDR sáng",
+            "Nhiều mây (Cloudy),Ánh sáng tán đều,Tone xám-be dịu",
+            "Sau mưa (After Rain),Không khí trong, phản chiếu nền ướt,Tone xanh lam, phản sáng đẹp",
+            "Có sương (Misty),Ánh sáng khuếch tán,Mờ nhẹ, cinematic",
+            "Trời âm u (Overcast),Giảm độ sáng, tone lạnh,Dịu, ánh sáng đều",
+            "Trời nắng gắt (Sunny Strong),Ánh sáng trắng mạnh,Tương phản cao",
+            "Trời hoàng hôn (Sunset Sky),Ánh sáng vàng hồng,Tone ấm, lãng mạn",
+            "Đêm có đèn (Night Lights),Đèn nhân tạo, phản chiếu vàng,Tone ấm, HDR contrast"
+          ]
+        },
+        "overallAtmosphere": {
+          "title": "Không khí tổng thể",
+          "options": [
+            "Dịu nhẹ (Soft & Calm),Không khí yên tĩnh, sáng đều,Tone thư giãn, nhẹ",
+            "Trong lành (Fresh & Clean),Ánh sáng trong, màu tươi,Tone tự nhiên, daylight",
+            "Ấm áp (Warm & Cozy),Tone vàng, gỗ, ánh sáng dịu,Không gian thân mật",
+            "Mát lạnh (Cool & Clear),Tone lạnh, xanh nhẹ,Cảm giác hiện đại",
+            "Cinematic / Nghệ thuật,Ánh sáng tương phản, bóng sâu,Chiều sâu, nghệ thuật",
+            "Luxury / Sang trọng,Ánh sáng phản chiếu tinh tế,Tone cao cấp, vàng be",
+            "Tĩnh lặng (Still & Quiet),Ánh sáng đều, bóng mềm,Cảm giác yên bình"
+          ]
+        },
+        "sunlightDirection": {
+          "title": "Hướng chiếu sáng mặt trời",
+          "options": [
+            "Ánh sáng từ phía trước (Front Light),Sáng đều, bóng nhẹ",
+            "Ánh sáng chéo trái (Left Side Light),Bóng đổ xiên, tăng chiều sâu",
+            "Ánh sáng chéo phải (Right Side Light),Cân bằng tone, có phản xạ tốt",
+            "Ánh sáng từ trên (Top Light),Đều, ít bóng – hợp giếng trời",
+            "Ánh sáng ngược (Backlight),Tạo viền sáng, cinematic",
+            "Ánh sáng hỗn hợp (Mixed Direction),Nhiều nguồn, phản xạ đa chiều"
+          ]
+        }
+      },
+      "environmentalCharacteristicsLabel": "Đặc điểm môi trường xung quanh",
+      "suggestionLink": "Gợi ý lựa chọn",
+      "aiSuggestionBtn": "AI Gợi ý",
+      "aiSuggesting": "Đang gợi ý...",
+      "aiSuggestingAngle": "Đang gợi ý...",
+      "environmentalCharacteristicsPlaceholder": "ví dụ: Cây đô thị mới trồng, Sau cơn mưa nhẹ...",
+      "distantContextLabel": "Bối cảnh xa & nền cảnh đô thị",
+      "distantContextPlaceholder": "ví dụ: Skyline thành phố xa xa, Núi đồi phía sau...",
+      "distantContexts": [
+        "I.BỐI CẢNH KHU ĐÔ THỊ MỚI , VEN ĐÔ, KHU NHÀ THẤP TẦNG",
+        "Khu dân cư đông đúc với các nhà phố liền kề và đường dây điện chằng chịt",
+        "Khu dân cư đô thị đông đúc với nhiều nhà phố, xen kẽ cây xanh rậm rạp",
+        "Không gian mở vừa phải, thoáng nhưng vẫn mang tính đô thị, tạo chiều sâu thị giác và cảm giác không gian mở rộng",
+        "Khu phố ven đô, các tầng nhà hiện đại thấp, Tường sáng, xen giữa cây xanh và dây điện trên cao. Không mở rộng, sáng ban ngày rõ ràng, phản ánh nhẹ nhàng trên tường và mái ngói, tạo cảm giác sống động, tự nhiên.",
+        "Một khu dân cư trên núi with những biệt thự khác và thảm thực vật dày đặc phía xa., tạo chiều sâu thị giác và cảm giác không gian mở rộng., tạo chiều sâu thị giác và cảm giác không gian mở rộng.",
+        "Khu nhà tầng thấp, Tường sơn màu sáng, có hàng rào bao quanh, cột điện và dây điện chạy ngang – đặc trưng của khu dân cư mới. Không gian xung quanh tạo chiều sâu thị giác và cảm giác mở thoáng, sinh động.",
+        "Khu dân cư vùng quê việt nam, sáng ban ngày rõ ràng, phản ánh nhẹ nhàng trên tường và mái ngói, tạo cảm giác sống động, tự nhiên.",
+        "Khu nhà thấp tầng, Tường sơn trắng và xám sáng, bố cục đều. Dọc tuyến phố có hàng rào, cột điện và dây điện chạy ngang, tạo cảm giác giác quan sinh hoạt quen thuộc của khu dân cư mới, không gian thoáng và sáng tự nhiên.",
+        "Không gian khu dân cư hiện đại, chủ yếu là nhà phố 2–3 tầng, Tường sáng màu. Có hàng rào thấp, cây xanh dọc đường và hệ thống dây điện trên cao, đặc biệt cho khu đô thị mở rộng ven đô.",
+        "Dãy nhà thấp tầng san sát, Tường sơn sáng, Mái dốc nhẹ nhàng. Cột điện và dây điện nằm ngang, cùng hàng cây nhỏ hai bên, tip sườn khu dân cư Yên Bình và thân thuộc.",
+        "Khu dân cư đô thị đông đúc with nhiều nhà phố, xen kẽ cây xanh rậm rạp",
+        "Khu dân cư mới hình thành, hạ tầng hoàn chỉnh, nhà thấp tầng sơn sáng, hàng rào và cột điện hiện rõ nét. Cảnh báo sạch sẽ, nhiều ánh sáng, tạo cảm giác giác quan không gian mở rộng và có chiều sâu thị giác giác giác.",
+        "Dãy nhà phố thấp tầng, Tường trắng sáng, Tựa, trước nhà có chậu cây xanh. Đường bê tông sạch, nắng sớm nghiêng nhẹ nhàng, không khí trong lành và yên tĩnh.",
+        "Đường nhựa mới, còn bảo vệ sơn phân làn, nhãn chưa trồng đủ cây. Hai bên là nhà xây mới, Tường sáng màu, hàng rào gọn gàng, không gian mở và nhiều ánh sáng.",
+        "Các tầng nhà thấp nằm giữa không gian cây xanh tươi tốt, có cây bóng mát tán tròn, hoa nở ven đường, ánh nắng phản chiếu qua lá tạo cảm giác sinh thái và nhẹ nhàng.",
+        "Đường phố rộng, có dải cây xanh ở giữa, nhà phố hiện đại with mặt tiền kính và lam nhôm. Cột điện thấp, dây điện gọn, không gian phá sản, ánh sáng đô thị phản chiếu nhẹ trên tường.",
+        "Nhà thấp tầng phản sáng nhẹ nhàng màu vàng cam, không khí tĩnh, có vài chiếc xe máy và người đi bộ, cảm giác giác đời sống thực tế và ấm áp.",
+        "Nhà thấp tầng mái ngói, Tường trắng, cửa gỗ nâu. Đường gạch, có hàng cây bằng lăng hoa tím, dây điện và đèn đường treo cao. Ánh sáng nhẹ nhàng, không gian thanh bình và gọn gàng.",
+        "Xa xa là hàng cây cao, lan rộng, đan xen ánh sáng, phía sau có vài mái nhà ẩn hiện. Không gian xanh dịu, tự nhiên, tạo cảm giác giác giác và gần gũi.",
+        "Các khối nhà mới xây dựng, mái tôn sáng màu, xen kẽ đất trống, tạo bối cảnh khu đô thị đang phát triển.",
+        "Sau công trình là cánh đồng hoặc bãi cỏ xanh mướt, rải rác cây bụi bụi thấp, nối ra đường xa – mang cảm giác thoáng đãng và có chiều sâu không gian.",
+        "Xa xa là cụm cây để tán tròn, sau đó là đường cong nhẹ nhàng ra khu dân cư khác, giúp hậu cảnh thương mại, tự nhiên, không cứng.",
+        "Ngập ánh sáng sương sương, tông vàng nhẹ, bóng nhà và cây kéo dài, tạo cảm giác trong trẻo, thanh bình đầu ngày.",
+        "Hậu cảnh có ánh nắng vàng cam,bóng bóng lên mái nhà, cột điện và hàng cây – tip không khí chiều đô thị sinh động.",
+        "Xa xa phản chiếu ánh sáng trên mặt đường ướt, lá cây đậm màu sắc, một vài vệt xe mờ xa, khung cảnh sâu và thực.",
+        "Đọc tuyến phố kéo dài, hàng cây trồng đều hai bên, tạo thẳng đứng sâu hút, nhấn mạnh chiều sâu phối cảnh và góc giác giác quy luật.",
+        "Xa xa có vài mái ngói đỏ, Tường sáng, xen giữa cây xanh và đất trống, tip vùng ven đô yên tĩnh, thân thiện và gần gũi.",
+        "Nhà thấp tầng mái ngói, Tường trắng, cửa gỗ nâu. Đường gạch, có hàng cây bằng lăng hoa tím, dây điện và đèn đường treo cao. Ánh sáng nhẹ nhàng, không gian thanh bình và gọn gàng.",
+        "Các ngôi nhà đồng bộ cao 2–3 tầng, Tường sáng, hàng rào cây xanh cao ngang, xen hoa nhỏ và chậu cảnh. Cột điện và dây điện hiện hữu nhẹ nhàng, tạo nên sự quen thuộc rõ ràng của khu dân cư thực tế.",
+        "Mặt đường ẩm, phản chiếu ánh sáng nhà và cây. Tường sáng nổi lên trong không khí mát. Lá cây xanh đậm, dây điện ngang có nước, khung cảnh tự nhiên, sống động.",
+        "Mạng lưới các ngôi nhà nông thôn mái thấp và đồng ruộng trải dài vô tận.",
+        "Phía trước là con đường nhựa sạch, phía sau còn bãi cỏ hoặc bãi cỏ xanh. Nhà thấp tầng Tường trắng, mái dốc nâu, dây điện chạy dọc theo tuyến đường, khung cảnh tĩnh lặng, gần kín.",
+        "FIX LỖI GÓC ĐƯỜNG",
+        "Góc chụp chính diện, camera vuông góc with mặt tiền.Ngôi nhà nằm trong khu đất nội bộ, chỉ có một mặt giáp đường phía trước.Hai bên trái và phải không hiển thị, không có đường, không có vỉa hè, không có lối đi.Bối cảnh hai bên là đất tư nhân kín, không gian bị che khuất hoàn toàn.",
+        "II. BỐI CẢNH XA & NỀN CẢNH TỰ NHIÊN",
+        " Bầu trời trắng đục và thoáng thấy mái nhà lân cận bị che khuất bởi tán cây",
+        "Bầu trời quang đãng, không có các công trình hoặc yếu tố cảnh quan xa",
+        "Bầu trời xanh thẳm, quang đãng làm nền tôn lên vẻ đẹp của công trình.",
+        "Khung cảnh cây cối xanh mướt trải dài phía sau ngôi nhà",
+        "Khoảng trời xanh nhạt phía trên và một phần mặt tiền của các ngôi nhà liền kề hai bên",
+        "Những ngọn đồi thoai thoải với thảm thực vật xanh và vàng xen kẽ, trải dài đến chân trời",
+        "Đồi núi (Mountain Landscape),Đồi thoai thoải, cây tán lớn, xa xa có núi mờ, trời trong, ánh sáng ban mai nhẹ,",
+        "Một khu dân cư ven biển with những biệt thự khác và thảm thực vật dày đặc phía xa",
+        "Rừng cây (Forest Setting),Bao quanh bởi rừng xanh, ánh sáng xuyên qua tán lá, sương mờ, độ sâu rõ,",
+        "Bờ hồ (Lakeside),Công trình bên mặt nước phẳng lặng, phản chiếu rõ, trời sáng lam nhạt, cây xanh quanh bờ,",
+        "Biển / ven biển (Seaside),Sóng nhẹ, cát mịn, gió biển, nền trời xanh nhạt, ánh nắng phản sáng mặt nước,",
+        "Làng quê (Countryside),Nhà mái ngói, đồng lúa, hàng dừa, không gian yên bình, ánh sáng vàng nhạt,",
+        "Cao nguyên / vùng đồi gió (Highland),Đồi cỏ rộng, gió lùa, trời trong, mây dày nhẹ, phối cảnh xa mở rộng,",
+        "Khu vườn / sân vườn (Garden Context),Cây cảnh, thảm cỏ, hoa dại, ánh sáng khuếch tán, bóng cây mềm mại,",
+        "III. BỐI CẢNH XA & NỀN CẢNH NGOẠI Ô",
+        "Ngoại ô hiện đại (Modern Suburb),Nhà biệt thự đơn lập, hàng cây, vỉa hè, đèn sân, đường bê tông nhỏ, ánh sáng vàng nhẹ,",
+        "Khu dân cư mới (New Residential Zone),Nhà liền kề, công viên nhỏ, ô tô đỗ, không khí yên bình, trời xanh nhạt,",
+        "Ngoại ô đồng quê (Countryside Edge),Giao thoa giữa ruộng và khu dân cư, cây bụi, ánh sáng sáng sớm,",
+        "Đường ven đô (Suburban Road),Đường nhựa chạy ngang, hàng cây, nền xa có nhà thấp tầng mờ nhẹ,",
+        "IV. BỐI CẢNH XA & NỀN CẢNH ĐÔ THỊ ",
+        "Đô thị hiện đại (Modern City),Skyline kính thép, tòa nhà cao tầng xa xa, đường phố sạch, cây xanh, ánh sáng trắng tự nhiên (5500K), trời trong xanh nhẹ mây,",
+        "Trung tâm thành phố (Downtown),Các cao ốc văn phòng, giao lộ đông đúc, xe hơi và người mờ nhẹ (motion blur), ánh sáng trưa rõ nét,",
+        "Khu dân cư cao cấp (Residential Area),Nhà thấp tầng, hàng cây thẳng tắp, đường nội khu lát đá, không gian yên tĩnh, ánh sáng chiều dịu,",
+        "Đô thị Á Đông (Asian City),Nhà phố san sát, bảng hiệu, xe máy, người đi bộ, ánh sáng vàng ấm, phản chiếu nhẹ trên mặt đường,",
+        "Cảnh đêm đô thị (Night City),Đèn tòa nhà phản chiếu, xe tạo vệt sáng, cửa kính sáng rực, trời lam tím, vật liệu hắt sáng đẹp,",
+        "Cảnh sương sáng sớm (Misty Morning City),Lớp sương mỏng, ánh sáng khuếch tán nhẹ, độ tương phản mềm, nền nhạt mờ tự nhiên,",
+        "Đô thị cổ / phố cũ (Historic District),Kiến trúc cổ xen lẫn hiện đại, tường gạch cũ, bảng tên kim loại, tông ấm vintage, ánh sáng chiều muộn,",
+        "Nằm trong một khu dân cư làng quê, xen kẽ giữa các ngôi nhà mái ngói cũ."
+      ],
+      "seasonLabel": "Mùa trong năm",
+      "seasonPlaceholder": "Chọn mùa trong năm",
+      "timeOfDayLabel": "Thời gian trong ngày",
+      "timeOfDayPlaceholder": "ví dụ: Buổi sáng sớm, ánh sáng dịu và sương nhẹ phủ trên cây cỏ...",
+      "weatherConditionLabel": "Điều kiện thời tiết",
+      "weatherConditionPlaceholder": "ví dụ: Trời trong xanh, Sau mưa nhẹ...",
+      "toneAndMoodLabel": "Cảm giác / Không khí tổng thể (Tone & Mood)",
+      "toneAndMoodPlaceholder": "ví dụ: Ấm áp & thư giãn, Năng động & sinh khí, ...",
+      "cameraAngleLabel": "Góc nhìn Camera",
+      "cameraAnglePlaceholder": "ví dụ: Góc mắt người, Góc từ trên cao...",
+      "timeOfDaySuggestions": [
+        "Bất kỳ thời điểm Sau mưa, mặt đường ướt phản chiếu ánh sáng, bầu trời nhiều mây, ánh sáng khuếch tán mềm.",
+        "Ánh nắng vàng chiếu qua mây sau cơn mưa, đường còn ướt phản sáng, cây cối lung linh.",
+        "Buổi sáng sớm, ánh sáng dịu và sương nhẹ phủ trên cây cỏ, bầu trời xanh lam nhạt, không khí yên bình.",
+        "5h00 – 6h00 Lúc bình minh, ánh sáng hồng nhạt chiếu nhẹ qua tán cây, sương mỏng, không khí tươi mới.",
+        "Lúc bình minh, ánh sáng hồng nhạt chiếu nhẹ qua tán cây, sương mỏng, không khí tươi mới.",
+        "Buổi bình minh sau cơn mưa nhỏ, ánh sáng hồng cam dịu chiếu qua mây mỏng, mặt đường còn ướt phản chiếu ánh sáng, không khí trong và ẩm nhẹ.",
+        "Sương mờ phủ nhẹ trên nền cỏ, ánh sáng buổi sáng sớm khuếch tán, tone lạnh và tĩnh.",
+        "Buổi sáng muộn, ánh sáng tự nhiên tươi sáng, bóng đổ rõ nhẹ, tone sạch and trong.",
+        "Buổi sáng trời trong xanh, ánh sáng mạnh and bóng rõ, vật liệu phản chiếu ánh nắng, không khí tươi sáng and rõ nét.",
+        "Buổi sáng sau mưa, ánh sáng chiếu qua mây tạo cầu vồng mờ phía xa, mặt đường ướt phản chiếu ánh sáng vàng nhẹ.",
+        "Buổi sáng sớm mưa nhẹ, ánh sáng khuếch tán mềm, mặt đường ẩm, cây lá bóng nước, không khí mát.",
+        "Buổi sáng sớm, sương dày phủ mờ phần nền, ánh sáng khuếch tán lạnh, không khí tĩnh lặng and sâu.",
+        "Buổi sáng sau mưa, ánh nắng chiếu qua mây, hơi nước bốc nhẹ, mặt đường ướt sáng lung linh.",
+        "Buổi sáng nhiều mây sáng, ánh sáng khuếch tán mềm, không có bóng gắt, màu sắc trung tính, độ chi tiết vật liệu rõ.",
+        "Buổi trưa đang có mưa rào nhẹ, ánh sáng trắng mờ, mặt đường loang nước, không khí ẩm lạnh.",
+        "Giữa trưa, ánh sáng mạnh, bóng rõ, bầu trời xanh trong, vật liệu phản chiếu ánh nắng.",
+        "Sau cơn mưa nhẹ lúc hoàng hôn, mặt đường ướt phản sáng, ánh vàng xen ánh xanh tạo cảm xúc chân thực.",
+        "Lúc chạng vạng, ánh sáng xanh tím, đèn vàng trong nhà hắt ra qua kính, không khí tĩnh lặng.",
+        "Buổi chiều, ánh sáng vàng nhạt, bóng đổ dài, không khí ấm áp and tự nhiên.",
+        "Buổi chiều muộn, gió nhẹ lay cây, ánh sáng vàng nhạt phản chiếu mặt nước, không khí thư giãn.",
+        "Buổi chiều vàng nhẹ, ánh sáng xiên vàng nhạt, bóng đổ mềm, không khí ấm and thư giãn.",
+        "Buổi chiều vàng nhẹ, ánh sáng dịu and phản chiếu mềm, cảm giác thư giãn and ấm áp.",
+        "Buổi chiều mùa đông, ánh sáng yếu, trời nhiều mây xám, ánh vàng nhạt, không khí lạnh and tĩnh.",
+        "Chiều trước cơn mưa, mây đen kéo đến, ánh sáng mờ xám, gió lay nhẹ cây, không khí căng and sâu.",
+        "Buổi chiều sau cơn mưa, ánh sáng vàng cam phản chiếu mặt đường ướt, bầu trời pha xanh xám, không khí trong and ẩm.",
+        "Buổi chiều sau mưa, ánh nắng xiên vàng phản chiếu mặt đường ướt, bầu trời nhiều mây sáng, không khí trong and ấm áp.",
+        "Chiều / hoàng hôn Trước cơn mưa, bầu trời xám nặng, ánh sáng mờ, gió lay nhẹ cây cối.",
+        "Lúc hoàng hôn muộn, ánh sáng vàng cam hòa tím xanh, đèn trong nhà vừa bật, không khí ấm and yên bình.",
+        "Lúc hoàng hôn, ánh nắng vàng cam chiếu xiên qua công trình, bóng đổ dài, không khí điện ảnh and ấm áp.",
+        "Hoàng hôn sau cơn mưa, ánh vàng cam phản sáng mặt đường, ánh xanh mờ phía xa, đèn trong nhà ấm dần.",
+        "Ban đêm, ánh đèn vàng ấm hắt qua cửa kính, mặt đường phản sáng nhẹ, bầu trời xanh đậm.",
+        "Ban đêm ẩm nhẹ, hơi nước phản sáng ánh đèn, không khí ấm, ánh sáng vàng loang nhẹ.",
+        "Ban đêm yên tĩnh, đèn vàng ấm hắt ra from cửa kính, phản chiếu nhẹ trên đường, bầu trời xanh đậm.",
+        "Ban đêm ẩm nhẹ, có sương mờ, ánh đèn vàng hắt qua hơi nước, tạo ánh sáng tán xạ mềm.",
+        "Đêm khuya, ánh sáng mờ xanh lạnh, bầu trời tối sâu, không khí tĩnh lặng and sâu lắng.",
+        "Ban đêm sau mưa, mặt đường ướt phản chiếu ánh đèn vàng ấm from trong nhà, bầu trời xanh đậm, không khí tĩnh lặng.",
+        "Ánh sáng khuếch tán đều, cho thấy thời điểm giữa trưa hoặc đầu giờ chiều",
+        "Sau cơn mưa, bầu trời vừa trong lại, ánh sáng chiếu qua mây mỏng, đường ướt phản sáng, không khí tươi and sạch."
+      ],
+      "weatherConditions": [
+        "Trời trong xanh",
+        "Bầu trời xanh ngắt điểm xuyết những đám mây trắng bồng bềnh",
+        "Nhiều mây sáng",
+        "Trời u ám",
+        "Trời nhiều mây (overcast), ánh sáng dịu nhẹ không có nắng gắt..",
+        "Sau mưa nhẹ",
+        "Trước cơn mưa",
+        "Mưa nhỏ",
+        "Sau mưa có nắng",
+        "Sương mờ nhẹ",
+        "Sương dày",
+        "Gió nhẹ",
+        "Trời nồm ẩm",
+        "Khô nóng",
+        "Mát dịu",
+        "Có cầu vồng",
+        "Bụi nắng",
+        "Trời lạnh khô",
+        "Trời ẩm lạnh",
+        "Bão nhẹ",
+        "Hơi nước bốc lên",
+        "Không khí bụi mịn"
+      ],
+      "toneAndMoodSuggestions": [
+        "Ấm áp & thư giãn",
+        "Năng động & sinh khí",
+        "Sang trọng & tinh tế",
+        "Tĩnh lặng & yên bình",
+        "Cổ điển & hoài niệm",
+        "Tương lai & công nghệ",
+        "Huyền bí & kịch tính",
+        "Vui tươi & rực rỡ",
+        "Mộc mạc & tự nhiên",
+        "Lạnh & tối giản",
+        "Mạnh mẽ & ấn tượng",
+        "Nhẹ nhàng & thơ mộng"
+      ],
+      "cameraAngleSuggestions": [
+        "Góc chính diện (Frontal View), mặt tiền rõ ràng, cảm giác mạnh về kiến trúc.",
+        "Góc mắt người (Eye-level View), Góc nhìn tự nhiên, giống tầm mắt người thật, cân đối và chân thực.",
+        "Góc nhìn from mặt đường (Street-level View), Tạo cảm giác thực tế, gần gũi, hòa vào cảnh quan đô thị Việt Nam.",
+        "Góc chéo 45° (3/4 View / Oblique Angle), Cho chiều sâu không gian, thấy được cả mặt tiền and bên hông, bố cục hài hòa.",
+        "Góc from trên cao (High-angle / Flycam View), Bao quát toàn cảnh khu đất, sân vườn and cảnh quan xung quanh.",
+        "Góc from dưới lên (Low-angle View), Tạo cảm giác hùng vĩ, uy nghi, tôn chiều cao and hiện đại của công trình.",
+        "Góc nhìn xa (Distant View), Thể hiện công trình trong bối cảnh rộng như đô thị, núi, rừng hoặc ven biển.",
+        "Góc from bên kia đường (Opposite-side View), Cho cảm giác thực tế, có foreground là lòng đường, cây xanh hoặc xe cộ.",
+        "Góc theo hướng con đường (Street Perspective View), Góc điện ảnh, có chiều sâu phố, ánh đèn, phù hợp buổi hoàng hôn.",
+        "Góc ngã tư / giao đường (Corner View), Tăng chiều sâu, thể hiện nhiều mặt công trình, bố cục năng động and hiện đại.",
+        "Góc from trong sân nhìn ra (Courtyard View), Tạo cảm giác riêng tư, gần gũi, hướng nhìn from trong nhà hoặc sân ra ngoài.",
+        "Flycam hoàng hôn (Drone Sunset View), Tạo cảm xúc điện ảnh, ánh sáng ấm áp and bóng đổ dài trên mặt đất.",
+        "Góc phố ban đêm (Night Street View), Phù hợp render đêm, ánh đèn vàng phản chiếu mặt đường ướt, không khí ấm and thật.",
+        "Góc mưa / mặt đường ướt (Rainy / Wet View), Tăng mood chân thực, ánh sáng phản chiếu sinh động, thường dùng sau mưa.",
+        "Góc 3/4 bên phải nhìn from bên bên trong như quán café hoặc sảnh ra công trình, có chiều sâu and khung cảnh foreground chân thực, ánh sáng tự nhiên and tone điện ảnh nhẹ.",
+        "Góc Phản chiếu trên Đường ướt (Reflection Shot): Tận dụng mặt đường ướt sau mưa, đặt máy ảnh sát mặt đất để chụp lại hình ảnh phản chiếu của tòa nhà trên vũng nước, tạo nên một bức ảnh đầy tính nghệ thuật and đối xứng.",
+        "Góc chụp xuyên qua tán lá , Tạo khung tự nhiên bằng tán cây hoặc lá ở tiền cảnh, giúp ảnh có chiều sâu, mềm mại and chân thực.",
+        "Chuyển sang ảnh chụp chập tối (hoàng hôn muộn) vào một ngày nhiều mây, trong khoảng thời gian Mùa Xuân hoặc Hè với không khí tĩnh lặng và êm đềm."
+      ],
+      "environmentalCharacteristics": [
+ "* I. MẶT ĐƯỜNG – VỈA HÈ – BỀ MẶT",
+"Mặt đường nhựa khô, phản chiếu ánh nắng nhẹ.",
+"Mặt đường phía trước cổng là đường nội bộ nhỏ bằng bê tông pha đất, không có vỉa hè, mép đường tự nhiên",
+"Đường nội khu đô thị nhỏ, mặt đường đất pha bê tông,mặt đường đất nén pha đá dăm, đất đá rải rác trên bề mặt, mép đường lẫn bùn đất và cỏ dại",
+"Mặt đường ướt phản chiếu ánh sáng và công trình.",
+"Vỉa hè lát gạch sáng sạch, phản sáng nhẹ.",
+"Có dây điện đô thị chạy ngang (bối cảnh thực tế), cây bàng đài loan vỉa hè đô thị tự nhiên, cây thân gỗ tán vừa, trồng sát mép đường, kết hợp cây bụi và cỏ dại, phong cách xanh mộc, không chỉnh trang",
+"Sân gạch đỏ, rêu phong nhẹ, đậm chất Việt Nam.",
+"Bãi cỏ tự nhiên xen lẫn lối đá bước chân.",
+"Trước nhà có hàng rào cây thấp và bụi cây cắt gọn, phía sau là vườn cây xanh rậm, nhiều cây chuối và cây cao tán rộng",
+"Nền cát sáng and đá tự nhiên quanh công trình.",
+"Cỏ xanh, sỏi trắng, nền lát đá, đất ẩm, lá rụng sau mưa",
+"II. CÁC MẪU HÀNG RÀO",
+"Cổng nhà phố gồm 3 module hình viên thuốc đứng, nền thép đen, tấm CNC màu cam with perforated grid, phía trái có họa tiết lá trắng. Hàng rào là mảng tường xám đậm, phẳng, có lỗ trang trí lá cắt rỗng. Vật liệu thép hộp + thép tấm sơn tĩnh điện, đường cong mềm theo phong cách organic modern",
+"Trụ rào tân cổ điển màu trắng kem, thân vuông có gờ chỉ and đèn trụ đen trên đỉnh.Tường rào trắng phẳng mịn, chia nhịp giữa các trụ, điểm nhấn ô vòm sắt đen uốn cong.Cổng chính đôi bằng sắt đen sơn tĩnh điện, nan dọc thoáng and hoa văn uốn cong nhẹ.Cổng phụ cửa đơn bằng sắt đen, hoa văn đồng bộ with cổng chính.",
+"**III. CÂY XANH – CÂY BÓNG MÁT – CÂY TRANG TRÍ",
+"1. Cây bóng mát – cây lớn",
+"Hai cây cọ Mỹ cao vút tạo điểm nhấn đối xứng trồng vỉa hè, hài hòa with cảnh quan tự nhiên.",
+"Cây đô thị mới trồng, tán tròn, trồng đều, không che mặt tiền công trình",
+"Cây bóng mát (bằng lăng, sao đen,hoa ban) hai bên đường.",
+"Cây cổ thụ lớn vươn tán rộng che mát một phần ngôi nhà.",
+"Dây leo trầu bà (Monstera) bám dày đặc.",
+"2. Cây cảnh – cây bụi – hàng rào",
+"Palm lớn, chuối cảnh, heliconia, philodendron, tre cảnh; đường nhựa nhỏ có xe máy ven đường and dây điện trên cao.",
+"Trước nhà có cây xanh nhỏ and nhiều dây điện chằng chịt đặc trưng đô thị Việt Nam",
+"Cây bóng mát nhỏ (có thể là trúc hay nguyệt quế), bố trí quanh tường rào để làm mềm mặt tiền",
+"Xung quanh khu vực có nhiều mảng xanh: hàng rào cây thấp, cây bụi, bồn hoa nhỏ, tạo cảm giác yên bình and thoáng mát.",
+"Cây xanh được trồng rải rác trong khu vực: cây bonsai, cây thế, các bồn cây nhỏ đặt sát tường rào; phía trước có một cây mới trồng đang được chống bằng cọc gỗ.",
+"Hàng rào cây xanh bao quanh khuôn viên.",
+"Dây leo phủ nhẹ trên tường, tạo bóng mát.",
+"Cây bụi và hoa ven đường, bố trí đều hai bên vỉa hè.",
+"3. Hoa – cây trang trí",
+"Cây bụi, cây cảnh, cây nhiệt đới, Không gian xanh len lỏi mặt tiền và ban công",
+"Hoa giấy, hoa cúc, hoa dại, hoa lan, cây cảnh nhỏ",
+"Khóm hoa giấy hoặc hoa trang trí",
+"Chậu bonsai and hoa đặt trước cửa nhà.",
+"4. Cây mới trồng có chống cọc",
+"Phía trước nhà là vỉa hè lát gạch sáng màu, hai bên cổng được trồng các cây cau vua mới trồng, được chống bằng cọc gỗ.",
+"Một cây mới trồng đang được chống bằng cọc gỗ.",
+"***VI. NHÀ XUNG QUANH – BỐI CẢNH KHU DÂN CƯ",
+"Ngôi nhà nằm trong khu dân cư hiện hữu, xung quanh có nhiều nhà ở thấp tầng, mái ngói and kiến trúc truyền thống xen hiện đại.",
+"Hai bên nhà là các lô đất hàng xóm, một bên có hàng rào tôn tạm, bên kia là nhà ở mái ngói đã xây dựng ổn định.",
+"Bên phải là một căn nhà hàng xóm một tầng, mái ngói đỏ, hàng rào,có tiểu cảnh bonsai and sân vườn sạch sẽ.",
+"Bên phải là một căn nhà hàng xóm Nhà cấp 4 bên phải: tường xi măng xám cũ, mái tôn xanh bạc, cổng sắt đứng xám bạc, sân đất lẫn đá dăm, nhiều cây cảnh nhỏ trước nhà",
+"Bên trái là một khoảng đất rộng, được quây tôn tạm, phía sau tấm tôn là cánh đồng hoặc khu đất trống, nhìn ra xa có dãy núi thấp and các nhà dân nhỏ.",
+"Bên trái là một căn nhà hàng xóm một tầng, mái ngói xanh than, hàng rào,có tiểu cảnh and sân vườn sạch sẽ.",
+"Ở giữa dãy phố hiện đại, hai bên nhà cùng cao, tone sáng sạch.Sáng, cân bằng, daylight.",
+"Ở giữa dãy phố Việt Nam, nhà hai bên cao thấp khác nhau, có cây, biển hiệu.Đời thường, hơi ấm, thực tế.",
+"Ở giữa dãy phố liền kề, hai bên tone sáng trung tính, mặt tiền đồng bộ.Clean, rõ nét, trung tính.",
+"Những ngôi nhà lân cận ở hai bên, một bên là công trường xây dựng.",
+"Cảnh đường phố đô thị điển hình của Việt Nam.",
+"Bảng hiệu nhỏ không rõ chữ, mang cảm giác phố Việt.",
+"V. CỘT ĐIỆN – HẠ TẦNG – ĐƯỜNG PHỐ",
+"Có cột điện and dây cáp nhỏ phía xa.",
+"Cột điện and dây cáp mảnh, chạy dọc theo lề đường.",
+"VI. ÁNH SÁNG – MẶT NƯỚC – KHÔNG GIAN",
+"Hai bên nhà che sáng, ánh mặt trời chiếu vào mặt tiền tạo tương phản tự nhiên.",
+"Lá rơi nhẹ trong gió, mặt nước gợn sóng phản chiếu ánh sáng.",
+"Mặt hồ phẳng lặng phản chiếu công trình and cây xanh.",
+"VII. GIAO THÔNG – HOẠT ĐỘNG – CHUYỂN ĐỘNG",
+"Một chiếc xe ô tô màu bạc đang di chuyển qua khung hình.",
+"Một người đi bộ xa xa tạo cảm giác thật.",
+"Một người đang đạp xe qua, ánh sáng phản chiếu nhẹ trên đường.",
+"Một con chó nhỏ nằm ở sân trước nhà.",
+"VIII. VỊ TRÍ NGÔI NHÀ – GÓC PHỐ",
+"Nhà nằm ở góc giao giữa hai đường, thường có 2 mặt tiền — dùng for prompt góc 45° hoặc góc ngã tư.",
+"Nhà nằm giữa hai công trình khác, chỉ có 1 mặt tiền — phổ biến nhất của nhà phố Việt Nam.",
+"Cuối tuyến phố, có không gian mở phía trước — dùng for biệt thự hoặc shophouse cuối dãy.",
+"Ở vị trí giao nhau của nhiều tuyến, phù hợp góc nhìn động, có chiều sâu.",
+"Nằm trong cụm nhà liên kế, có mặt tiền đồng bộ, hai bên sát vách.",
+"FIX LỖI GÓC ĐƯỜNG",
+"Góc chụp chính diện, camera vuông góc with mặt tiền.Ngôi nhà nằm trong khu đất nội bộ, chỉ có một mặt giáp đường phía trước.Hai bên trái và phải không hiển thị, không có đường, không có vỉa hè, không có lối đi.Bối cảnh hai bên là đất tư nhân kín, không gian bị che khuất hoàn toàn.",
+"IX. YẾU TỐ NHIỆT ĐỚI – CẢM GIÁC THIÊN NHIÊN",
+"Cây nhiệt đới mọc tự nhiên, tán lá đổ bóng nhẹ,",
+"X. SÂN VƯỜN",
+"Khuôn viên biệt thự rộng lớn, bao quanh bởi sân vườn được thiết kế tỉ mỉ and hàng rào kín đáo."
+      ],
+      "seasonSuggestions": [
+        "Mùa xuân",
+        "Mùa hè",
+        "Mùa hè nhiệt đới, with thảm thực vật xanh tốt và đầy sức sống",
+        "Mùa thu",
+        "Mùa đông",
+        "Giao mùa",
+        "Mùa khô",
+        "Mùa ẩm"
+      ],
+      "locationContexts": [
+        "*NHÓM NHÀ PHỐ*",
+        "Nằm trong một khu dân cư đô thị mới, with vỉa hè và đường nhựa phía trước",
+        "Nằm trong dãy phố quy hoạch kinh doanh theo kiến trúc tân cổ điển đẹp ở thành phố hồ chí minh",
+        "Nằm trong một khu đô thị mới, yên tĩnh with đường phố rộng rãi.",
+        "Nằm trong một khu dân cư yên tĩnh, cạnh một lô đất trống đang để cỏ mọc tự nhiên",
+        "Khu dân cư đô thị đông đúc with nhiều nhà phố, xen kẽ cây xanh rậm rạp, tạo chiều sâu thị giác và cảm giác không gian mở rộng.",
+        "Tọa lạc trong một khu phố đô thị sầm uất, with các công trình lân cận mang phong cách đa dạng",
+        "*NHÓM KHU ĐÔ THỊ*",
+        "Khu dân cư cao cấp trong đô thị, nằm trên một con đường yên tĩnh với các biệt thự liền kề.",
+        "Khu đô thị giàu có, nhiều cây xanh; xung quanh là biệt thự và nhà phố cao cấp, có đặc trưng nhiệt đới Đông Nam Á.",
+        "Trong một khu đô thị hoặc nghỉ dưỡng cao cấp, có mật độ cây xanh cao",
+        "Khu phố Thảo Điền, Thành phố Hồ Chí Minh; đường nhỏ yên tĩnh, nhiều cây xanh; xung quanh là biệt thự và nhà phố cao cấp, có đặc trưng nhiệt đới Đông Nam Á.",
+        "Công trình nằm ở khu ngoại ô / vùng quê Việt Nam, xung quanh là vườn cây xanh tự nhiên, cây chuối, cây lớn, nhà hàng xóm thưa thớt, không phải khu đô thị.",
+        "Tọa lạc ngay vị trí lô góc ngã ba đường một khu phố đô thị sầm uất, với các công trình lân cận mang phong cách đa dạng.",
+        "Khu dân cư mới, ven đô hoặc khu mở rộng đô thị",
+        "Khu dân cư đô thị hiện đại tại Việt Nam",
+        "Khu đô thị sầm uất tại Việt Nam",
+        "Khu dân cư hiện đại",
+        "Khu dân cư đô thị",
+        "Khu nhà phố thương mại",
+        "Khu dân cư cao cấp",
+        "Khu biệt thự sinh thái đô thị",
+        "Khu phố Việt Nam",
+        "Khu nhà phố Việt Nam",
+        "*SÂN VƯỜN",
+        "1 khu vườn nhiệt đới phía bắc việt nam.",
+        "Ngã ba – góc phố",
+        "Khu hẻm / ngõ nhỏ",
+        "Trung tâm thành phố",
+        "Khu cao tầng hiện đại",
+        "Khu downtown / tài chính",
+        "Khu quảng trường / công viên trung tâm",
+        "Khu trường học / viện nghiên cứu / bệnh viện",
+        "Khu chung cư / khu phức hợp đô thị",
+        "Khu bến xe / nhà ga / metro",
+        "Khu phố cổ / phố Pháp",
+        "Khu shophouse thương mại",
+        "Khu công nghiệp / văn phòng hiện đại",
+        "Khu ven đại lộ",
+        "Khu biệt thự sinh thái",
+        "Khu nghỉ dưỡng ven biển",
+        "Khu nghỉ dưỡng núi đồi",
+        "Khu nghỉ dưỡng sinh thái",
+        "Bên hồ / ven sông",
+        "Vùng núi",
+        "Giữa rừng / thung lũng",
+        "Đồng quê / làng Việt",
+        "Trên đồi cao / sườn núi",
+        "Rừng thông / cao nguyên",
+        "Rừng ngập mặn / đầm lầy",
+        "Khu ven hồ lớn / bán đảo",
+        "Vùng tuyết / mùa đông",
+        "Bán sa mạc / vùng khô hạn",
+        "Ven biển đá",
+        "Khu di sản / cổ kính",
+        "Khu tâm linh / đền chùa",
+        "Khu văn hóa / làng nghề",
+        "Khu biệt thự châu Âu",
+        "Khu làng châu Âu cổ",
+        "Khu làng Bắc Âu",
+        "Khu phố Nhật / Hàn",
+        "Khu Ả Rập / sa mạc",
+        "Khu đô thị Ấn Độ / Nam Á",
+        "Khu châu Mỹ Latin",
+        "Khu Santorini / Địa Trung Hải",
+        "Khu phố Mỹ / suburb hiện đại"
+      ],
+      "constructionTypes": [
+        "Nhà phố",
+        "Nhà liền kề",
+        "Biệt thự đơn lập",
+        "Biệt thự song lập",
+        "Biệt thự sân vườn",
+        "Nhà tổ",
+        "Nhà thờ họ",
+        "Nhà nghỉ dưỡng ngoại ô",
+        "Nhà sân vườn rộng",
+        "Chung cư",
+        "Tòa nhà hỗn hợp Kết hợp nhà ở + thương mại + văn phòng",
+        "Condotel Serviced Apartment",
+        "Resort Villa",
+        "Beach Villa",
+        "Khu nghỉ dưỡng tổng hợp",
+        "Khu nghỉ dưỡng sinh thái",
+        "Bungalow Nhà gỗ nghỉ dưỡng",
+        "Showroom Cửa hàng",
+        "Tòa nhà Văn phòng",
+        "Trung tâm thương mại",
+        "Khách sạn",
+        "Nhà hàng, Quán Cafe",
+        "Nhà văn hóa,Bảo tàng",
+        "Trường học",
+        "Nhà hát",
+        "Sân vận động",
+        "Bệnh viện",
+        "Sân bay",
+        "Nhà máy",
+        "Công trình tâm linh Chùa",
+        "Công trình tâm linh Nhà thờ"
+      ],
+      "generateBtn": "Tạo Ảnh ngay",
+      "transforming": "Đang chuyển đổi...",
+      "analyzing": "Đang phân tích...",
+      "generating": "F9 Render Đang tạo...",
+      "clearImageBtn": "Xóa ảnh",
+      "descriptionLabel": " Mô tả (Input Prompt)",
+      "templateDescriptionTitle": "5.Mô tả theo mẫu có sẵn",
+      "templateDescriptionPlaceholder": "Lựa chọn 1 mẫu có sẵn",
+      "templateDescriptionHint": "*Gợi ý lựa chọn mẫu",
+      "templateDescriptionOptions": [
+          "Mẫu Nhà phố 1",
+          "Mẫu Nhà phố 2",
+          "Mẫu Nhà phố 3",
+          "Mẫu Nhà phố 4",
+          "Mẫu Nhà phố 5"
+
+      ],
+      "templateDescriptionPrompts": [
+        "Ảnh thực tế của công trình Kiến trúc nhiệt đới hiện đại, ưu tiên không gian xanh và vật liệu tự nhiên., phong cách Hiện đại – Nhiệt đới.\nBối cảnh tại Tọa lạc trong một khu dân cư đô thị.\nCông trình sử dụng vật liệu như ảnh tải lên.\nKhông gian xung quanh bao gồm Hệ thống cây xanh đa dạng trên các ban công, Hai cây lớn xanh tốt ở hai bên vỉa hè, hài hòa with cảnh quan tự nhiên.\nPhía xa là Bầu trời u ám, tạo chiều sâu thị giác và cảm giác không gian mở rộng.\nKhung cảnh được ghi lại vào Mùa hè, cây cối tươi tốt và đầy sức sống., Giữa ngày., trong điều kiện thời tiết Trời nhiều mây, ánh sáng dịu và khuếch tán..\nÁnh sáng tự nhiên cân bằng, phản chiếu mềm, vật liệu hiện rõ chi tiết.\nKhông khí tổng thể mang cảm xúc Yên bình, tươi mát và thân thiện..\nGóc nhìn máy ảnh là Chụp thẳng from phía bên kia đường, ngang tầm mắt, lấy trọn vẹn mặt tiền ngôi nhà., sử dụng DSLR full-frame with ống kính góc rộng, DOF nhẹ nhàng, và bố cục theo tỉ lệ vàng.",
+        "Ảnh thực tế của công trình Nhà phố, phong cách Kiến trúc hiện đại nhiệt đới, ưu tiên không gian mở, cây xanh và các giải pháp che nắng tự nhiên.Bối cảnh tại Nằm trong một khu dân cư yên tĩnh, cạnh một lô đất trống đang để cỏ mọc tự nhiên.Công trình sử dụng vật liệu như ảnh tải lên.Không gian xung quanh bao gồm Sân vườn và ban công được phủ đầy cây xanh nhiệt đới, Hàng cây lớn viền quanh khuôn viên, Con đường nhựa phía trước nhà, Sử dụng cây nhiệt đới như cọ, dừa cảnh, chuối kiểng trên sân thượng và ban công – đặc trưng của phong cách tropical, Cây bóng mát nhỏ (có thể là trúc hay nguyệt quế), bố trí quanh tường rào để làm mềm mặt tiền., Được sắp xếp theo nguyên tắc “xanh chồng xanh” – tạo cảm giác công trình hòa cùng thiên nhiên thay vì tách biệt., Giữ cấu trúc cảnh quan hiện có: bên trái là bãi đất thô with một cây non chống 3 cọc, tán thưa; bên phải là cây tán tròn dày trước hàng rào nan dọc tối, gốc có bao tải và 3 cọc chống; vỉa hè bê tông chia ô sạch, đường nhựa tối khô. Không thay đổi vị trí – hình học – tỷ lệ các cây và cọc chống., Phần nền trước (foreground) có tán cây xanh đậm vươn from mép trên khung hình, lá nhỏ, thưa, hắt sáng nhẹ quanh viền lá (rim light), tạo khung tự nhiên bao quanh bầu trời, thêm rèm vào vị trí các khu vực cửa, hài hòa with cảnh quan tự nhiên.Phía xa là Phía xa là một khu vực cây cối rậm rạp, tạo nên một phông nền xanh tự nhiên., tạo chiều sâu thị giác và cảm giác không gian mở rộng.Khung cảnh được ghi lại vào Mùa khô đặc trưng của vùng nhiệt đới, cây cối vẫn xanh tươi., Xẩm tối, khi ánh sáng tự nhiên yếu đi và đèn nội thất được bật lên tạo nên ánh sáng ấm áp, trong điều kiện thời tiết Bầu trời có mây che phủ, tạo ra ánh sáng dịu nhẹ và không có bóng đổ gay gắt..Ánh sáng tự nhiên cân bằng, phản chiếu mềm, vật liệu hiện rõ chi tiết.Không khí tổng thể mang cảm xúc Tĩnh lặng, sang trọng và gần gũi with thiên nhiên.Góc nhìn máy ảnh là Góc nhìn from mặt đường (Street-level View), Tạo cảm giác thực tế, gần gũi, hòa vào cảnh quan đô thị Việt Nam., sử dụng DSLR full-frame with ống kính góc rộng, DOF nhẹ nhàng, và bố cục theo tỉ lệ vàng.",
+       "Một bức ảnh kiến trúc thực tế của Nhà phố hiện đại, phong cách Hiện đại – Tropical, tại Khu dân cư mới, ven đô hoặc khu mở rộng đô thị.Công trình sử dụng vật liệu như ảnh tải lên.Không gian xung quanh gồm Không gian xung quanh thoáng, chưa có nhiều công trình cao tầng., Hai bên còn đất trống, cây cối thưa, hạ tầng đường nội bộ mới. Đường nội bộ rộng, lát gạch xi măng sáng., Không gian mở, thoáng gió, ánh sáng tự nhiên mạnh., Nền trời trong, ít mây, ánh sáng dịu buổi sáng., Một số khu vực còn đất trống, cỏ dại mọc, rải đá vụn và vật liệu xây dựng nhỏ., Đường nhựa đen đã hoàn thiện, có vài vết nứt nhỏ tự nhiên, vỉa hè lát gạch sáng, cây xanh đô thị tán tròn không che mặt tiền, không gian sạch và thoáng., Cây xanh đô thị mơia trồng tán tròn 2 bên không đều nhau, trồng dọc vỉa hè lệch mép đường, không che mặt tiền, tạo bóng mát nhẹ và cảm giác xanh mát tự nhiên. Cây xanh trang trí mặt tiền gồm cây bụi nhỏ và cây rủ ở ban công, lá xanh tươi, bố trí gọn, không che hình khối, tạo điểm nhấn mềm và tự nhiên, hài hòa with cảnh quan tự nhiên.Phía xa là Phía xa là khu nhà thấp tầng, tường sáng màu. Có hàng rào, cột điện, và dây điện chạy ngang – đặc trưng khu dân cư mới., tạo chiều sâu thị giác và cảm giác không gian mở.Cảnh được ghi lại vào Mùa hè, Giữa trưa, ánh sáng mạnh, bóng rõ, bầu trời xanh trong, vật liệu phản chiếu ánh nắng.Trời trong xanh.Ánh sáng HDR cân bằng, kết hợp hài hòa giữa nguồn sáng tự nhiên và nhân tạo, phản chiếu mềm mại, tạo hiệu ứng điện ảnh tinh tế.Tổng thể mang cảm xúc và không khí Sang trọng & tinh tế.Góc nhìn của máy ảnh là Góc chính diện (Frontal View), Nhấn mạnh bố cục đối xứng, mặt tiền rõ ràng, cảm giác mạnh về kiến trúc., sử dụng DSLR full-frame with ống kính góc rộng, DOF nhẹ, bố cục điện ảnh theo tỉ lệ vàng.Render chất lượng 8K photorealistic cinematic, ánh sáng HDR chân thực, vật liệu rõ nét, phản chiếu tự nhiên, đổ bóng mềm.Không gian có chiều sâu, công trình nổi bật trên nền mờ nhẹ (depth of field), mang lại cảm giác sống động và hiện thực cao.",
+        "Ảnh thực tế công trình [TÒA NHÀ CỦA BẠN],được chụp vào buổi sáng nắng đẹp trong một khu dân cư hiện đại tại Việt Nam.Công trình sử dụng vật liệu như ảnh tải lên.Góc máy hướng trực diện mặt tiền tòa nhà ở tầm mắt người nhìn,sử dụng ống kính kiến trúc 24mm with đường thẳng đứng hoàn hảo, không méo hình.Ánh sáng là ánh sáng tự nhiên ban ngày with bầu trời xanh trong,bóng cây nhẹ nhàng đổ lên mặt tiền và phản chiếu sáng rực trên các mảng kính và tường trắng.Bảng màu tổng thể ấm áp và hài hòa — trắng tinh khiết, gỗ sậm sang trọng, cây xanh tươi mát,và sắc xanh sâu của bầu trời — tạo nên cảm giác sống động nhưng tự nhiên.Vỉa hè và con đường phía trước tòa nhà sạch sẽ, chân thực,được điểm xuyết bởi hàng cây đô thị, hàng rào thấp và vài chậu cây cảnh,tăng thêm chiều sâu for khung cảnh.Độ nét hoàn hảo from tiền cảnh đến hậu cảnh, thể hiện rõ từng chi tiết vật liệu và bóng đổ.Không có người, xe cộ hay chữ viết trong khung hình.Render siêu chân thực (ultra-photorealistic),xử lý HDR,độ tương phản và ánh sáng tự nhiên cân bằng,chất lượng 8K,tỷ lệ thực tế chuẩn xác,và bố cục điện ảnh tinh tế.",
+        "Ảnh thực tế công trình [TÒA NHÀ CỦA BẠN],tọa lạc trong khu dân cư hiện đại tại Việt Nam.Công trình sử dụng vật liệu như ảnh tải lên.Khung cảnh được chụp vào lúc hoàng hôn sau cơn mưa nhẹ, dưới bầu trời xanh xám trong trẻo cùng ánh sáng môi trường dịu nhẹ.Mặt đường ướt phản chiếu rõ hình ảnh tòa nhà và ánh sáng xung quanh,tạo nên cảm giác sống động và chân thực.Một chiếc xe hơi hiện đại màu bạc hoặc trắng đang di chuyển from phải sang trái trong khung hình,nằm ở khoảng một phần ba chiều cao ảnh,with hiệu ứng mờ chuyển động nhẹ ở bánh xe để thể hiện chuyển động tự nhiên,trong khi tòa nhà vẫn được lấy nét rõ ràng.Ánh sáng ấm áp from bên bên trong tòa nhà tỏa ra qua các ô cửa kính lớn,tạo nên sự tương phản ấm – lạnh đầy cuốn hút giữa không gian nội thất ấm cúng và môi trường xanh lam mát mẻ bên ngoài.Góc chụp trực diện mặt tiền, bằng ống kính kiến trúc 24mm ở tầm mắt người nhìn,đảm bảo đường nét chuẩn xác, không méo hình.Toàn cảnh có độ rõ nét cao, phản chiếu chính xác, ánh sáng cân bằng,không sương mờ, mang lại cảm giác sạch, sắc nét và điện ảnh.Render siêu chân thực (ultra-photorealistic),ánh sáng điện ảnh,chất lượng 8K,with bố cục tinh tế và tông màu tự nhiên."
+      ],
+	  "numberOfResultsLabel": "Số lượng ảnh kết quả",
+      "setupAngleTemplatesTitle": "3. Mẫu góc chụp có sẵn",
+      "exteriorViewTitle": "Góc nhìn Ngoại thất",
+      "exteriorViewPlaceholder": "Chọn 1 góc chụp Ngoại thất mong muốn",
+      "exteriorAngleSuggestions": [
+        "Góc chính diện , nhấn mạnh bố cục đối xứng, mặt tiền rõ ràng, cảm giác mạnh về kiến trúc.",
+        "Góc mắt người, góc nhìn tự nhiên, giống tầm mắt người thật, cân đối và chân thực.",
+        "Góc nhìn từ mặt đường, tạo cảm giác thực tế, gần gũi, hòa vào cảnh quan đô thị Việt Nam.",
+        "Góc chéo 45° nhìn từ bên trái tòa nhà, cho chiều sâu không gian, thấy được cả mặt tiền và bên hông, bố cục hài hòa.",
+        "Góc chéo 45° nhìn từ bên phải tòa nhà, cho chiều sâu không gian, thấy được cả mặt tiền và bên hông, bố cục hài hòa.",
+        "Góc từ trên cao, bao quát toàn cảnh khu đất, sân vườn và cảnh quan xung quanh.",
+        "Góc từ dưới lên, tạo cảm giác hùng vĩ, uy nghi, tôn chiều cao và hiện đại của công trình.",
+        "Góc nhìn xa, thể hiện công trình trong bối cảnh rộng như đô thị, núi, rừng hoặc ven biển.",
+        "Góc từ bên kia đường, cho cảm giác thực tế, có foreground là lòng đường, cây xanh hoặc xe cộ.",
+        "Góc theo hướng con đường, góc điện ảnh, có chiều sâu phố, ánh đèn, phù hợp buổi hoàng hôn.",
+        "Góc ngã tư / giao đường, tăng chiều sâu, thể hiện nhiều mặt công trình, bố cục năng động và hiện đại.",
+        "Góc từ trong sân , tạo cảm giác riêng tư, gần gũi, hướng nhìn từ trong nhà hoặc sân ra ngoài.",
+        "Flycam hoàng hôn, tạo cảm xúc điện ảnh, ánh sáng ấm áp và bóng đổ dài trên mặt đất.",
+        "Góc phố ban đêm, Phù hợp render đêm, ánh đèn vàng phản chiếu mặt đường ướt, không khí ấm và thật.",
+        "Góc mưa / mặt đường ướt (Rainy / Wet View), Tăng mood chân thực, ánh sáng phản chiếu sinh động, thường dùng sau mưa.",
+        "Góc 3/4 bên phải nhìn từ bên trong như quán café hoặc sảnh ra công trình, có chiều sâu và khung cảnh foreground chân thực, ánh sáng tự nhiên and tone điện ảnh nhẹ.",
+        "Góc Phản chiếu trên Đường ướt (Reflection Shot): Tận dụng mặt đường ướt sau mưa, đặt máy ảnh sát mặt đất để chụp lại hình ảnh phản chiếu của tòa nhà trên vũng nước, tạo nên một bức ảnh đầy tính nghệ thuật và đối xứng.",
+        "Góc chụp xuyên qua tán lá , Tạo khung tự nhiên bằng tán cây hoặc lá ở tiền cảnh, giúp ảnh có chiều sâu, mềm mại và chân thực.",
+        "Chuyển đổi khung cảnh from ban ngày sang ban đêm, tạo nên bầu không khí ấm áp và dễ chịu. Bật toàn bộ hệ thống chiếu sáng nhân tạo và bổ sung hệ đèn LED hắt nhẹ dưới tủ, kệ hoặc các chi tiết kiến trúc. Tăng cường độ phát sáng của đèn và hệ chiếu sáng gián tiếp để tạo hiệu ứng ánh sáng mềm mại, thân thiện và cuốn hút. Giữ nguyên bóng đổ ban đêm chân thực, duy trì cảm giác ấm cúng, riêng tư và gần gũi xuyên suốt toàn bộ không gian.",
+        "Góc 3/4 bên phải nhìn xuyên qua tán hoa xa xa là hình ảnh công trình.",
+        "Chuyển sang ảnh chụp chập tối (hoàng hôn muộn) vào một ngày nhiều mây, trong khoảng thời gian Mùa Xuân hoặc Hè với không khí tĩnh lặng và êm đềm."
+      ],
+      "interiorViewTitle": "Góc nhìn Nội thất",
+      "interiorViewPlaceholder": "Chọn 1 góc chụp Nội thất mong muốn",
+      "interiorAngleSuggestions": [
+        "Góc toàn cảnh: Từ cửa chính nhìn vào toàn phòng – thể hiện layout tổng thể, ánh sáng tự nhiên, lens 16–24mm.",
+        "Góc toàn cảnh: Chéo 45° toàn phòng khách – tạo chiều sâu thị giác, bố cục cân bằng.",
+        "Góc toàn cảnh: Từ góc phòng nhìn bao quát toàn không gian – giúp cảm nhận tỷ lệ và chiều cao trần.",
+        "Góc toàn cảnh: Flycam nội thất nhìn from trên cao xuống (ảo giác) – mô phỏng layout tổng thể.",
+        "Góc toàn cảnh: Góc liên thông phòng khách – bếp – ăn – thể hiện mạch không gian mở.",
+        "Góc toàn cảnh: Góc toàn cảnh chiều dọc – nhìn xuyên hành lang đến điểm sáng cuối – tạo hiệu ứng dẫn hướng mạnh.",
+        "Góc diện tường: Chính diện tường TV / kệ tủ lớn – góc vuông 90°, thể hiện rõ vật liệu, ánh sáng hắt, bố cục đối xứng.",
+        "Góc diện tường: Chính diện tường đầu giường – làm nổi bật mảng trang trí, đèn ngủ, tranh treo.",
+        "Góc diện tường: Chính diện tường bếp / backsplash – hiển thị rõ đường nét tủ, vật liệu đá, kim loại.",
+        "Góc diện tường: Chính diện tường hành lang hoặc gallery wall – thể hiện bố cục tranh, khung, vật liệu, ánh sáng dọc.",
+        "Góc diện tường: Góc ¾ diện tường – nghiêng nhẹ 30–45° – vừa thấy bề mặt tường, vừa cảm nhận chiều sâu không gian.",
+        "Góc trung cảnh: Góc eye-level chính diện sofa – khung bố cục cân đối, ánh sáng tự nhiên.",
+        "Góc trung cảnh: Góc from sofa nhìn ra cửa / TV / cửa sổ lớn – hướng nhìn sống động, diễn tả không gian sinh hoạt.",
+        "Góc trung cảnh: Góc from bàn ăn nhìn về khu bếp – ánh sáng ấm, lens 35–50mm.",
+        "Góc trung cảnh: Góc đứng ở bếp nhìn ngược ra phòng khách – bố cục ngược dòng, thể hiện liên kết không gian.",
+        "Góc trung cảnh: Góc nhìn xuyên khung vòm / cửa / lam gỗ – tạo lớp không gian và chiều sâu nghệ thuật.",
+        "Góc trung cảnh: Góc nhìn dọc hành lang có nguồn sáng cuối – for cảm giác dẫn hướng và ánh sáng tự nhiên.",
+        "Góc cận cảnh: Cận vật liệu sàn – tường – ánh sáng chạm nhau – diễn tả chi tiết hoàn thiện.",
+        "Góc cận cảnh: Cận bàn trang trí (bình hoa, khung ảnh) – tạo cảm xúc “lifestyle”.",
+        "Góc cận cảnh: Cận bề mặt vật liệu (texture close-up) – ánh sáng xiên, focus hẹp.",
+        "Góc cận cảnh: Cận góc sofa và rèm ánh sáng chiếu xiên buổi sáng – cảm giác ấm áp, thật.",
+        "Góc cận cảnh: Cận giường ngủ – đầu giường – đèn hắt ấm – thể hiện thư giãn, ánh sáng tinh tế.",
+        "Góc cận cảnh: Cận tay nắm cửa / khung gỗ / tay vịn cầu thang – chi tiết kim loại hoặc gỗ tinh xảo.",
+        "Góc sáng tạo: Góc phản chiếu qua gương / kính / mặt nước – tạo chiều sâu và không khí.",
+        "Góc sáng tạo: Low angle from sàn nhìn lên – phóng đại không gian, tăng cảm giác cao cấp.",
+        "Góc sáng tạo: High angle from trần nhìn xuống một phần bàn / sofa – bố cục mạnh, cảm giác quy hoạch.",
+        "Góc sáng tạo: Góc có người tương tác nhẹ (rót trà, mở cửa, đi ngang) – tạo cảm giác sống thật.",
+        "Góc đặc biệt: Góc ánh sáng xiên buổi sáng (sunrise light) – thể hiện tinh thần tự nhiên, tươi mới.",
+        "Góc đặc biệt: Góc ánh sáng chiều (golden hour light) – tone ấm, tạo mood sang trọng, cinematic.",
+        "Góc đặc biệt: Góc chuyển cảnh day-to-night / cool-to-warm – dùng for motion hoặc timelapse nội thất."
+      ],
+      "descriptionPlaceholder": "Mô tả hình ảnh bạn muốn tạo...",
+      "optimizePromptBtn": "Tạo Prompt từ Ảnh",
+      "optimizingPrompt": "Đang tạo prompt..."
+    },
+    "main": {
+      "resultsTab": "Kết quả",
+      "historyTab": "Lịch sử",
+      "resultsPlaceholderTitle": "Kết quả sẽ được hiển thị ở đây",
+      "resultsPlaceholderSubtitle": "Tải ảnh nguồn, chọn mô tả và góc máy, sau đó nhấn 'Tạo góc nhìn mới' để bắt đầu."
+    },
+    "errors": {
+      "transformFailed": "Không thể chuyển đổi ảnh. Vui lòng thử ảnh khác.",
+      "transformError": "Đã xảy ra lỗi không mong muốn trong quá trình chuyển đổi."
+    },
+    "prompts": {
+      "aiEnvironmentSuggestionPrompt": "Dựa trên một công trình kiến trúc là '{{constructionType}}' with phong cách '{{designStyle}}' trong bối cảnh '{{locationContext}}', hãy gợi ý chính xác 10 đặc điểm môi trường xung quanh phù hợp nhất để làm nổi bật công trình trong một bức ảnh render thực tế. Trả về kết quả dưới dạng một mảng JSON chứa chuỗi ký tự đầy đủ và hoàn chỉnh.",
+      "aiMaterialSuggestionPrompt": "Phân tích hình ảnh kiến trúc đầu vào. Xác định và liệt kê tất cả vật liệu ứng dụng được nhìn thấy. Đối với mỗi vật liệu, hãy cung cấp mô tả chi tiết bao gồm loại vật liệu, đặc điểm bề mặt (ví dụ: mờ, bóng, nhám) và mức độ phản sáng (ví dụ: thấp, trung bình, cao), hoàn thiện mô tả như vật liệu thực tế.Tuyệt đối KHÔNG gộp nhiều vật liệu vào một mô tả duy nhất. Mỗi vật liệu nhìn thấy được trên bất kỳ bề mặt kiến trúc nào (tường, sàn, trần, mái, cột, lan can, mặt đứng, chi tiết trang trí, v.v.) PHẢI được mô tả thành một phần tử JSON độc lập, ngay cả khi chúng cùng tồn tại trên một bề mặt hoặc cấu kiện.. Trả về kết quả dưới dạng một mảng JSON chứa các chuỗi ký tự, mỗi chuỗi là một mô tả vật liệu hoàn chỉnh.",
+      "analysisPrompt": "Phân tích hình ảnh tham chiếu để xác định các yếu tố sau: hướng chiếu sáng, cường độ và màu sắc ánh sáng; tổng thể màu sắc và tông màu; cảm xúc và bầu không khí; chất liệu và môi trường xung quanh. Chỉ cung cấp phân tích về các yếu tố này, không mô tả công trình kiến trúc trong ảnh.",
+      "styleAnalysisPrompt": "Phân tích hình ảnh được cung cấp. Trích xuất phong cách hình ảnh chung, ánh sáng, vật liệu và tông màu. KHÔNG mô tả bố cục, vị trí đối tượng hoặc hình học không gian. Trả về kết quả phân tích dưới dạng đối tượng JSON.",
+      "filterAnalysisPrompt": "Phân tích hình ảnh kiến trúc được cung cấp và trích xuất các thuộc tính chính của nó vào một đối tượng JSON. Đối với mỗi thuộc tính, hãy tạo một giá trị mô tả ngắn gọn, súc tích bằng Tiếng Việt hoặc tiếng anh tùy theo bộ lọc ngôn nhữ đang chọn dựa trên phân tích trực quan của bạn. Các mô tả phải sáng tạo và chính xác, phản ánh phong cách và tâm trạng của hình ảnh. Không sử dụng bất kỳ danh sách có sẵn nào; hãy tạo các mô tả hoàn toàn mới. Chỉ trả về đối tượng JSON.\n\nVí dụ về các thuộc tính và định dạng đầu ra mong muốn:\n- constructionType: \"Biệt thự hai tầng đương đại with mái bằng và các khối vươn lớn.\"\n- designStyle: \"Tối giản nhiệt đới, nhấn mạnh ánh sáng tự nhiên và sự kết nối trong-ngoài.\"\n- locationContext: \"Tọa lạc trên vách đá nhìn ra biển lặng.\"\n- appliedMaterials: [\"Tường bê tông trần\", \"Vách ốp gỗ tếch\", \"Hệ kính lớn from sàn tới trần\"]\n- environmentalCharacteristics: [\"Hồ bơi vô cực phản chiếu bầu trời\", \"Cây cối bản địa xanh tốt\", \"Lối đi lát đá dẫn vào nhà\"]\n- distantContext: \"Dãy núi mờ ảo ở phía xa.\"\n- season: \"Giữa mùa hè nắng ấm.\"\n- timeOfDay: \"Chiều muộn, with bóng đổ dài, mềm mại và ánh sáng vàng óng.\"\n- weatherCondition: \"Trời trong xanh with vài gợn mây cao.\"\n- toneAndMood: \"Thanh bình, sang trọng và tĩnh lặng.\"\n- cameraAngle: \"Góc máy thấp from sân vườn nhìn lên, nhấn mạnh sự bề thế của công trình.\"",
+      "interiorFilterAnalysisPrompt": "Phân tích hình ảnh nội thất được cung cấp và trích xuất các thuộc tính của nó vào một đối tượng JSON. Đối với mỗi thuộc tính, hãy tạo một giá trị mô tả ngắn gọn, súc tích bằng Tiếng Việt hoặc tiếng anh tùy theo bộ lọc ngôn nhữ đang chọn. Các mô tả phải sáng tạo và chính xác, phản ánh phong cách và tâm trạng của hình ảnh. Chỉ trả về đối tượng JSON.\n\nVí dụ về định dạng đầu ra mong muốn:\n{\n  \"roomType\": \"Phòng khách liền kề bếp\",\n  \"interiorDesignStyle\": \"Hiện đại with các yếu tố Wabi-Sabi, tập trung vào vật liệu tự nhiên và không gian thoáng đãng.\",\n  \"contextLocationViewDescription\": \"Bối cảnh: Không gian nằm trong căn hộ penthouse, hướng nhìn ra ban công with vườn cây xanh và tầm nhìn thành phố.\",\n  \"mainColorTone\": \"Tone màu be ấm, kết hợp with màu gỗ sồi tự nhiên và các điểm nhấn màu đen mờ.\",\n  \"materialDescription\": \"Sử dụng vật liệu trong nội thất như sau:\\nSàn: Sàn gỗ sồi sáng tự nhiên, bề mặt mờ, phản sáng thấp.\\nTường: Sơn trắng mờ, có một mảng tường ốp gỗ sồi.\\nNội thất: Sofa vải lanh màu be, bàn trà bằng đá cẩm thạch trắng, ghế kim loại sơn đen.\",\n  \"lightingSystemDescription\": \"Ánh sáng: Ánh sáng tự nhiên dịu, nguồn sáng chính from cửa sổ kính lớn, tone ánh sáng trung tính 4500K, hiệu ứng bóng đổ xiên nhẹ, tương phản trung bình, mood thư giãn.\",\n  \"lightToneDescription\": \"Tông màu ánh sáng: Tông sáng sạch, giống ánh sáng tự nhiên ban ngày.\",\n  \"timeAndClimateDescription\": \"Thời gian: Buổi sáng mùa hè, trời trong. Không khí trong lành, ánh sáng tự nhiên dịu chiếu from cửa sổ bên trái.\",\n  \"cameraAngleAndComposition\": \"Góc rộng from cửa vào: Chụp toàn cảnh không gian, thể hiện tổng thể thiết kế và cách bố trí nội thất.\"\n}",
+      "finalRenderWithStyleJsonPrompt": "Dựa trên phong cách được xác định trong JSON này:\n{{styleJson}}\n\nHãy tạo một hình ảnh mới, thực tế bằng cách sử dụng bản vẽ cơ sở được cung cấp. Bản vẽ xác định hình học, bố cục và thành phần. Áp dụng phong cách, ánh sáng, vật liệu và tông màu from phân tích JSON.\n\nCác ràng buộc nghiêm ngặt:\n- Không dùng ảnh tham chiếu làm đầu vào.\n- Bỏ qua mọi ảnh đã tải lên trước đó.\n- Chỉ dùng phần mô tả JSON và ảnh bản vẽ.\n- Giữ bố cục bản vẽ, áp dụng phong cách về vật liệu và ánh sáng.\n\nKết quả phải là một bản render mới, độc lập chỉ mang cùng một tông màu hình ảnh như được mô tả trong JSON.",
+      "finalRenderPrompt": "Dựa trên phân tích phong cách sau: '{{styleDescription}}'. Hãy tạo một bức ảnh thực tế của công trình trong ảnh đầu vào. Áp dụng toàn bộ ánh sáng, môi trường, tông màu và cảm xúc from phân tích đó. Tuyệt đối không sao chép bất kỳ công trình hay đối tượng nào from ảnh tham chiếu, chỉ lấy không khí, ánh sáng, màu sắc và phong cách. Kết quả phải là một bức ảnh chụp trông như được chụp bằng máy ảnh DSLR chuyên nghiệp, chất lượng cao, HDR, sắc nét, không nhiễu và không phải là ảnh CGI giả.",
+      "defaultRenderPrompt": "Hãy tạo một bức ảnh thực tế của công trình trong ảnh đầu vào. Kết quả phải là một bức ảnh trông như được chụp bằng máy ảnh DSLR chuyên nghiệp, chất lượng cao, HDR, sắc nét, không nhiễu và không phải là ảnh CGI giả.",
+      "exterior_part1_structure": "{{prefix}} của một {{constructionType}} theo phong cách {{designStyle}}",
+      "creativeFilterPrompt_part1": "Hãy tạo một bức ảnh thực tế của một {{constructionType}} theo phong cách {{designStyle}}",
+      "creativeFilterPrompt_camera": ". Góc nhìn của camera là: {{cameraAngle}}",
+      "creativeFilterPrompt_location": ", trong bối cảnh {{locationContext}}",
+      "creativeFilterPrompt_materials": ". Vật liệu ứng dụng chính bao gồm: {{materials}}",
+      "creativeFilterPrompt_time": ". Bối cảnh thời gian và không khí là: {{timeOfDay}}",
+      "creativeFilterPrompt_weather": ". Điều kiện thời tiết là: {{weatherCondition}}",
+      "creativeFilterPrompt_tone": ". Cảm giác và không khí tổng thể của bức ảnh là {{toneAndMood}}",
+      "creativeFilterPrompt_environment": ". Đặc điểm môi trường xung quanh bao gồm: {{environmentalCharacteristics}}",
+      "creativeFilterPrompt_distantContext": ". Bối cảnh xa và nền cảnh là: {{distantContext}}",
+      "creativeFilterPrompt_season": ". Mùa trong năm là: {{season}}",
+      "creativeFilterPrompt_part2": ", dựa trên hình ảnh đầu vào. Kết quả phải là một bức ảnh trông như được chụp bằng máy ảnh DSLR chuyên nghiệp, chất lượng cao, HDR, sắc nét, không nhiễu và không phải là ảnh CGI giả.",
+      "defaultConstructionType": "công trình kiến trúc",
+      "defaultDesignStyle": "chân thực",
+      "defaultRoomType": "căn phòng",
+      "defaultInteriorStyle": "chân thực",
+      "interior_prompt": "Một bức ảnh nội thất thực tế của một {{roomType}}, theo phong cách {{designStyle}}. Ánh sáng tự nhiên tràn vào from cửa sổ, tạo ra bóng đổ mềm mại. Kết quả phải là một bức ảnh trông như được chụp bằng máy ảnh DSLR chuyên nghiệp, chất lượng cao, HDR, sắc nét, không nhiễu và không phải là ảnh CGI giả.",
+      "interior_tone_clause": "Tông màu chủ đạo và không khí tổng thể là: {{mainColorTone}}.",
+      "camera_angle_composition_clause": "Góc chụp và bố cục của ảnh: {{angle}}.",
+      "suggestAngleGeneral": "Dựa trên hình ảnh kiến trúc đầu vào, hãy gợi ý một góc máy ảnh đẹp và sáng tạo. Mô tả góc máy bằng một câu ngắn gọn, súc tích. Ví dụ: 'Góc máy thấp from sân vườn nhìn lên, nhấn mạnh sự bề thế của công trình.'",
+      "suggestAngleZoom": "Dựa trên hình ảnh kiến trúc đầu vào, hãy gợi ý một góc chụp cận cảnh hoặc zoom đẹp làm nổi bật một chi tiết kiến trúc, vật liệu, hoặc hiệu ứng ánh sáng cụ thể. Mô tả góc máy bằng một câu ngắn gọn, súc tích. Ví dụ: 'Cận cảnh chi tiết vật liệu gỗ teak trên mặt tiền, nhấn mạnh vân gỗ và sự phản chiếu của ánh sáng .'",
+      "suggestAngleError": "Không thể tạo gợi ý. Vui lòng thử lại."
+    },
+    "prompt_conditional": {
+      "part1": "Một bức ảnh kiến trúc thực tế của {{constructionType}}, phong cách {{designStyle}}",
+      "location": ", tại {{locationContext}}.",
+      "materials": "\nCông trình sử dụng vật liệu chính là {{materials}}.",
+      "environment": "\nKhông gian xung quanh gồm {{environmentalCharacteristics}}, hài hòa with cảnh quan tự nhiên.",
+      "distantContext": "\nPhía xa là {{distantContext}}, tạo chiều sâu thị giác và cảm giác không gian mở.",
+      "time_clause": "\nCảnh được ghi lại vào {{timeDetails}}.",
+      "part2_prefix": "\nÁnh sáng HDR cân bằng, kết hợp hài hòa giữa nguồn sáng tự nhiên và nhân tạo, phản chiếu chân thực, tạo hiệu ứng điện ảnh tinh tế.",
+      "toneAndMood": "\nTổng thể mang cảm xúc và không khí {{toneAndMood}}.",
+      "cameraAngle_clause": "\nGóc nhìn của máy ảnh là {{cameraAngle}}, sử dụng DSLR full-frame with ống kính góc rộng, bố cục điện ảnh theo tỉ lệ vàng.",
+      "part2_suffix": "\nRender chất lượng 8K photorealistic cinematic, ánh sáng HDR chân thực, vật liệu rõ nét, phản chiếu tự nhiên, đổ bóng mềm.\nKhông gian có chiều sâu, công trình nổi bật trên nền mờ nhẹ (depth of field), mang lại cảm giác sống động và hiện thực cao."
+    },
+    "new_prompts": {
+      "construction_with_style": " {{constructionType}}, phong cách {{designStyle}}",
+      "construction_only": " {{constructionType}}",
+      "location": "Bối cảnh tại {{locationContext}}.",
+      "materials": "Công trình sử dụng vật liệu chính là {{materials}}.",
+      "environment": "Không gian xung quanh bao gồm {{environmentalCharacteristics}}, hài hòa with cảnh quan tự nhiên.",
+      "distant_context": "Phía xa là {{distantContext}}, tạo chiều sâu thị giác và cảm giác không gian mở rộng.",
+      "time_full": "Khung cảnh được ghi lại vào {{season}}, {{timeOfDay}}, trong điều kiện thời tiết {{weatherCondition}}.",
+      "time_season_weather": "Khung cảnh được ghi lại vào {{season}}, trong điều kiện thời tiết {{weatherCondition}}.",
+      "lighting_hyper": "Ánh sáng HDR điện ảnh, phản chiếu mềm mại, vật liệu sáng rõ. Kết xuất chất lượng 8K, chi tiết nổi khối và chiều sâu rõ ràng.",
+      "lighting_realistic": "Ánh sáng tự nhiên cân bằng, phản chiếu mềm, vật liệu hiện rõ chi tiết.",
+      "mood": "Không khí tổng thể mang cảm xúc {{toneAndMood}}.",
+      "camera": "Góc nhìn máy ảnh là {{cameraAngle}}, sử dụng DSLR full-frame with ống kính góc rộng,  và bố cục theo tỉ lệ vàng."
+    },
+    "cameraAngleSuggestionModal": {
+      "title": "🎥 HƯỚNG DẪN SỬ DỤNG HIỆU QUẢ – BỘ LỌC GÓC CHỤP & THÀNH PHẦN BỐ CỤC",
+      "sections": [
+        {
+          "title": "🧭 1️⃣ Mục tiêu thật sự của bộ lọc này",
+          "content": "Giúp AI hiểu rõ ý định khung hình: bạn muốn nhìn toàn cảnh – chi tiết – điểm nhấn – cảm xúc – vật liệu\nchứ không phải chỉ “render lại không gian”.\nA.I khi nhận ảnh base + JSON style sẽ phân tích vật lý ánh sáng + tone + vật liệu,\nnhưng nếu không biết góc nhìn, nó sẽ render bố cục ngẫu nhiên hoặc lệch chủ đề (ví dụ chụp sai hướng, sai trọng tâm).\nBộ “Camera Composition” chính là bản đồ chỉ đạo khung hình, giúp A.I:",
+          "points": ["Biết camera đặt ở đâu", "Tập trung vào phần nào", "Giữ tỷ lệ phối cảnh hợp lý", "Truyền cảm xúc đúng như chụp thật"]
+        },
+        {
+          "title": "🎯 2️⃣ Khi nào nên dùng bộ lọc này",
+          "table": {
+            "headers": ["Tình huống", "Có nên bật?", "Mục đích"],
+            "rows": [
+              ["Render tổng thể (phòng khách, sảnh, showroom)", "✅ Có", "Dùng preset “Góc rộng from cửa vào” hoặc “High-view nhìn bao quát”"],
+              ["Render cận cảnh (khu décor, vật liệu, bàn ghế)", "✅ Có", "Dùng preset “Cận cảnh décor”, “Cận chất liệu”, “Ánh sáng nổi bật”"],
+              ["Ảnh phong cách / cảm xúc (cinematic, branding)", "✅ Nên có", "“Chụp qua gương”, “Chi tiết logo”, “Ánh sáng mood mạnh”"],
+              ["Ảnh kỹ thuật / bố trí layout", "✅ Rất cần", "“Bird’s-eye view” hoặc “Toàn cảnh from cửa vào”"],
+              ["Ảnh render kiểu tĩnh – không người", "⚙️ Có thể kết hợp", "“Góc ngang tầm mắt” để giữ tự nhiên"],
+              ["Ảnh render có người / hành động", "✅ Rất nên", "Giúp AI chọn tầm camera đúng nhân vật (ngang hông, eye-level)"]
+            ]
+          }
+        },
+        {
+          "title": "⚙️ 3️⃣ Cách kết hợp thông minh with các bộ khác",
+          "table": {
+            "headers": ["Kết hợp with", "Hiệu quả đạt được"],
+            "rows": [
+              ["🎯 Camera & Ống kính (Camera Setup)", "“Camera Setup” định hình kỹ thuật (24mm, eye-level…) → “Composition” nói AI chụp cái gì và from đâu"],
+              ["🎨 Bảng màu chủ đạo", "Dùng preset “Cận chất liệu / ánh sáng nổi bật” để AI thể hiện tone màu trung thực"],
+              ["💡 Ánh sáng", "Chọn “Góc qua gương” hoặc “Cận ánh sáng” để AI xử lý phản xạ, đổ bóng chính xác"],
+              ["🪵 Vật liệu & Hoàn thiện", "“Cận chất liệu nội thất” giúp A.I render PBR cực thật, đúng bề mặt"],
+              ["🧍 Human Presence / Decor Elements (nếu có)", "Kết hợp “Góc ngang tầm mắt bàn thử đồ” để AI sắp bố cục con người tự nhiên"]
+            ]
+          }
+        },
+        {
+          "title": "🔧 4️⃣ Cách gọi bộ lọc này trong prompt / API",
+          "content": "🔹 Cách 1 – Tự động from dropdown\nKhi người dùng chọn preset:\n\"camera_composition\": \"Góc rộng from cửa vào – Toàn cảnh không gian\"\nA.I sẽ hiểu tương đương:\n“Ảnh được chụp from vị trí cửa chính nhìn vào, thể hiện tổng thể bố cục không gian và thiết kế.”\n\n🔹 Cách 2 – Sinh mô tả tự động (dạng prompt)\nKhung hình được chụp theo góc [preset],\ncamera đặt ở vị trí [vị trí tương đối],\nlấy nét [đối tượng chính],\nnhấn mạnh [mục tiêu thị giác hoặc cảm xúc].\nVí dụ:\n“Khung hình được chụp theo góc from cửa vào,\ncamera đặt ở tầm mắt người,\nlấy nét tổng thể không gian,\nnhấn mạnh cảm giác thoáng, sáng và trưng bày sang trọng.”"
+        },
+        {
+            "title": "💡 5️⃣ Chiến lược chọn góc chụp hiệu quả",
+            "table": {
+                "headers": ["Mục tiêu hình ảnh", "Gợi ý góc chụp", "Lý do"],
+                "rows": [
+                    ["Giới thiệu tổng thể không gian", "Góc rộng from cửa vào / High-view nhìn bao quát", "Tạo cảm giác “bước vào không gian”"],
+                    ["Nổi bật sản phẩm / vật liệu", "Cận chất liệu / Cận kệ trưng bày / Focus vật liệu", "Cho thấy chi tiết & độ hoàn thiện"],
+                    ["Ảnh thương hiệu / truyền cảm xúc", "Chụp qua gương / Cận décor đặc trưng / Ánh sáng nổi bật", "Gợi mood và chiều sâu thị giác"],
+                    ["Ảnh kỹ thuật / bố trí nội thất", "Bird’s eye view / Toàn cảnh / Chính diện 24mm", "Trình bày layout rõ, không méo"],
+                    ["Ảnh storytelling (có người)", "Ngang tầm mắt / from phòng thử nhìn ra", "Gợi cảm giác tự nhiên, đời thường"]
+                ]
+            }
+        },
+        {
+            "title": "🧠 6️⃣ Mẹo tối ưu for A.I Vision",
+            "table": {
+                "headers": ["Mẹo", "Lợi ích"],
+                "rows": [
+                    ["🟢 Luôn đặt “Camera Setup” trước “Composition” trong prompt", "A.I cần hiểu kỹ thuật trước khi hiểu mục đích góc chụp"],
+                    ["🟢 Không nên chọn 2 preset composition cùng lúc", "AI sẽ bị mâu thuẫn (vd: “from cửa vào” + “qua gương”)"],
+                    ["🟢 Khi dùng ảnh base, hãy chọn góc tương tự with bố cục ảnh", "Giúp A.I giữ geometry chính xác"],
+                    ["🟢 Nếu ảnh style reference có góc khác, thêm dòng “Giữ bố cục theo preset, không theo ảnh tham chiếu.”", "Ngăn A.I đảo hướng khung hình"],
+                    ["🟢 Với render cinematic, tăng “Lighting Mood” thành “Cinematic / Warm contrast”", "Đẩy cảm xúc ánh sáng mạnh hơn"]
+                ]
+            }
+        },
+        {
+          "title": "✨ 7️⃣ Ví dụ hoàn chỉnh trong prompt",
+          "example": "“Render ảnh nội thất khu trưng bày sản phẩm A.I Banana,\nchụp theo góc cận kệ trưng bày chính,\ncamera setup Eye-level 24mm – góc chéo tự nhiên,\nánh sáng hỗn hợp daylight và LED ấm,\nlấy nét sản phẩm ở trung tâm khung hình,\nnhấn mạnh texture gỗ và ánh sáng phản chiếu trên logo.”\n\n📸 → Kết quả: ảnh ra đúng góc, đúng vật liệu, bố cục tự nhiên, ánh sáng đồng nhất."
+        },
+        {
+          "title": "✅ Tóm tắt “Cách dùng hiệu quả”",
+          "table": {
+            "headers": ["Bước", "Hành động", "Kết quả"],
+            "rows": [
+              ["1️⃣", "Chọn Camera Setup (24mm / góc chéo / eye-level)", "Xác định kỹ thuật khung hình"],
+              ["2️⃣", "Chọn 1 góc composition trong dropdown", "Xác định hướng nhìn và chủ thể"],
+              ["3️⃣", "Kết hợp vớiLighting & Color Palette", "Tạo ánh sáng và tone phù hợp"],
+              ["4️⃣", "Ghi rõ “Giữ bố cục theo preset” trong prompt", "A.I render ổn định, không lệch hướng"],
+              ["5️⃣", "Dùng preset khác for shot phụ (detail / tổng thể)", "Xây dựng story ảnh có logic thị giác"]
+            ]
+          }
+        }
+      ],
+      "conclusion": "👉 Tóm lại:\nBộ lọc “Góc chụp & Thành phần bố cục” = bản đồ thị giác for camera trong AI render.\nDùng đúng preset = A.I hiểu đúng “bạn muốn người xem nhìn gì, from đâu, with cảm xúc gì”.\nCàng đồng bộ with Lighting & Material → ảnh càng giống chụp thật bằng DSLR kiến trúc.",
+      "finalNote": "Nội dung và Bản quyền được phát triển bởi đội ngũ www.f9render.com. Thank You!"
+    },
+    "colorPaletteSuggestionModal": {
+      "title": "🎨 Gợi ý 20 Tone màu chủ đạo – Bản mở rộng Tone màu Nội thất AI Render",
+      "subtitle": "( Coppy và Paste vào mục Bảng màu chủ đạo (Color Palette) )",
+      "groups": [
+        {
+          "title": "🧩 Nhóm 1: Tone sáng – tự nhiên – thanh lịch",
+          "headers": ["#", "Tên tone", "Mô tả chi tiết", "Kelvin gợi ý", "Ứng dụng"],
+          "rows": [
+            ["1️⃣", "Sáng dịu – Tự nhiên", "Gỗ sáng, trắng, be; ánh sáng trung tính, không chói; không gian thư giãn, sạch và mềm mại.", "5000K", "Scandinavian, Minimal, Japandi"],
+            ["2️⃣", "Trung tính – Hiện đại", "Trắng xám be, bề mặt matte và satin; cân bằng sáng và bóng, tinh tế và rõ nét.", "4800K", "Modern, Urban, Neo Classic"],
+            ["3️⃣", "Sáng trẻ trung – Bright Fresh", "Gỗ sáng, ánh sáng daylight; không khí trong, năng lượng, tươi sáng.", "5200K", "Bắc Âu, Tropical, Contemporary"],
+            ["4️⃣", "Sáng tự nhiên – Modern Neutral", "Đá sáng, gỗ be, daylight 5000K; hiện đại, cân bằng, dễ chịu.", "5000K", "Modern Vietnam, Apartment"],
+            ["5️⃣", "Trắng tinh khôi – Pure White", "Trắng toàn phần, ánh sáng daylight mạnh, phản sáng đều; sạch, hiện đại, thuần khiết.", "5500K", "Minimal, Gallery, Studio"]
+          ]
+        },
+        {
+          "title": "🧩 Nhóm 2: Tone ấm – sang trọng – cảm xúc",
+          "headers": ["#", "Tên tone", "Mô tả chi tiết", "Kelvin gợi ý", "Ứng dụng"],
+          "rows": [
+            ["6️⃣", "Ấm sang trọng – Luxury Warm", "Gỗ óc chó, đá sáng, gold; ánh sáng 3500K; quý phái, cao cấp và điện ảnh.", "3500K", "Luxury, Penthouse, Hotel"],
+            ["7️⃣", "Dịu & ấm cúng – Natural Cozy", "Gỗ, linen, ánh sáng 4500K; ấm áp, mềm mại, gần gũi, nhẹ nhàng.", "4500K", "Japandi, Homestay, Spa"],
+            ["8️⃣", "Cổ điển tinh tế – Classic Warm", "Da, nỉ, đá sáng, ánh sáng vàng đồng; sâu, sang trọng, mềm mại.", "3500K", "Classic, Boutique, Lobby"],
+            ["9️⃣", "Đông Dương – Indochine Heritage", "Gỗ đậm, ánh sáng vàng nhẹ, nhấn xanh ngọc; sang trọng, di sản, hoài cổ.", "3700K", "Indochine, Cafe, Villa"],
+            ["10️⃣", "Tối ấm – Sang trọng (Dark Luxury)", "Gỗ nâu, đá tối, đồng ánh vàng; ánh sáng 3000K; đậm sâu, huyền bí.", "3000K", "Bar, Lounge, High-end interior"]
+          ]
+        },
+        {
+            "title": "🧩 Nhóm 3: Tone lạnh – tinh tế – hiện đại",
+            "headers": ["#", "Tên tone", "Mô tả chi tiết", "Kelvin gợi ý", "Ứng dụng"],
+            "rows": [
+                ["11️⃣", "Lạnh – Công nghiệp (Industrial Cool)", "Bê tông, kim loại, ánh sáng trắng 6000K; rõ nét, mạnh mẽ, hiện đại.", "6000K", "Industrial, Loft, Office"],
+                ["12️⃣", "Lạnh tinh tế – Cool Elegant", "Trắng lạnh, xám khói, ánh sáng neutral; sạch, sang và tối giản.", "5500K", "Luxury apartment, Modern office"],
+                ["13️⃣", "Xanh đá – Calm Grey Blue", "Xanh xám, be lạnh, ánh sáng trung tính; thanh lịch, yên tĩnh, nhẹ thị giác.", "5000K", "Bedroom, Reading area"],
+                ["14️⃣", "Metallic Silver – Hiện đại đô thị", "Xám bạc, kính, đen bóng; ánh sáng trắng lạnh 6000K; hiện đại, cá tính.", "6000K", "Office, Tech, Showroom"],
+                ["15️⃣", "Monochrome Minimal", "Đen – Trắng – Xám, ánh sáng 4800K; contrast cao, tinh khiết, trừu tượng.", "4800K", "Minimal concept, Gallery"]
+            ]
+        },
+        {
+            "title": "🧩 Nhóm 4: Tone thiên nhiên – organic – nghệ thuật",
+            "headers": ["#", "Tên tone", "Mô tả chi tiết", "Kelvin gợi ý", "Ứng dụng"],
+            "rows": [
+                ["16️⃣", "Organic Natural – Tự nhiên cân bằng", "Gỗ tự nhiên, ánh sáng 4500K, phản sáng xanh lá; organic và bền vững.", "4500K", "Resort, Eco house"],
+                ["17️⃣", "Earthy Warm – Nâu đất & cát", "Nâu đất, be cát, ánh sáng vàng nhẹ; ấm, mộc, gần gũi.", "4000K", "Rustic, Tropical, Garden Villa"],
+                ["18️⃣", "Pastel Dream – Mềm & tươi sáng", "Hồng phấn, xanh mint, be sáng, ánh sáng trung tính; nhẹ nhàng, trẻ trung.", "5200K", "Cafe, Bedroom, Boutique"],
+                ["19️⃣", "Artistic Moody – Nghệ thuật trầm", "Tone tối, tương phản mạnh, ánh sáng khuếch tán; cinematic và cảm xúc.", "3200K", "Concept, Gallery, Night render"],
+                ["20️⃣", "Zen Serenity – Thiền & thư thái", "Be xám, gỗ mộc, ánh sáng nhẹ 4500K; tĩnh, cân bằng, sâu lắng.", "4500K", "Spa, Thiền viện, Homestay"]
+            ]
+        }
+      ],
+      "formula": {
+        "title": "💡 Công thức Mô tả chuẩn (AI hiểu 100%)",
+        "template": "“Tone [Tên tone], [mô tả cảm xúc tổng thể].\nÁnh sáng [loại ánh sáng / Kelvin], vật liệu [tên vật liệu chính] tạo [hiệu ứng thị giác / cảm xúc].”",
+        "exampleTitle": "📘 Ví dụ:",
+        "exampleText": "Tone Earthy Warm – Nâu đất & cát, ánh sáng vàng nhẹ 4000K,\nvật liệu be cát và gỗ tự nhiên mang cảm giác ấm, mộc, gần gũi thiên nhiên."
+      },
+      "summary": {
+        "title": "🧱 Tóm tắt Kỹ thuật (để tích hợp hệ thống)",
+        "headers": ["ID", "Tên tone", "Kelvin", "Màu chính", "Cảm xúc"],
+        "rows": [
+          ["tone_01", "Sáng dịu – Tự nhiên", "5000K", "Gỗ sáng – Trắng – Be", "Tự nhiên, thư giãn"],
+          ["tone_02", "Trung tính – Hiện đại", "4800K", "Trắng – Xám – Be", "Hiện đại, tối giản"],
+          ["tone_03", "Sáng trẻ trung – Bright Fresh", "5200K", "Gỗ sáng – Kem – Be", "Tươi, năng lượng"],
+          ["tone_04", "Sáng tự nhiên – Modern Neutral", "5000K", "Gỗ be – Đá sáng", "Cân bằng, hiện đại"],
+          ["tone_05", "Trắng tinh khôi – Pure White", "5500K", "Trắng – Kính – Gỗ sáng", "Sạch, thuần khiết"],
+          ["tone_06", "Ấm sang trọng – Luxury Warm", "3500K", "Gỗ óc chó – Đá sáng – Gold", "Quý phái, ấm"],
+          ["tone_07", "Dịu & ấm cúng – Natural Cozy", "4500K", "Gỗ – Linen – Be", "Ấm, nhẹ, tinh tế"],
+          ["tone_08", "Cổ điển tinh tế – Classic Warm", "3500K", "Da – Nỉ – Đá sáng", "Sang trọng, mềm"],
+          ["tone_09", "Đông Dương – Indochine Heritage", "3700K", "Gỗ đậm – Xanh ngọc – Đồng", "Di sản, thanh lịch"],
+          ["tone_10", "Tối ấm – Sang trọng (Dark Luxury)", "3000K", "Đá tối – Gỗ nâu – Đồng", "Huyền bí, cao cấp"],
+          ["tone_11", "Lạnh – Công nghiệp (Industrial Cool)", "6000K", "Bê tông – Kim loại – Đen", "Mạnh, rõ nét lạnh"],
+          ["tone_12", "Lạnh tinh tế – Cool Elegant", "5500K", "Xám lạnh – Bạc – Trắng", "Tinh tế, cao cấp"],
+          ["tone_13", "Xanh đá – Calm Grey Blue", "5000K", "Xanh xám – Be lạnh", "Thanh lịch, yên tĩnh"],
+          ["tone_14", "Metallic Silver – Hiện đại đô thị", "6000K", "Bạc – Kính – Đen", "Cá tính, tương lai"],
+          ["tone_15", "Monochrome Minimal", "4800K", "Đen – Trắng – Xám", "Trừu tượng, contrast"],
+          ["tone_16", "Organic Natural – Tự nhiên cân bằng", "4500K", "Gỗ tự nhiên – Lá cây – Be", "Dịu, organic"],
+          ["tone_17", "Earthy Warm – Nâu đất & cát", "4000K", "Nâu đất – Be cát", "Mộc, ấm"],
+          ["tone_18", "Pastel Dream – Mềm & tươi sáng", "5200K", "Hồng phấn – Xanh mint – Be", "Trẻ trung, nhẹ"],
+          ["tone_19", "Artistic Moody – Nghệ thuật trầm", "3200K", "Đen – Gỗ – Ánh vàng", "Cinematic, sâu lắng"],
+          ["tone_20", "Zen Serenity – Thiền & thư thái", "4500K", "Be xám – Gỗ mộc", "Cân bằng, thiền"]
+        ],
+        "conclusion": "✅ Kết luận\nTổng 20 tone → đủ bao phủ mọi style nội thất (Modern, Classic, Indochine, Tropical, Industrial, Minimal…).\nMỗi tone gồm: Tên + mô tả + Kelvin + vật liệu + cảm xúc → A.I hiểu màu, ánh sáng và mood tổng thể."
+      }
+    },
+    "suggestionModal": {
+      "title": "💡 GỢI Ý SỬ DỤNG",
+      "situationHeader": "Tình huống",
+      "situationTable": {
+        "headers": {
+          "situation": "Tình huống",
+          "groups": "Chọn mấy nhóm?",
+          "suggestion": "Gợi ý"
+        },
+        "rows": [
+          {
+            "situation": "Nhà phố / biệt thự thường",
+            "groups": "2 nhóm (Gỗ + Đá / Gỗ + Kính)",
+            "suggestion": "Cân bằng tone ấm và lạnh."
+          },
+          {
+            "situation": "Resort / villa nghỉ dưỡng",
+            "groups": "3 nhóm (Gỗ + Đá + Kính)",
+            "suggestion": "Tự nhiên, sáng, chân thực."
+          },
+          {
+            "situation": "Công nghiệp / hiện đại",
+            "groups": "2 nhóm (Bê tông + Kim loại / Kính)",
+            "suggestion": "Lạnh, sạch."
+          },
+          {
+            "situation": "Truyền thống / rustic",
+            "groups": "2 nhóm (Gạch + Gỗ / Đá rối)",
+            "suggestion": "Mộc, ấm, tone dịu."
+          }
+        ]
+      },
+      "combinationHeader": "Hướng dẫn chọn nhiều nhóm (đã test thực tế)",
+      "combinationTable": {
+        "headers": {
+          "combo": "Kết hợp nhóm",
+          "recommended": "Nên dùng?",
+          "result": "Ảnh ra & Cảm giác"
+        },
+        "rows": [
+          {
+            "combo": "🪵 Gỗ + Đá",
+            "recommended": "✅ Rất nên dùng",
+            "result": "Cân bằng tone: ấm (gỗ) + lạnh (đá) → sang, tự nhiên."
+          },
+          {
+            "combo": "🪵 Gỗ + Kính",
+            "recommended": "✅ Đẹp",
+            "result": "Phản xạ ánh sáng mềm, tạo cảm giác hiện đại, luxury."
+          },
+          {
+            "combo": "🪵 Gỗ + Kim loại đen",
+            "recommended": "✅ Chuẩn Luxury / hiện đại",
+            "result": "Tương phản nóng-lạnh, HDR cao, cinematic."
+          },
+          {
+            "combo": "🪨 Đá + Kính",
+            "recommended": "✅ Chuẩn resort / villa hiện đại",
+            "result": "Phản xạ đẹp, tone sáng sạch, HDR tự nhiên."
+          },
+          {
+            "combo": "🧱 Gạch + Gỗ",
+            "recommended": "✅ Chuẩn style Việt / tropical",
+            "result": "Mộc mạc, ấm, tự nhiên, rất hợp nhà phố."
+          },
+          {
+            "combo": "🧱 Bê tông + Kim loại",
+            "recommended": "✅ Chuẩn Công nghiệp",
+            "result": "Tone xám lạnh, tương phản mạnh, rõ nét."
+          },
+          {
+            "combo": "🪞 Kính + Kim loại",
+            "recommended": "✅ Chuẩn Đô thị hiện đại",
+            "result": "Phản xạ mạnh, tone lạnh, sắc nét."
+          },
+          {
+            "combo": "🌿 Gỗ + Tự nhiên (cỏ, đá sân vườn)",
+            "recommended": "✅ Sống động, chân thực",
+            "result": "Tạo cảm giác thật, ấm, thư giãn."
+          },
+          {
+            "combo": "🧱 Gạch + Đá rối / ong",
+            "recommended": "✅ Chuẩn Việt / mộc mạc",
+            "result": "Chân thực, phản xạ thấp, rất hợp cảnh sau mưa."
+          },
+          {
+            "combo": "🧱 Bê tông + Gỗ + Kính",
+            "recommended": "✅ Combo 3 nhóm chuẩn",
+            "result": "Rất cân bằng – tone xám, ấm, phản xạ ánh sáng mềm."
+          },
+          {
+            "combo": "🪵 Gỗ + Thép corten",
+            "recommended": "⚠️ Có thể dùng",
+            "result": "Tone mạnh, industrial-art – chỉ hợp công trình cá tính."
+          },
+          {
+            "combo": "🧱 Bê tông + Đá Slate + Kim loại đen",
+            "recommended": "⚠️ Ok, nhưng tone rất lạnh",
+            "result": "Chỉ dùng for ảnh “cinematic / minimal”."
+          },
+          {
+            "combo": "🧱 Gạch + Kính",
+            "recommended": "⚠️ Cần cân bằng ánh sáng",
+            "result": "Nếu ánh sáng mạnh, AI dễ gây “tường kính phản xạ quá mức”."
+          },
+          {
+            "combo": "❌ Gỗ + Gạch men + Kim loại bóng",
+            "recommended": "❌ Không nên dùng",
+            "result": "Quá nhiều phản xạ khác nhau → ảnh giả, không tự nhiên."
+          },
+          {
+            "combo": "❌ Đá Marble + Gỗ đen + Kính phản xạ",
+            "recommended": "❌ Dễ cháy, sai tone HDR",
+            "result": "Chỉ dùng for render style nội thất luxury."
+          }
+        ]
+      },
+      "goldenRules": {
+        "header": "Quy tắc vàng khi chọn nhiều nhóm",
+        "table": {
+          "headers": {
+            "rule": "Quy tắc",
+            "explanation": "Giải thích"
+          },
+          "rows": [
+            { "rule": "≤ 3 nhóm một lần", "explanation": "2 là tốt nhất, 3 là tối đa. Hơn 4 nhóm → ảnh bị rối." },
+            { "rule": "Luôn có 1 vật liệu ấm và 1 vật liệu lạnh", "explanation": "Cân bằng phản xạ (vd: gỗ + đá)." },
+            { "rule": "Nếu có kính → không chọn đá quá bóng", "explanation": "Tránh phản xạ chồng chéo." },
+            { "rule": "Không chọn >1 vật liệu phản xạ mạnh cùng lúc", "explanation": "AI sẽ xử lý sai ánh sáng (gương + kính + đá bóng = cháy HDR)." },
+            { "rule": "Giữ tone chính đồng bộ", "explanation": "Nếu tone ấm (gỗ, be, kem) → tránh đá đen hoặc inox quá lạnh." }
+          ]
+        }
+      },
+      "environmentSuggestions": {
+        "title": "🌿 DANH SÁCH GỢI Ý TOÀN DIỆN – MÔI TRƯỜNG, CẢNH QUAN & SÂN VƯỜN KIẾN TRÚC",
+        "instruction": "Tham khảo các tùy chọn bên dưới sau đó Sao chép và Dán vào Bộ lọc bên trái",
+        "sections": [
+          {
+            "title": "1. MÔI TRƯỜNG TỔNG THỂ",
+            "subsections": [
+              {
+                "title": "🛣️ Đường & Bề mặt nền",
+                "items": [
+                  "Mặt đường nhựa đen hoàn thiện, bằng phẳng, có vài vết nứt nhỏ và vá víu không đáng kể – thể hiện sự sử dụng thực tế.",
+                  "Mặt đường nhựa khô, phản chiếu ánh nắng nhẹ.",
+                  "Mặt đường phía trước cổng là đường nội bộ nhỏ bằng bê tông pha đất, không có vỉa hè, mép đường tự nhiên",
+                  "Mặt đường ướt phản chiếu ánh sáng và công trình.",
+                  "Mặt đường nhựa hơi nhám, phản sáng mờ.",
+                  "Đường nội bộ rộng, lát gạch xi măng sáng.",
+                  "Vỉa hè lát gạch sáng sạch hai bên, phản sáng nhẹ.",
+                  "Gạch lát vỉa hè có các bụi cỏ nhỏ mọc ở khe.",
+                  "Sân gạch đỏ, rêu phong nhẹ, đậm chất Việt Nam.",
+                  "Bãi cỏ tự nhiên xen lẫn lối đá bước chân.",
+                  "Nền cát sáng và đá tự nhiên quanh công trình.",
+                  "Mặt hồ phẳng lặng phản chiếu công trình và cây xanh."
+                ]
+              },
+              {
+                "title": "☀️ Không gian & Ánh sáng",
+                "items": [
+                  "Không gian mở, thoáng gió, ánh sáng tự nhiên mạnh.",
+                  "Bầu trời trong xanh, ít mây, ánh sáng buổi sáng dịu nhẹ.",
+                  "Trời trong xanh, ánh nắng chiếu xiên rõ bóng.",
+                  "Ánh hoàng hôn vàng cam chiếu nhẹ lên mặt tiền.",
+                  "Sau cơn mưa nhẹ, ánh sáng khuếch tán mềm.",
+                  "Đêm xuống, ánh đèn vàng hắt qua cửa kính.",
+                  "Phản xạ ánh sáng nhẹ trên kính nhôm xám.",
+                  "Ánh sáng phản chiếu from kính làm sáng phần dưới ban công."
+                ]
+              },
+              {
+                "title": "🏙️ Không gian Đô thị",
+                "items": [
+                  "Ở giữa dãy phố hiện đại, hai bên nhà cùng cao, tone sáng sạch — sáng, cân bằng, daylight.",
+                  "Ở giữa dãy phố Việt Nam, nhà hai bên cao thấp khác nhau, có cây, biển hiệu — đời thường, hơi ấm, thực tế.",
+                  "Ở giữa dãy phố liền kề, hai bên tone sáng trung tính, mặt tiền đồng bộ — clean, rõ nét, trung tính.",
+                  "Hai bên nhà che sáng, ánh mặt trời chiếu vào mặt tiền tạo tương phản tự nhiên.",
+                  "Những ngôi nhà lân cận ở hai bên, một bên là công trường xây dựng.",
+                  "Nằm trong cụm nhà liên kế, có mặt tiền đồng bộ, hai bên sát vách.",
+                  "Nhà nằm ở góc giao giữa hai đường, thường có 2 mặt tiền — dùng for prompt góc 45° hoặc góc ngã tư.",
+                  "Cuối tuyến phố, có không gian mở phía trước — dùng for biệt thự hoặc shophouse cuối dãy.",
+                  "Ở vị trí giao nhau của nhiều tuyến, phù hợp góc nhìn động, có chiều sâu."
+                ]
+              },
+              {
+                "title": "🌳 Cây xanh & Yếu tố tự nhiên",
+                "items": [
+                  "Cây đô thị mới trồng, tán tròn, trồng đều, không che mặt tiền công trình.",
+                  "Trước nhà có hàng rào cây thấp và bụi cây cắt gọn, phía sau là vườn cây xanh rậm, nhiều cây chuối và cây cao tán rộng.",
+                  "Cây bóng mát (bằng lăng, sao đen) hai bên đường.",
+                  "Cây nhiệt đới mọc tự nhiên, tán lá đổ bóng nhẹ.",
+                  "Một cây lớn đổ bóng nhẹ lên mặt tiền.",
+                  "Hàng rào cây xanh bao quanh khuôn viên.",
+                  "Dây leo phủ nhẹ trên tường, tạo bóng mát.",
+                  "Lá cây lay nhẹ trong gió, ánh sáng phản chiếu động.",
+                  "Lá rơi nhẹ trong gió, mặt nước gợn sóng phản chiếu ánh sáng.",
+                  "Sương mờ buổi sáng phủ nhẹ trên cây và đường."
+                ]
+              },
+              {
+
+                 "title": "🚶 Chi tiết sống động – Con người & Chuyển động",
+                "items": [
+                  "Một chiếc xe ô tô màu bạc đang di chuyển qua khung hình.",
+                  "Một người đi bộ xa xa tạo cảm giác thật.",
+                  "Một người đang đạp xe qua, ánh sáng phản chiếu nhẹ trên đường.",
+                  "Một con chó nhỏ nằm ở sân trước nhà.",
+                  "Bảng hiệu nhỏ không rõ chữ, mang cảm giác phố Việt.",
+                  "Có cột điện và dây cáp nhỏ phía xa.",
+                  "Cột điện đổ bóng xiên.",
+                  "Đèn đường vàng phản chiếu trên mặt đường ướt.",
+                  "Ghế đá / hàng rào / biển chỉ đường — tạo cảm giác không gian đô thị quen thuộc."
+                ]
+              }
+            ]
+          },
+{
+  "title": "1.1 TIỀN CẢNH (FOREGROUND COMPOSITION)",
+  "subsections": [
+    {
+      "title": "",
+      "items": [
+        "Phần nền trước (foreground) có tán cây xanh đậm vươn from mép trên khung hình, lá nhỏ, thưa, hắt sáng nhẹ quanh viền lá (rim light), tạo khung tự nhiên bao quanh bầu trời.",
+        "Tán cây xanh đậm vươn nhẹ from mép trên khung hình, lá nhỏ thưa đón ánh sáng ngược, viền lá ánh lên sắc sáng dịu, tạo khung tự nhiên bao quanh bầu trời.",
+        "Những cành lá mảnh đổ xuống from phía trên khung, ánh nắng xuyên qua từng kẽ lá, tạo vùng viền sáng nhẹ quanh tán lá, khung hình mở ra dịu dàng và thoáng đãng.",
+        "Từ trên cao, tán cây xanh sậm phủ nhẹ mép khung, ánh sáng hắt viền bạc qua lá, nền trời phía sau sáng nhẹ, không khí trong trẻo và yên bình.",
+        "Từ trên cao, cành cây nghiêng xuống khung, viền lá hắt sáng vàng nhạt, khung cảnh được bao lại bởi tán lá như khung tranh tự nhiên.",
+        "Những tán cây xanh đậm xen lẫn ánh sáng vàng nhạt, tạo cảm giác chiều sâu hòa nhịp vào bầu trời trong khung hình.",
+        "Bóng lá xanh phủ đan xen viền khung trên, ánh sáng chiếu xiên xuống tạo vệt sáng chấm dặm trên nền, không khí yên bình và có chiều sâu.",
+        "Tán lá nhỏ mảnh đan xen viền khung, ánh sáng ngược tạo hiệu ứng sáng viền lá, khung hình gợi cảm giác mát mẻ, tự nhiên và có chiều sâu.",
+        "Ánh sáng xuyên qua tán lá xanh, hắt sáng lên từng lớp lá, tạo ánh sáng lập lánh và trong vắt.",
+        "Ánh sáng ban mai xuyên qua kẽ lá, tạo nên viền sáng nhẹ quanh tán lá, mang lại cảm giác tươi mới và tràn không khí sáng.",
+        "Tán cây xanh mượt đan xen mép trên khung, ánh sáng phản chiếu nhẹ qua lá bằng sắc sáng ấm, tạo khung tự nhiên ôm lấy bầu trời.",
+        "Cành lá nhỏ vươn ra from góc phải khung, đón ánh sáng xiên vàng nhạt, viền sáng lập lánh trên từng mép lá, khung cảnh gợi cảm giác buổi sáng thanh tĩnh.",
+        "Những chùm lá thưa rải rác mép trên khung, ánh sáng phản chiếu nhẹ nhàng qua từng lá, tạo chiều sâu và khoảng sáng dịu.",
+        "Tán lá nhỏ mảnh thả rủ nhẹ trong khung, ánh sáng xiên chiếu xuyên qua từng tầng lá, gợi cảm giác sáng sớm trong lành.",
+        "Mảng tán cây xanh sẫm trái ngang khung, ánh sáng ban chiều chiếu ngược, viền lá ấm áp tạo khung hài hòa quanh nền trời.",
+        "Ánh sáng chiếu xiên chạm vào từng chùm lá, sắc nắng phản sáng nhẹ, khung cảnh mang hơi ấm and yên bình.",
+        "Cành cây thả mềm uốn cong from trên cao, ánh sáng chiếu ngược tạo viền sáng tinh khiết, khung hình mở ra đầy không khí tươi mới.",
+        "Tán lá đan xen viền khung, tạo dải sáng và bóng xen lẫn, ánh sáng phản nhẹ qua lá buổi trưa hè.",
+        "Tán lá nghiêng hắt sáng xuống, ánh sáng vàng đổ chéo, khung cảnh gợi cảm giác ấm áp và gần gũi.",
+        "Bụi lá nhỏ nhất sáng nhẹ ở rìa khung, ánh sáng ban trưa tỏa sắc sáng ấm, khung hình đượm ánh chiều.",
+        "Tán lá mảnh nghiêng xuống, ánh sáng xiên qua, tạo ánh sáng chấm dặm viền lá, cảnh vật mang chiều sâu dịu êm.",
+        "Cây thân cao vươn bên mép khung, ánh sáng xuyên qua từng lá, viền sáng vàng nhạt phủ nhẹ qua chiều sâu dịu.",
+        "Tán lá dày ánh sáng rải ngấn phản trên, ánh sáng chiếu xiên long lanh, khung hình trở nên cân đối và sâu hút.",
+        "Cành lá xanh nhỏ mềm mại, sáng chiếu xiên tạo đường viền sáng vàng ấm, hòa trộn giữa ánh nắng và hơi sương.",
+        "Tán lá rũ nhẹ tán sáng ngược, tầng phiến lá viền sáng mảnh, bầu trời phía sau trong xanh, gợi cảm giác yên bình cuối ngày."
+      ]
+    }
+  ]
+},
+          {
+            "title": "2. BỐI CẢNH CẢNH QUAN LIỀN KỀ",
+            "subsections": [
+              {
+                "title": "🌾 Phía trước & xung quanh công trình",
+                "items": [
+                  "Phía trước công trình: thảm cỏ có lối đi bằng đá bước chân, cây bụi nhỏ, hoa lá non xanh.",
+                  "Mảng xanh trang trí trên mặt tiền gồm các cây bụi nhỏ, cây leo rủ ở ban công, lá xanh tươi, sắp xếp gọn gàng, không che khuất hình khối, tạo điểm nhấn mềm mại, tự nhiên.",
+                  "Ban công có bồn cây bê tông trồng cây leo rủ, xen kẽ vài chậu cây lá bản nhỏ; cây được bố trí đều, tạo thành viền mềm mại phía trước lan can kính, không che khuất cửa kính.",
+                  "Một góc sân có vài bụi tre cảnh, cây lưỡi hổ hoặc dương xỉ, tạo bố cục gọn gàng, ít chăm sóc.",
+                  "Màu xanh của cây nổi bật trên nền tường trắng-xám-vàng.",
+                  "Không gian sạch, thoáng, gió nhẹ, phản xạ ánh sáng tự nhiên."
+                ]
+              },
+              {
+                "title": "🏘️ Kết nối with Môi trường đô thị",
+                "items": [
+                  "Cảnh đường phố đô thị điển hình của Việt Nam.",
+                  "Phối cảnh nằm giữa dãy nhà phố liền kề, tone sáng sạch, hiện đại.",
+                  "Nhà hai bên cao tương đương hoặc chênh lệch nhẹ, thể hiện tính chân thực.",
+                  "Cây xanh và vật liệu mặt tiền hài hòa, tạo cảm giác mát mẻ, thân thiện."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "3. KHÔNG GIAN SÂN VƯỜN BIỆT THỰ (Các phong cách Vườn)",
+            "subsections": [
+              {
+                "title": "🌿 Các phong cách Vườn",
+                "items": [
+                  "Vườn Nhiệt đới hiện đại (Modern Tropical Garden): cây lá bản lớn (chuối cảnh, dương xỉ, cọ Nhật), thảm cỏ có lối đi lát đá phiến, phản sáng mềm, không khí ẩm, xanh mát.",
+                  "Vườn Nhật (Zen Garden): cát trắng, đá tự nhiên, bonsai nhỏ, hồ cá koi hoặc tiểu cảnh nước, bố cục tĩnh, thiền.",
+                  "Vườn Việt truyền thống: sân gạch đỏ, chum nước, hàng cau, bậc tam cấp, cây xanh mộc mạc.",
+                  "Vườn châu Âu hiện đại: thảm cỏ đều, bồn cây vuông, đường sỏi sáng, ghế gỗ.",
+                  "Vườn Tối giản (Minimalist Garden): ít cây, tone màu trung tính, bề mặt nền phẳng, cây trồng đối xứng tạo cảm giác tĩnh lặng."
+                ]
+              },
+              {
+                "title": "🌺 Bố cục & Chi tiết Vườn",
+                "items": [
+                  "Lối đi lát đá tự nhiên xen cỏ xanh, dẫn from cổng vào nhà.",
+                  "Bồn cây bê tông vuông, viền gỗ hoặc đá, trồng cây leo rủ.",
+                  "Một góc sân có tiểu cảnh nước hoặc hồ cá nhỏ.",
+                  "Cây bụi thấp viền quanh thảm cỏ, tạo lớp lang mềm mại.",
+                  "Một cây lớn đổ bóng nhẹ lên sân và tường.",
+                  "Đèn sân vườn âm đất hoặc đèn cột nhỏ chiếu sáng cây.",
+                  "Bàn ghế ngoài trời, tone gỗ sáng hoặc trắng, hài hòa with tự nhiên."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "4. CHI TIẾT PHỤ TRỢ CHÂN THỰC (Micro Details)",
+            "subsections": [
+              {
+                "title": "✨ Hiệu ứng bề mặt & ánh sáng",
+                "items": [
+                  "Cạnh tường có vết bụi nhẹ, góc tường phản sáng.",
+                  "Mép cửa kính phản chiếu hình ảnh mờ của cây và trời.",
+                  "Bóng lá cau đổ hoa văn trên tường trắng.",
+                  "Phản xạ ánh sáng from kính, cạnh tường, lan can.",
+                  "Phản xạ nhẹ from mặt nước hoặc đường ướt."
+                ]
+              },
+              {
+                "title": "🧱 Chi tiết vật lý & Cảm giác thật",
+                "items": [
+                  "Biển số nhà hoặc hộp điện nhỏ gắn gọn gàng gần cổng.",
+                  "Vài chiếc lá khô rơi nhẹ ở mép đường hoặc gần gốc cây.",
+                  "Cột điện đổ bóng xiên.",
+                  "Bóng đổ tự nhiên from tán cây hoặc vật thể."
+                ]
+              }
+            ]
+          },
+          {
+            "title": "I. CẢNH QUAN & MÔI TRƯỜNG XUNG QUANH THEO LOẠI CÔNG TRÌNH",
+            "subsections": [
+              {
+                "title": "1. NHÓM NHÀ Ở",
+                "items": [
+                  "Chung cư",
+                  "Môi trường xung quanh: khu đô thị hiện đại, cao tầng, khu dân cư đông đúc.",
+                  "Cảnh quan: công viên nội khu, hồ cảnh quan, đường nội bộ, sân chơi, sân thể thao, bể bơi.",
+                  "Mức độ tự nhiên: mảng xanh tập trung, cảnh quan nội khu, bồn hoa, ánh sáng đô thị ban đêm.",
+                  "Không gian liền kề: bãi đỗ xe, trung tâm thương mại, shophouse tầng trệt, đường phố sầm uất.",
+                  "Nhà phố",
+                  "Môi trường xung quanh: mặt phố liền kề, ngõ nhỏ, khu dân cư đô thị.",
+                  "Cảnh quan: cây xanh ven đường, vỉa hè, mặt tiền thương mại, cột điện, biển hiệu, xe cộ.",
+                  "Tự nhiên: cây cảnh trong chậu, ban công xanh, giếng trời, ánh sáng đô thị phản chiếu.",
+                  "Không gian liền kề: tường nhà hàng xóm, mái ngói xen kẽ, biển hiệu, cổng sắt, đường lát gạch.",
+                  "Biệt thự",
+                  "Môi trường xung quanh: khu biệt thự cao cấp, sân vườn rộng, đường nội bộ yên tĩnh.",
+                  "Cảnh quan: hồ cá, thảm cỏ, cây xanh, hàng rào thấp, lối đi lát đá, ánh sáng tự nhiên chan hòa.",
+                  "Tự nhiên: cây tán lớn, vườn hoa, đồi cỏ, tiểu cảnh nước, bể bơi riêng.",
+                  "Không gian liền kề: các biệt thự khác, hàng rào, đường nội bộ, lối xe riêng.",
+                  "Nhà vườn",
+                  "Môi trường xung quanh: vùng ngoại ô, không gian xanh, gần đồng ruộng hoặc hồ.",
+                  "Cảnh quan: vườn cây ăn trái, hàng cau, rặng dừa, thảm cỏ lớn, hòn non bộ, ao nhỏ.",
+                  "Tự nhiên: ánh sáng tự nhiên, gió đồng, cảnh chim chóc, sương sớm.",
+                  "Không gian liền kề: lối đi lát gạch, hàng rào cây, cổng gỗ, hiên nhà.",
+                  "Penthouse / Duplex",
+                  "Môi trường xung quanh: tầng cao của chung cư cao cấp, skyline thành phố, ánh đèn đêm.",
+                  "Cảnh quan: bể bơi sân thượng, vườn trên mái, khu lounge, tường kính panorama.",
+                  "Tự nhiên: giếng trời, mây và hoàng hôn, view thành phố thu nhỏ bên dưới.",
+                  "Không gian liền kề: sân thượng, kính phản chiếu, lan can kính.",
+                  "Resort / Villa nghỉ dưỡng",
+                  "Môi trường xung quanh: khu nghỉ dưỡng ven biển, rặng dừa, thảm cỏ, gần hồ hoặc biển.",
+                  "Cảnh quan: bể bơi vô cực, lối đi lát đá, bãi cát, ghế nằm, ánh nắng vàng.",
+                  "Tự nhiên: cây cọ, sóng biển, hoa nhiệt đới, trời xanh trong.",
+                  "Không gian liền kề: các villa khác, lối đi lát đá, cây xanh, khu spa hoặc bar.",
+                  "Homestay / Bungalow",
+                  "Môi trường xung quanh: vùng đồi núi, biển yên bình hoặc làng quê.",
+                  "Cảnh quan: cỏ dại, hoa dại, hàng rào gỗ, khói bếp, cây cổ thụ.",
+                  "Tự nhiên: không gian mở, nắng chiều vàng, tiếng chim, sương sớm.",
+                  "Không gian liền kề: các bungalow khác, lối đi sỏi, khu sinh hoạt chung.",
+                  "Nhà truyền thống / Nhà cổ",
+                  "Môi trường xung quanh: làng cổ, cổng gạch, hàng cau, giếng nước, sân gạch.",
+                  "Cảnh quan: cây cổ thụ, chum nước, mái ngói rêu phong, tường đất.",
+                  "Tự nhiên: nắng nhẹ, bóng mát, gió đồng, hương quê.",
+                  "Không gian liền kề: sân đình, giếng nước, đồng ruộng hoặc ao nhỏ gần đó."
+                ]
+              },
+              {
+                "title": "2. NHÓM LÀM VIỆC",
+                "items": [
+                  "Văn phòng hiện đại",
+                  "Môi trường xung quanh: trung tâm đô thị, tòa nhà cao tầng, skyline hiện đại.",
+                  "Cảnh quan: đường chính, bãi đỗ xe, mảng xanh đô thị, mặt tiền kính phản chiếu.",
+                  "Không gian liền kề: khu thương mại, quán cafe, sảnh, thang máy, biển tên công ty.",
+                  "Studio sáng tạo / Văn phòng thiết kế",
+                  "Môi trường xung quanh: khu sáng tạo, khu công nghiệp cải tạo, xưởng cũ chuyển đổi.",
+                  "Cảnh quan: tường gạch thô, cây leo, cửa kính lớn, ánh sáng tự nhiên.",
+
+                  "Không gian liền kề: các xưởng khác, không gian mở, nghệ sĩ làm việc, góc thư giãn.",
+                  "Coworking space",
+                  "Môi trường xung quanh: trung tâm thành phố, khu startup, quán cafe, sân thượng.",
+                  "Cảnh quan: khu vực mở, cây xanh trong nhà, khu pantry, sân thượng, vườn trên mái.",
+                  "Không gian liền kề: các văn phòng khác, khu cafe, không gian sáng tạo.",
+                  "Home office",
+                  "Môi trường xung quanh: nhà phố, chung cư, khu dân cư.",
+                  "Cảnh quan: giếng trời, ban công, bàn làm việc gần cửa sổ, cây xanh nhỏ.",
+                  "Không gian liền kề: phòng khách, bếp, sân trong."
+                ]
+              },
+              {
+                "title": "3. NHÓM DỊCH VỤ & THƯƠNG MẠI",
+                "items": [
+                  "Nhà hàng / Cafe",
+                  "Môi trường xung quanh: mặt phố, khu du lịch, ven sông, vườn xanh.",
+                  "Cảnh quan: mảng xanh, đèn trang trí, sân thượng, bàn ngoài trời, đèn treo.",
+                  "Không gian liền kề: các cửa hàng khác, khu phố, bờ hồ, người qua lại.",
+                  "Showroom / Cửa hàng",
+                  "Môi trường xung quanh: phố trung tâm, khu thương mại, trung tâm thương mại, vỉa hè rộng.",
+                  "Cảnh quan: mặt tiền kính lớn, biển hiệu sáng, ánh sáng nhân tạo mạnh.",
+                  "Không gian liền kề: các cửa hàng khác, phố sầm uất.",
+                  "Khách sạn / Sảnh",
+                  "Môi trường xung quanh: trung tâm đô thị, khu du lịch, gần biển hoặc núi.",
+                  "Cảnh quan: sảnh sang trọng, cây cảnh lớn, tiểu cảnh nước, ánh sáng tự nhiên.",
+                  "Không gian liền kề: khu dịch vụ, bể bơi, nhà hàng.",
+                  "Spa / Wellness",
+                  "Môi trường xung quanh: không gian yên tĩnh, mảng xanh, hồ nhỏ, ánh sáng dịu.",
+                  "Cảnh quan: hương liệu, sỏi, tre, suối nhân tạo.",
+                  "Không gian liền kề: phòng trị liệu, khu thư giãn, lối đi gỗ.",
+                  "Salon / Thẩm mỹ viện",
+                  "Môi trường xung quanh: phố thương mại, khu đô thị hiện đại.",
+                  "Cảnh quan: ánh sáng trắng, cây nhỏ, mặt tiền kính lớn, biển hiệu thanh lịch.",
+                  "Không gian liền kề: các cửa hàng khác, đường phố, sảnh.",
+                  "Gym / Fitness",
+                  "Môi trường xung quanh: tòa nhà cao tầng, khu phức hợp đô thị.",
+                  "Cảnh quan: kính panorama, ánh sáng mạnh, view thành phố.",
+                  "Không gian liền kề: khu thay đồ, bể bơi, khu lounge."
+                ]
+              },
+              {
+                "title": "4. NHÓM CÔNG CỘNG & GIÁO DỤC",
+                "items": [
+                  "Thư viện / Phòng đọc",
+                  "Môi trường xung quanh: khu học thuật, trường học, công viên.",
+                  "Cảnh quan: mảng xanh, lối đi yên tĩnh, hồ nhỏ, ánh sáng tự nhiên.",
+                  "Trường học / Lớp học",
+                  "Môi trường xung quanh: sân chơi, hàng cây, khu dân cư.",
+                  "Cảnh quan: sân cờ, hành lang, lớp học sáng sủa.",
+                  "Bảo tàng / Gallery",
+                  "Môi trường xung quanh: trung tâm văn hóa, quảng trường, công viên nghệ thuật.",
+                  "Cảnh quan: sân lát đá, cây trang trí, ánh sáng trung tính."
+                ]
+              },
+              {
+                "title": "5. NHÓM NGHỈ DƯỠNG & GIẢI TRÍ",
+                "items": [
+                  "Villa biển / Nhà ven biển",
+                  "Môi trường xung quanh: bờ biển, hàng dừa, cát trắng, sóng nhẹ.",
+                  "Cảnh quan: bể bơi vô cực, sân thượng hướng biển, ghế nằm, ánh nắng vàng.",
+                  "Nhà nghỉ núi",
+                  "Môi trường xung quanh: sườn đồi, rừng thông, sương sớm, đá tự nhiên.",
+                  "Cảnh quan: lối đi lát đá, lửa trại, view núi, rừng xanh.",
+                  "Glamping / Lều cắm trại",
+                  "Môi trường xung quanh: rừng, thung lũng, hồ nhỏ, bãi cỏ.",
+                  "Cảnh quan: lều, bàn picnic, ánh lửa trại, cây cối xung quanh."
+                ]
+              },
+              {
+                "title": "6. NHÓM CÔNG NGHIỆP & SÁNG TẠO",
+                "items": [
+                  "Loft / Studio nhà kho",
+                  "Môi trường xung quanh: khu công nghiệp cũ, xưởng cải tạo, không gian công nghiệp.",
+                  "Cảnh quan: tường gạch thô, cửa sắt, khung thép, đèn treo công nghiệp.",
+                  "Studio ảnh / Phim trường",
+                  "Môi trường xung quanh: không gian trống, nhà kho, khu sáng tạo.",
+                  "Cảnh quan: phông nền, đèn studio, thiết bị quay phim, tường nền trắng."
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "materialFilter": {
+      "title": "Vật liệu ứng dụng",
+      "placeholder": "ví dụ: Sàn gỗ sồi sáng tự nhiên, bề mặt bán bóng, phản sáng trung bình.",
+      "note": "Chọn theo gợi ý Bộ lọc bên dưới hoặc Tự mô tả.",
+      "promptPrefix": "Sử dụng vật liệu trong nội thất như sau:",
+      "common": {
+        "materialTypeLabel": "Loại vật liệu",
+        "surfaceLabel": "bề mặt",
+        "reflectionLabel": "phản sáng",
+        "selectPlaceholder": "Chọn một tùy chọn"
+      },
+      "floor": {
+        "title": "Sàn",
+        "label": "Sàn",
+        "materialTypes": ["Gỗ sồi sáng tự nhiên", "Gỗ óc chó", "Gỗ công nghiệp", "Đá Marble", "Đá Granite", "Gạch Ceramic", "Gạch Terrazzo", "Bê tông mài", "Vinyl", "Thảm"],
+        "surfaces": ["Mờ (Matte)", "Bán bóng (Semi-gloss)", "Bóng (Glossy)", "Bóng cao (High-gloss)", "Nhám (Textured)"],
+        "reflections": ["Phản sáng thấp", "Phản sáng trung bình", "Phản sáng cao"]
+      },
+      "wall": {
+        "title": "Tường",
+        "label": "Tường",
+        "materialTypes": ["Sơn trắng mờ", "Ốp gỗ", "Bê tông trần", "Đá tự nhiên", "Gạch men", "Gạch thô", "Giấy dán tường", "Tấm nỉ", "Kính", "Veneer gỗ"],
+        "surfaces": ["Mờ (Matte)", "Mờ mịn (Smooth Matte)", "Satin", "Bán bóng (Semi-gloss)"],
+        "reflections": ["Phản sáng thấp", "Khuếch tán mềm", "Phản sáng trung bình"]
+      },
+      "ceiling": {
+        "title": "Trần",
+        "label": "Trần",
+        "materialTypes": ["Sơn trắng mờ", "Bê tông", "Trần thạch cao", "Veneer gỗ", "Tấm gỗ", "Kim loại sơn trắng"],
+        "surfaces": ["Mờ (Matte)", "Mờ mềm (Soft Matte)", "Bán bóng (Semi-gloss)"],
+        "reflections": ["Phản sáng thấp", "Khuếch tán mềm"]
+      },
+      "furniture": {
+        "title": "Nội thất",
+        "label": "Nội thất",
+        "materialTypes": ["Gỗ óc chó", "Gỗ sồi sáng", "Da tự nhiên", "Da công nghiệp", "Vải lanh", "Vải nỉ", "Kim loại", "Kính", "Đá Marble"],
+        "surfaces": ["Mờ (Matte)", "Bán bóng (Semi-gloss)", "Bóng (Glossy)", "Bóng cao (High-gloss)"],
+        "reflections": ["Khuếch tán mềm", "Phản sáng trung bình", "Phản sáng cao"]
+      },
+      "decor": {
+        "title": "Trang trí",
+        "label": "Trang trí",
+        "materialTypes": ["Kim loại đồng", "Inox xước", "Kính mờ", "Đá Onyx", "Gốm sứ", "Acrylic", "Resin"],
+        "reflections": ["Phản sáng cao", "Sắc nét", "Phản xạ ấm"]
+      }
+    },
+    "outputImageSuggestionModal": {
+      "title": "💡 GỢI Ý SỬ DỤNG",
+      "subtitle": "🎨 CÁC “BỘ LỌC” PHONG CÁCH ẢNH KIẾN TRÚC THƯỜNG DÙNG",
+      "table": {
+        "headers": ["Loại phong cách", "Từ khóa gợi ý", "Hiệu ứng ảnh", "Khi nào dùng"],
+        "rows": [
+          { "style": "🏙 Realistic / Photographic", "keywords": "realistic photo, shot on full-frame camera, natural lighting", "effect": "Màu trung tính, ánh sáng đời thực, vật liệu chân thực", "usage": "Mô phỏng công trình đã hoàn thiện, hồ sơ kỹ thuật" },
+          { "style": "✨ Hyper-realistic / Ultra-detailed", "keywords": "hyper-realistic render, 8K, ultra-high detail, cinematic lighting", "effect": "Ánh sáng ấn tượng, vật liệu hoàn hảo, hiệu ứng “wow”", "usage": "Phối cảnh quảng cáo, concept cao cấp" },
+          { "style": "🎬 Cinematic / Film", "keywords": "cinematic color tone, film still, volumetric light, anamorphic lens", "effect": "Ánh sáng kiểu phim, tương phản mạnh, không khí nghệ thuật", "usage": "Video, flycam, phối cảnh kể chuyện" },
+          { "style": "🌤 Conceptual / Artistic", "keywords": "concept art, digital painting, stylized architecture", "effect": "Màu sắc phi thực tế, nét vẽ mềm, ánh sáng phi vật lý", "usage": "Giai đoạn concept, phác thảo ý tưởng" },
+          { "style": "💎 Architectural Render / CGI", "keywords": "3D render, V-Ray style, ray-traced lighting", "effect": "Trông như render from phần mềm 3D, sạch, vật liệu chính xác", "usage": "Trình bày thiết kế nội/ngoại thất" },
+          { "style": "🌿 Natural Lighting / Environmental", "keywords": "soft natural light, morning atmosphere, environmental tone", "effect": "Ánh sáng mềm, bóng đổ dịu, tone màu nhẹ nhàng", "usage": "Mô phỏng công trình sinh thái, công trình xanh" },
+          { "style": "🌿 Natural Lighting / Environmental", "keywords": "soft natural light, morning atmosphere, environmental tone", "effect": "Ánh sáng mềm, bóng đổ dịu, tone màu nhẹ nhàng", "usage": "Mô phỏng công trình sinh thái, công trình xanh" },
+          { "style": "🌙 Night Scene / Twilight", "keywords": "night photo, blue hour, warm lights, reflections", "effect": "Ánh sáng vàng ấm, phản chiếu kính, trời tím xanh", "usage": "Công trình có thiết kế chiếu sáng, quảng cáo buổi tối" },
+          { "style": "🚁 Aerial / Drone / Flycam", "keywords": "aerial view, drone perspective, high-angle shot", "effect": "Góc nhìn tổng thể, phối cảnh khu đất", "usage": "Quy hoạch tổng thể, biệt thự, quy hoạch" },
+          { "style": "🏗 Under Construction / Site Scene", "keywords": "under construction, raw materials, scaffolding", "effect": "Công trường, xi măng, cốt thép, công nhân", "usage": "Báo cáo tiến độ, ảnh hiện trạng" },
+          { "style": "☁️ Minimalist / Clean Composition", "keywords": "minimalist composition, clean lighting, simple background", "effect": "Phẳng, sáng, ít chi tiết thừa", "usage": "Ảnh catalog, trình bày vật liệu, nghiên cứu hình khối" },
+          { "style": "🔲 Magazine Style / Editorial", "keywords": "architectural digest magazine photo, editorial lighting", "effect": "Như tạp chí kiến trúc, sang trọng", "usage": "Hồ sơ năng lực, brochure" },
+          { "style": "🕊 Cinematic Naturalism", "keywords": "realistic yet cinematic, balanced light, film tone", "effect": "Cân bằng giữa thật và nghệ thuật", "usage": "Khi muốn ảnh vừa đẹp, vừa đáng tin" },
+          { "style": "☀️ Golden Hour / Sunset Mood", "keywords": "golden hour light, warm shadows, cinematic sun", "effect": "Ánh sáng hoàng hôn, cảm xúc, lung linh", "usage": "Biệt thự, resort, phối cảnh nghệ thuật" },
+          { "style": "🌫 Atmospheric / Foggy / Moody", "keywords": "foggy morning, atmospheric light, deep haze", "effect": "Sương mù, không khí dày, chiều sâu", "usage": "Ảnh cảm xúc, concept ngoại thất" },
+          { "style": "🪞 Reflective / Glass Emphasis", "keywords": "glass reflection, metal reflection, HDR lighting", "effect": "Phản xạ mạnh trên kính và kim loại", "usage": "Công trình hiện đại, tháp kính" }
+        ]
+      },
+      "exampleTitle": "VÍ DỤ: 🏡 Chủ đề chung:",
+      "exampleTopic": "Một biệt thự vườn Nhiệt đới hiện đại 2 tầng, mặt tiền kính và gỗ teak tự nhiên, bao quanh bởi tiểu cảnh nước và cây xanh.",
+      "examples": [
+        { "title": "1. Ảnh thực tế (Realistic Photo)", "prompt": "Một bức ảnh thực tế của dự án biệt thự vườn Nhiệt đới hiện đại, chụp bằng máy ảnh full-frame, góc rộng, ánh sáng tự nhiên buổi sáng sớm, vật liệu chân thực gồm kính trong và gỗ teak, màu sắc trung tính, trong môi trường đô thị xanh yên tĩnh.", "result": "Kết quả: Ảnh trông như cảnh đời thực, ánh sáng mềm, vật liệu tự nhiên." },
+        { "title": "2. Render siêu thực (Hyper-realistic)", "prompt": "Một bản render siêu thực của biệt thự vườn Nhiệt đới hiện đại, ánh sáng hoàng hôn, phản xạ mạnh, 8K ultra-high detail, phản chiếu mặt nước, cây xanh sống động, chất lượng điện ảnh.", "result": "Kết quả: Đẹp ấn tượng, tone vàng cam, hiệu ứng “wow”, như render quảng cáo." },
+        { "title": "3. Điện ảnh (Cinematic)", "prompt": "Một cảnh điện ảnh của biệt thự vườn Nhiệt đới hiện đại, ánh sáng khối (volumetric light) xuyên qua cây, tone màu phim, ống kính anamorphic, không khí ấm áp và sang trọng.", "result": "Kết quả: Trông như một khung hình trong phim, ánh sáng mờ ảo, chiều sâu mạnh." },
+        { "title": "4. Render kiến trúc (CGI)", "prompt": "Một phối cảnh render 3D của biệt thự vườn Nhiệt đới, ánh sáng ban ngày, render kiểu V-Ray, ánh sáng ray-traced, texture vật liệu chi tiết và phản xạ chân thực.", "result": "Kết quả: Trông như ảnh xuất from 3ds Max, rất sạch và cân bằng." },
+        { "title": "5. Ánh sáng tự nhiên (Environmental)", "prompt": "Biệt thự vườn Nhiệt đới trong ánh sáng tự nhiên buổi sáng, tone màu dịu, gió nhẹ, bóng cây mềm, một khung cảnh yên tĩnh và trong lành.", "result": "Kết quả: Tone màu dịu, sáng, gần gũi, for cảm giác sinh thái." },
+        { "title": "6. Cảnh đêm (Night / Twilight)", "prompt": "Biệt thự vườn Nhiệt đới ban đêm, ánh sáng vàng ấm from nội thất, phản chiếu trên mặt nước, bầu trời tím xanh, ánh sáng khuếch tán mềm.", "result": "Kết quả: Rất đẹp for cảnh đêm, có sự tương phản nóng-lạnh." },
+        { "title": "7. Đang thi công (Under Construction)", "prompt": "Dự án biệt thự vườn Nhiệt đới hiện đại đang thi công, khung thép, giàn giáo, công nhân, nền đất và vật liệu chân thực, ánh sáng tự nhiên giữa trưa.", "result": "Kết quả: Ảnh công trường sống động, mô phỏng chân thực quá trình xây dựng." },
+        { "title": "8. Tối giản / Sạch (Minimalist / Clean)", "prompt": "Biệt thự vườn Nhiệt đới hiện đại, bố cục tối giản, ánh sáng đều, nền sáng sạch, nhấn mạnh hình khối kiến trúc và vật liệu gỗ-kính.", "result": "Kết quả: Rất hợp for ảnh hồ sơ năng lực, tạp chí kiến trúc." },
+        { "title": "9. Tạp chí (Magazine / Editorial)", "prompt": "Ảnh kiểu tạp chí kiến trúc của biệt thự vườn Nhiệt đới hiện đại, ánh sáng studio kết hợp daylight, tone màu sang trọng, khung hình cân đối, hậu kỳ nhẹ.", "result": "Kết quả: Đẹp kiểu tạp chí Architectural Digest, ánh sáng tinh tế." },
+        { "title": "10. Giờ vàng (Golden Hour)", "prompt": "Biệt thự vườn Nhiệt đới trong ánh sáng giờ vàng, bóng đổ dài, phản chiếu vàng óng trên kính và gỗ teak, không khí ấm áp và lãng mạn.", "result": "Kết quả: Cảm xúc, nghệ thuật cao, rất đẹp for poster." },
+        { "title": "11. Không khí / Sương mù (Atmospheric / Foggy)", "prompt": "Biệt thự vườn Nhiệt đới trong sương sớm, ánh sáng mờ ảo, cây cối ẩm ướt, phản chiếu hồ nước mờ, không khí tĩnh lặng và sâu lắng.", "result": "Kết quả: Gợi cảm giác “dreamy”, rất điện ảnh và tự nhiên." },
+        { "title": "12. Tự nhiên điện ảnh (Cinematic Naturalism - mix giữa thật và phim)", "prompt": "Một bức ảnh điện ảnh nhưng tự nhiên của biệt thự vườn Nhiệt đới hiện đại, ánh sáng buổi sáng, tương phản mềm, tone màu phim nhẹ, vật liệu chân thực.", "result": "Kết quả: Đẹp kiểu phim nhưng vẫn tin là ảnh thật — rất cân bằng." }
+      ],
+      "conclusion": ""
+    }
+  },
+  "designStyles": [
+    "Hiện đại",
+    "Hiện đại – Nhiệt đới",
+    "Tân cổ điển",
+    "Phong cách châu Âu",
+    "Bắc Âu",
+    "Nhật Bản",
+    "Đông Dương",
+    "Wabi-Sabi",
+    "Pháp",
+    "Địa Trung Hải",
+    "Tân Trung Hoa",
+    "Đương đại",
+    "Nhà nông trại",
+    "Công nghiệp & Nghệ thuật",
+    "Sinh thái & Bền vững",
+    "Nhà ở bản địa & Tự nhiên",
+    "Nông thôn truyền thống Việt Nam",
+    "Địa Trung Hải / Santorini",
+    "Nghệ thuật Deco / Cổ điển",
+    "Gothic",
+    "Romanesque",
+    "Santorini",
+    "Byzantine",
+    "Ấn Độ truyền thống",
+    "Hiện đại nhiệt đới Ấn Độ",
+    "Ấn Độ tâm linh",
+    "Mughal Ấn Độ",
+    "Ả Rập truyền thống",
+    "Ma-rốc",
+    "Ả Rập sang trọng – Phong cách Dubai",
+    "Ả Rập sa mạc hiện đại",
+    "Cổ điển Hồi giáo Ả Rập"
+  ],
+  "layoutAdherenceOptions": [
+    "Tuân thủ nghiêm ngặt",
+    "Tuân thủ vừa phải",
+    "Giải thích lỏng lẻo"
+  ],
+  "outputDrawingOptions": [
+    "Lựa chọn kiểu Bản vẽ",
+    "Đổ màu mặt bằng 2D",
+    "Chuyển đổi bản vẽ 2D sang góc nhìn from trên xuống 3D"
+  ],
+  "pagination": {
+    "previous": "Trang trước",
+    "next": "Trang sau",
+    "page": "Trang {{currentPage}} / {{totalPages}}"
+  },
+"imageEditor": {
+  "title": "Trình chỉnh sửa ảnh",
+  "reset": "Đặt lại",
+  "exposure": "Phơi sáng",
+  "contrast": "Tương phản",
+  "saturation": "Bão hòa",
+  "vibrance": "Sắc độ tự nhiên",
+  "temperature": "Nhiệt độ màu",
+  "tint": "Ánh xanh / hồng",
+  "highlights": "Vùng sáng",
+  "shadows": "Bóng tối",
+  "clarity": "Độ trong",
+  "sharpness": "Độ nét",
+  "dehaze": "Khử mù",
+  "sepia": "Tông nâu cổ điển",
+  "invert": "Đảo màu",
+  "hue": "Điều chỉnh sắc độ",
+  "blur": "Làm mờ",
+  "grain": "Nhiễu hạt",
+  "vignette": "Viền tối",
+  "crop": "Cắt ảnh",
+  "rotate": "Xoay ảnh",
+  "flip": "Lật ảnh",
+  "filter": "Bộ lọc màu",
+  "preset": "Phong cách",
+  "save": "Lưu ảnh",
+  "saving": "Đang lưu..."
+}
+}

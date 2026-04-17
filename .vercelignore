@@ -1,0 +1,4 @@
+# Ignore backend server code during frontend Vercel deployment
+server/
+railway.json
+*.md
