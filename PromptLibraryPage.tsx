@@ -728,7 +728,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
             {currentItems.map((item, index) => (
-              <div key={index} onClick={() => setSelectedItem(item)} className="group bg-[#2a303c] rounded-xl overflow-hidden shadow-lg border border-slate-700 hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col">
+              <div key={index} onClick={() => { setSelectedItem(item); setHoveredThumbnail(null); }} className="group bg-[#2a303c] rounded-xl overflow-hidden shadow-lg border border-slate-700 hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col">
                 <div 
                   className="h-48 w-full relative overflow-hidden"
                   onMouseEnter={() => setHoveredThumbnail(item.imageUrl)}
@@ -773,7 +773,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           {libraryCards.map((card, index) => (
             <div 
               key={index} 
-              onClick={() => setSelectedCategory(card.title)}
+              onClick={() => { setSelectedCategory(card.title); setHoveredThumbnail(null); }}
               className="group relative bg-[#2a303c] rounded-2xl overflow-hidden shadow-lg border border-slate-700 hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl cursor-pointer"
               onMouseEnter={() => setHoveredThumbnail(card.imageUrl)}
               onMouseLeave={() => setHoveredThumbnail(null)}
