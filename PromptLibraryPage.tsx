@@ -879,7 +879,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       <Footer />
 
       {/* Hover Preview Popup */}
-      {hoveredThumbnail && (
+      {hoveredThumbnail && !selectedItem && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center pointer-events-none bg-black/20 backdrop-blur-sm animate-fade-in">
           <img 
             src={hoveredThumbnail} 
