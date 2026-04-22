@@ -1,4 +1,3 @@
-
 {
   "header": {
     "home": "HOME - F9 Rendering Apps",
@@ -419,41 +418,98 @@
         "buildingLocations": {
           "residential": {
             "title": "Residential",
-            "options": ["Apartment", "Townhouse", "Villa", "Garden House", "Penthouse/Duplex", "Resort Villa", "Homestay/Bungalow", "Traditional/Ancient House"]
+            "options": [
+              "Apartment",
+              "Townhouse",
+              "Villa",
+              "Garden House",
+              "Penthouse/Duplex",
+              "Resort Villa",
+              "Homestay/Bungalow",
+              "Traditional/Ancient House"
+            ]
           },
           "work": {
             "title": "Work",
-            "options": ["Modern Office", "Creative Studio", "Coworking Space", "Home Office"]
+            "options": [
+              "Modern Office",
+              "Creative Studio",
+              "Coworking Space",
+              "Home Office"
+            ]
           },
           "commercial": {
             "title": "Commercial",
-            "options": ["Restaurant/Cafe", "Showroom/Shop", "Hotel Lobby", "Spa/Wellness", "Salon", "Gym/Fitness"]
+            "options": [
+              "Restaurant/Cafe",
+              "Showroom/Shop",
+              "Hotel Lobby",
+              "Spa/Wellness",
+              "Salon",
+              "Gym/Fitness"
+            ]
           },
           "public": {
             "title": "Public & Education",
-            "options": ["Library", "School/Classroom", "Museum/Gallery"]
+            "options": [
+              "Library",
+              "School/Classroom",
+              "Museum/Gallery"
+            ]
           },
           "leisure": {
             "title": "Leisure",
-            "options": ["Beach House", "Mountain Retreat", "Glamping Hut"]
+            "options": [
+              "Beach House",
+              "Mountain Retreat",
+              "Glamping Hut"
+            ]
           },
           "creative": {
             "title": "Creative",
-            "options": ["Loft/Warehouse Studio", "Photo/Film Set"]
+            "options": [
+              "Loft/Warehouse Studio",
+              "Photo/Film Set"
+            ]
           }
         },
         "viewDirections": {
           "nature": {
             "title": "Nature Views",
-            "options": ["Garden", "Pool/Water", "River", "Sea", "Mountain", "Fields", "Forest", "Sky"]
+            "options": [
+              "Garden",
+              "Pool/Water",
+              "River",
+              "Sea",
+              "Mountain",
+              "Fields",
+              "Forest",
+              "Sky"
+            ]
           },
           "urban": {
             "title": "Urban Views",
-            "options": ["Street", "City Skyline", "Residential Area", "Park", "Commercial Zone/Shophouses", "Alley"]
+            "options": [
+              "Street",
+              "City Skyline",
+              "Residential Area",
+              "Park",
+              "Commercial Zone/Shophouses",
+              "Alley"
+            ]
           },
           "special": {
             "title": "Special Views",
-            "options": ["No Window", "Dual Open Views", "Skylight", "Balcony/Loggia", "Patio", "Corridor", "Aquarium", "Adjacent Wall"]
+            "options": [
+              "No Window",
+              "Dual Open Views",
+              "Skylight",
+              "Balcony/Loggia",
+              "Patio",
+              "Corridor",
+              "Aquarium",
+              "Adjacent Wall"
+            ]
           }
         }
       },
@@ -616,7 +672,6 @@
           ]
         }
       },
-	  
       "timeAndClimate": {
         "title": "Time and Climate",
         "exampleLabel": "Example: Time: Early summer morning, clear sky. Fresh air, soft natural light streaming in from the left window.",
@@ -642,7 +697,7 @@
             "The night was clear, the air cool, the ambient light dim, and it felt peaceful."
           ]
         },
-		 "timeOfDay": {
+        "timeOfDay": {
           "title": "Thời gian trong ngày",
           "options": [
             "Early morning, soft, slightly bluish light, cool tones, soft shadows, light mist.",
@@ -1221,19 +1276,52 @@
         {
           "title": "🧭 1️⃣ True Objective of this Filter",
           "content": "Helps AI understand framing intent: whether you want overview – details – highlights – emotion – material\nrather than just 're-rendering the space'.\nWhen AI receives a base image + JSON style, it analyzes physics + tone + materials,\nbut without a perspective guide, it might render random layouts.\nComposition guides tell the AI:",
-          "points": ["Where to place the camera", "What to focus on", "Maintain proper perspective ratios", "Convey authentic photographic emotion"]
+          "points": [
+            "Where to place the camera",
+            "What to focus on",
+            "Maintain proper perspective ratios",
+            "Convey authentic photographic emotion"
+          ]
         },
         {
           "title": "🎯 2️⃣ When to use this filter",
           "table": {
-            "headers": ["Situation", "Use?", "Purpose"],
+            "headers": [
+              "Situation",
+              "Use?",
+              "Purpose"
+            ],
             "rows": [
-              ["Overall render (living room, lobby, showroom)", "✅ Yes", "Use 'Wide angle' or 'High-view panorama'"],
-              ["Detail render (decor, materials, furniture)", "✅ Yes", "Use 'Detail close-up', 'Material focus', 'Highlighted light'"],
-              ["Style/Emotional shots (cinematic, branding)", "✅ Recommended", "Use 'Mirror reflection', 'Logo detail', 'Strong mood'"],
-              ["Technical/Layout shots", "✅ Essential", "Use 'Bird’s-eye view' or 'Entrance frontal 24mm'"],
-              ["Still render – no people", "⚙️ Optional", "Use 'Eye-level' for natural look"],
-              ["Storytelling – with people/action", "✅ Recommended", "Helps AI choose correct camera height"]
+              [
+                "Overall render (living room, lobby, showroom)",
+                "✅ Yes",
+                "Use 'Wide angle' or 'High-view panorama'"
+              ],
+              [
+                "Detail render (decor, materials, furniture)",
+                "✅ Yes",
+                "Use 'Detail close-up', 'Material focus', 'Highlighted light'"
+              ],
+              [
+                "Style/Emotional shots (cinematic, branding)",
+                "✅ Recommended",
+                "Use 'Mirror reflection', 'Logo detail', 'Strong mood'"
+              ],
+              [
+                "Technical/Layout shots",
+                "✅ Essential",
+                "Use 'Bird’s-eye view' or 'Entrance frontal 24mm'"
+              ],
+              [
+                "Still render – no people",
+                "⚙️ Optional",
+                "Use 'Eye-level' for natural look"
+              ],
+              [
+                "Storytelling – with people/action",
+                "✅ Recommended",
+                "Helps AI choose correct camera height"
+              ]
             ]
           }
         }
@@ -1247,24 +1335,96 @@
       "groups": [
         {
           "title": "🧩 Group 1: Bright – Natural – Elegant",
-          "headers": ["#", "Tone Name", "Detail Description", "Suggested Kelvin", "Application"],
+          "headers": [
+            "#",
+            "Tone Name",
+            "Detail Description",
+            "Suggested Kelvin",
+            "Application"
+          ],
           "rows": [
-            ["1️⃣", "Soft Bright – Natural", "Light wood, white, beige; neutral light; relaxing, clean space.", "5000K", "Scandinavian, Minimal, Japandi"],
-            ["2️⃣", "Neutral – Modern", "White gray beige, matte and satin surfaces; balanced light/shadow.", "4800K", "Modern, Urban, Neo Classic"],
-            ["3️⃣", "Bright Fresh", "Light wood, daylight; fresh and energetic atmosphere.", "5200K", "Nordic, Tropical, Contemporary"],
-            ["4️⃣", "Modern Neutral", "Light stone, beige wood, 5000K daylight; balanced modern look.", "5000K", "Modern Vietnam, Apartment"],
-            ["5️⃣", "Pure White", "Full white, strong daylight, even reflections; pure and clean.", "5500K", "Minimal, Gallery, Studio"]
+            [
+              "1️⃣",
+              "Soft Bright – Natural",
+              "Light wood, white, beige; neutral light; relaxing, clean space.",
+              "5000K",
+              "Scandinavian, Minimal, Japandi"
+            ],
+            [
+              "2️⃣",
+              "Neutral – Modern",
+              "White gray beige, matte and satin surfaces; balanced light/shadow.",
+              "4800K",
+              "Modern, Urban, Neo Classic"
+            ],
+            [
+              "3️⃣",
+              "Bright Fresh",
+              "Light wood, daylight; fresh and energetic atmosphere.",
+              "5200K",
+              "Nordic, Tropical, Contemporary"
+            ],
+            [
+              "4️⃣",
+              "Modern Neutral",
+              "Light stone, beige wood, 5000K daylight; balanced modern look.",
+              "5000K",
+              "Modern Vietnam, Apartment"
+            ],
+            [
+              "5️⃣",
+              "Pure White",
+              "Full white, strong daylight, even reflections; pure and clean.",
+              "5500K",
+              "Minimal, Gallery, Studio"
+            ]
           ]
         },
         {
           "title": "🧩 Group 2: Warm – Luxury – Emotional",
-          "headers": ["#", "Tone Name", "Detail Description", "Suggested Kelvin", "Application"],
+          "headers": [
+            "#",
+            "Tone Name",
+            "Detail Description",
+            "Suggested Kelvin",
+            "Application"
+          ],
           "rows": [
-            ["6️⃣", "Luxury Warm", "Walnut wood, light stone, gold; 3500K light; cinematic and high-end.", "3500K", "Luxury, Penthouse, Hotel"],
-            ["7️⃣", "Natural Cozy", "Wood, linen, 4500K light; soft and intimate feel.", "4500K", "Japandi, Homestay, Spa"],
-            ["8️⃣", "Classic Warm", "Leather, felt, light stone, amber light; deep and sophisticated.", "3500K", "Classic, Boutique, Lobby"],
-            ["9️⃣", "Indochine Heritage", "Dark wood, soft yellow light, turquoise accents; nostalgic luxury.", "3700K", "Indochine, Cafe, Villa"],
-            ["10️⃣", "Dark Luxury", "Dark wood, dark stone, brass; 3000K light; mysterious and deep.", "3000K", "Bar, Lounge, High-end"]
+            [
+              "6️⃣",
+              "Luxury Warm",
+              "Walnut wood, light stone, gold; 3500K light; cinematic and high-end.",
+              "3500K",
+              "Luxury, Penthouse, Hotel"
+            ],
+            [
+              "7️⃣",
+              "Natural Cozy",
+              "Wood, linen, 4500K light; soft and intimate feel.",
+              "4500K",
+              "Japandi, Homestay, Spa"
+            ],
+            [
+              "8️⃣",
+              "Classic Warm",
+              "Leather, felt, light stone, amber light; deep and sophisticated.",
+              "3500K",
+              "Classic, Boutique, Lobby"
+            ],
+            [
+              "9️⃣",
+              "Indochine Heritage",
+              "Dark wood, soft yellow light, turquoise accents; nostalgic luxury.",
+              "3700K",
+              "Indochine, Cafe, Villa"
+            ],
+            [
+              "10️⃣",
+              "Dark Luxury",
+              "Dark wood, dark stone, brass; 3000K light; mysterious and deep.",
+              "3000K",
+              "Bar, Lounge, High-end"
+            ]
           ]
         }
       ],
@@ -1277,7 +1437,7 @@
     },
     "suggestionModal": {
       "title": "💡 USAGE SUGGESTIONS",
-           "situationHeader": "Situation",
+      "situationHeader": "Situation",
       "situationTable": {
         "headers": {
           "situation": "Situation",
@@ -1400,11 +1560,26 @@
             "explanation": "Explanation"
           },
           "rows": [
-            { "rule": "≤ 3 groups at once", "explanation": "2 is best, 3 is max. More than 4 groups → cluttered photo." },
-            { "rule": "Always 1 warm + 1 cool material", "explanation": "Balanced reflection (e.g. wood + stone)." },
-            { "rule": "If using glass → don't choose too shiny stone", "explanation": "Avoid overlapping reflections." },
-            { "rule": "Don't choose >1 high reflective material at once", "explanation": "AI will process light wrongly (mirror + glass + shiny stone = HDR burn)." },
-            { "rule": "Keep main tone consistent", "explanation": "If warm tone (wood, beige, cream) → avoid black stone or too cold stainless steel." }
+            {
+              "rule": "≤ 3 groups at once",
+              "explanation": "2 is best, 3 is max. More than 4 groups → cluttered photo."
+            },
+            {
+              "rule": "Always 1 warm + 1 cool material",
+              "explanation": "Balanced reflection (e.g. wood + stone)."
+            },
+            {
+              "rule": "If using glass → don't choose too shiny stone",
+              "explanation": "Avoid overlapping reflections."
+            },
+            {
+              "rule": "Don't choose >1 high reflective material at once",
+              "explanation": "AI will process light wrongly (mirror + glass + shiny stone = HDR burn)."
+            },
+            {
+              "rule": "Keep main tone consistent",
+              "explanation": "If warm tone (wood, beige, cream) → avoid black stone or too cold stainless steel."
+            }
           ]
         }
       },
@@ -1757,76 +1932,290 @@
       "floor": {
         "title": "Floor",
         "label": "Floor",
-        "materialTypes": ["Natural Light Oak", "Walnut", "Engineered Wood", "Marble", "Granite", "Ceramic Tile", "Terrazzo", "Polished Concrete", "Vinyl", "Carpet"],
-        "surfaces": ["Matte", "Semi-gloss", "Glossy", "High-gloss", "Textured"],
-        "reflections": ["Low reflection", "Medium reflection", "High reflection"]
+        "materialTypes": [
+          "Natural Light Oak",
+          "Walnut",
+          "Engineered Wood",
+          "Marble",
+          "Granite",
+          "Ceramic Tile",
+          "Terrazzo",
+          "Polished Concrete",
+          "Vinyl",
+          "Carpet"
+        ],
+        "surfaces": [
+          "Matte",
+          "Semi-gloss",
+          "Glossy",
+          "High-gloss",
+          "Textured"
+        ],
+        "reflections": [
+          "Low reflection",
+          "Medium reflection",
+          "High reflection"
+        ]
       },
       "wall": {
         "title": "Wall",
         "label": "Wall",
-        "materialTypes": ["Matte White Paint", "Wood Paneling", "Exposed Concrete", "Natural Stone", "Tiles", "Raw Brick", "Wallpaper", "Felt Panels", "Glass", "Wood Veneer"],
-        "surfaces": ["Matte", "Smooth Matte", "Satin", "Semi-gloss"],
-        "reflections": ["Low reflection", "Soft diffusion", "Medium reflection"]
+        "materialTypes": [
+          "Matte White Paint",
+          "Wood Paneling",
+          "Exposed Concrete",
+          "Natural Stone",
+          "Tiles",
+          "Raw Brick",
+          "Wallpaper",
+          "Felt Panels",
+          "Glass",
+          "Wood Veneer"
+        ],
+        "surfaces": [
+          "Matte",
+          "Smooth Matte",
+          "Satin",
+          "Semi-gloss"
+        ],
+        "reflections": [
+          "Low reflection",
+          "Soft diffusion",
+          "Medium reflection"
+        ]
       },
       "ceiling": {
         "title": "Ceiling",
         "label": "Ceiling",
-        "materialTypes": ["Matte White Paint", "Concrete", "Gypsum Board", "Wood Veneer", "Wood Planks", "White Painted Metal"],
-        "surfaces": ["Matte", "Soft Matte", "Semi-gloss"],
-        "reflections": ["Low reflection", "Soft diffusion"]
+        "materialTypes": [
+          "Matte White Paint",
+          "Concrete",
+          "Gypsum Board",
+          "Wood Veneer",
+          "Wood Planks",
+          "White Painted Metal"
+        ],
+        "surfaces": [
+          "Matte",
+          "Soft Matte",
+          "Semi-gloss"
+        ],
+        "reflections": [
+          "Low reflection",
+          "Soft diffusion"
+        ]
       },
       "furniture": {
         "title": "Furniture",
         "label": "Furniture",
-        "materialTypes": ["Walnut", "Light Oak", "Natural Leather", "Faux Leather", "Linen", "Velvet", "Metal", "Glass", "Marble"],
-        "surfaces": ["Matte", "Semi-gloss", "Glossy", "High-gloss"],
-        "reflections": ["Soft diffusion", "Medium reflection", "High reflection"]
+        "materialTypes": [
+          "Walnut",
+          "Light Oak",
+          "Natural Leather",
+          "Faux Leather",
+          "Linen",
+          "Velvet",
+          "Metal",
+          "Glass",
+          "Marble"
+        ],
+        "surfaces": [
+          "Matte",
+          "Semi-gloss",
+          "Glossy",
+          "High-gloss"
+        ],
+        "reflections": [
+          "Soft diffusion",
+          "Medium reflection",
+          "High reflection"
+        ]
       },
       "decor": {
         "title": "Decor",
         "label": "Decor",
-        "materialTypes": ["Brass/Copper", "Brushed Stainless Steel", "Frosted Glass", "Onyx", "Ceramic", "Acrylic", "Resin"],
-        "reflections": ["High reflection", "Sharp", "Warm reflection"]
+        "materialTypes": [
+          "Brass/Copper",
+          "Brushed Stainless Steel",
+          "Frosted Glass",
+          "Onyx",
+          "Ceramic",
+          "Acrylic",
+          "Resin"
+        ],
+        "reflections": [
+          "High reflection",
+          "Sharp",
+          "Warm reflection"
+        ]
       }
     },
     "outputImageSuggestionModal": {
       "title": "💡 USAGE SUGGESTIONS",
       "subtitle": "🎨 COMMON ARCHITECTURAL PHOTO STYLE \"FILTERS\"",
       "table": {
-        "headers": ["Style Type", "Suggested Keywords", "Photo Effect", "When to Use"],
+        "headers": [
+          "Style Type",
+          "Suggested Keywords",
+          "Photo Effect",
+          "When to Use"
+        ],
         "rows": [
-          { "style": "🏙 Realistic / Photographic", "keywords": "realistic photo, shot on full-frame camera, natural lighting", "effect": "Neutral colors, real life light, realistic materials", "usage": "Simulate finished building, technical profile" },
-          { "style": "✨ Hyper-realistic / Ultra-detailed", "keywords": "hyper-realistic render, 8K, ultra-high detail, cinematic lighting", "effect": "Impressive light, perfect materials, \"wow\" effect", "usage": "Advertising perspective, high-end concept" },
-          { "style": "🎬 Cinematic / Film", "keywords": "cinematic color tone, film still, volumetric light, anamorphic lens", "effect": "Film style light, strong contrast, artistic atmosphere", "usage": "Video, flycam, storytelling perspective" },
-          { "style": "🌤 Conceptual / Artistic", "keywords": "concept art, digital painting, stylized architecture", "effect": "Unrealistic colors, soft strokes, non-physical light", "usage": "Concept stage, idea sketching" },
-          { "style": "💎 Architectural Render / CGI", "keywords": "3D render, V-Ray style, ray-traced lighting", "effect": "Looks like render from 3D software, clean, accurate materials", "usage": "Present interior/exterior design" },
-          { "style": "🌿 Natural Lighting / Environmental", "keywords": "soft natural light, morning atmosphere, environmental tone", "effect": "Soft light, gentle shadows, soft color tone", "usage": "Simulate ecological building, green building" },
-          { "style": "🌙 Night Scene / Twilight", "keywords": "night photo, blue hour, warm lights, reflections", "effect": "Warm yellow light, glass reflection, purple blue sky", "usage": "Building with lighting design, evening advertisement" },
-          { "style": "🚁 Aerial / Drone / Flycam", "keywords": "aerial view, drone perspective, high-angle shot", "effect": "Overall view, land perspective", "usage": "Master planning, villa, planning" },
-          { "style": "🏗 Under Construction / Site Scene", "keywords": "under construction, raw materials, scaffolding", "effect": "Construction site, cement, reinforced concrete, workers", "usage": "Progress report, current status photo" },
-          { "style": "☁️ Minimalist / Clean Composition", "keywords": "minimalist composition, clean lighting, simple background", "effect": "Flat, bright, few redundant details", "usage": "Catalog photo, material presentation, form study" },
-          { "style": "🔲 Magazine Style / Editorial", "keywords": "architectural digest magazine photo, editorial lighting", "effect": "Like architectural magazine, luxurious", "usage": "Company profile, brochure" },
-          { "style": "🕊 Cinematic Naturalism", "keywords": "realistic yet cinematic, balanced light, film tone", "effect": "Balance between real and art", "usage": "When wanting photo both beautiful and credible" },
-          { "style": "☀️ Golden Hour / Sunset Mood", "keywords": "golden hour light, warm shadows, cinematic sun", "effect": "Sunset light, emotional, shimmering", "usage": "Villa, resort, artistic perspective" },
-          { "style": "🌫 Atmospheric / Foggy / Moody", "keywords": "foggy morning, atmospheric light, deep haze", "effect": "Mist, thick atmosphere, depth", "usage": "Emotional photo, exterior concept" },
-          { "style": "🪞 Reflective / Glass Emphasis", "keywords": "glass reflection, metal reflection, HDR lighting", "effect": "Strong reflection on glass and metal", "usage": "Modern building, glass tower" }
+          {
+            "style": "🏙 Realistic / Photographic",
+            "keywords": "realistic photo, shot on full-frame camera, natural lighting",
+            "effect": "Neutral colors, real life light, realistic materials",
+            "usage": "Simulate finished building, technical profile"
+          },
+          {
+            "style": "✨ Hyper-realistic / Ultra-detailed",
+            "keywords": "hyper-realistic render, 8K, ultra-high detail, cinematic lighting",
+            "effect": "Impressive light, perfect materials, \"wow\" effect",
+            "usage": "Advertising perspective, high-end concept"
+          },
+          {
+            "style": "🎬 Cinematic / Film",
+            "keywords": "cinematic color tone, film still, volumetric light, anamorphic lens",
+            "effect": "Film style light, strong contrast, artistic atmosphere",
+            "usage": "Video, flycam, storytelling perspective"
+          },
+          {
+            "style": "🌤 Conceptual / Artistic",
+            "keywords": "concept art, digital painting, stylized architecture",
+            "effect": "Unrealistic colors, soft strokes, non-physical light",
+            "usage": "Concept stage, idea sketching"
+          },
+          {
+            "style": "💎 Architectural Render / CGI",
+            "keywords": "3D render, V-Ray style, ray-traced lighting",
+            "effect": "Looks like render from 3D software, clean, accurate materials",
+            "usage": "Present interior/exterior design"
+          },
+          {
+            "style": "🌿 Natural Lighting / Environmental",
+            "keywords": "soft natural light, morning atmosphere, environmental tone",
+            "effect": "Soft light, gentle shadows, soft color tone",
+            "usage": "Simulate ecological building, green building"
+          },
+          {
+            "style": "🌙 Night Scene / Twilight",
+            "keywords": "night photo, blue hour, warm lights, reflections",
+            "effect": "Warm yellow light, glass reflection, purple blue sky",
+            "usage": "Building with lighting design, evening advertisement"
+          },
+          {
+            "style": "🚁 Aerial / Drone / Flycam",
+            "keywords": "aerial view, drone perspective, high-angle shot",
+            "effect": "Overall view, land perspective",
+            "usage": "Master planning, villa, planning"
+          },
+          {
+            "style": "🏗 Under Construction / Site Scene",
+            "keywords": "under construction, raw materials, scaffolding",
+            "effect": "Construction site, cement, reinforced concrete, workers",
+            "usage": "Progress report, current status photo"
+          },
+          {
+            "style": "☁️ Minimalist / Clean Composition",
+            "keywords": "minimalist composition, clean lighting, simple background",
+            "effect": "Flat, bright, few redundant details",
+            "usage": "Catalog photo, material presentation, form study"
+          },
+          {
+            "style": "🔲 Magazine Style / Editorial",
+            "keywords": "architectural digest magazine photo, editorial lighting",
+            "effect": "Like architectural magazine, luxurious",
+            "usage": "Company profile, brochure"
+          },
+          {
+            "style": "🕊 Cinematic Naturalism",
+            "keywords": "realistic yet cinematic, balanced light, film tone",
+            "effect": "Balance between real and art",
+            "usage": "When wanting photo both beautiful and credible"
+          },
+          {
+            "style": "☀️ Golden Hour / Sunset Mood",
+            "keywords": "golden hour light, warm shadows, cinematic sun",
+            "effect": "Sunset light, emotional, shimmering",
+            "usage": "Villa, resort, artistic perspective"
+          },
+          {
+            "style": "🌫 Atmospheric / Foggy / Moody",
+            "keywords": "foggy morning, atmospheric light, deep haze",
+            "effect": "Mist, thick atmosphere, depth",
+            "usage": "Emotional photo, exterior concept"
+          },
+          {
+            "style": "🪞 Reflective / Glass Emphasis",
+            "keywords": "glass reflection, metal reflection, HDR lighting",
+            "effect": "Strong reflection on glass and metal",
+            "usage": "Modern building, glass tower"
+          }
         ]
       },
       "exampleTitle": "EXAMPLE: 🏡 General Topic:",
       "exampleTopic": "A modern Tropical garden villa 2 stories, glass and natural teak wood facade, surrounded by water feature and trees.",
       "examples": [
-        { "title": "1. Realistic Photo", "prompt": "A realistic photo of modern Tropical garden villa project, shot with full-frame camera, wide angle, early morning natural light, realistic materials including clear glass and teak wood, neutral colors, in quiet green urban environment.", "result": "Result: Photo looks like real life scene, soft light, natural materials." },
-        { "title": "2. Hyper-realistic Render", "prompt": "A hyper-realistic render of modern Tropical garden villa, sunset light, strong reflection, 8K ultra-high detail, reflecting water surface, vivid trees, cinematic quality.", "result": "Result: Impressively beautiful, yellow orange tone, \"wow\" effect, like advertising render." },
-        { "title": "3. Cinematic", "prompt": "A cinematic scene of modern Tropical garden villa, volumetric light through trees, film color tone, anamorphic lens, warm and luxurious atmosphere.", "result": "Result: Looks like a frame in a movie, hazy light, strong depth." },
-        { "title": "4. Architectural Render (CGI)", "prompt": "A 3D render perspective of Tropical garden villa, daylight, V-Ray style render, ray-traced lighting, detailed material texture and realistic reflection.", "result": "Result: Looks like photo exported from 3ds Max, very clean and balanced." },
-        { "title": "5. Natural Lighting (Environmental)", "prompt": "Tropical garden villa in morning natural light, soft color tone, light breeze, soft tree shadows, a quiet and fresh scene.", "result": "Result: Soft tone, bright, close, giving ecological feeling." },
-        { "title": "6. Night Scene / Twilight", "prompt": "Tropical garden villa at night, warm yellow light from interior, reflecting on water surface, blue violet sky, soft diffused light.", "result": "Result: Very beautiful for night scene, has hot-cold contrast." },
-        { "title": "7. Under Construction", "prompt": "Modern Tropical garden villa project under construction, steel frame, scaffolding, workers, realistic ground and materials, noon natural light.", "result": "Result: Vivid construction site photo, simulating realistic construction process." },
-        { "title": "8. Minimalist / Clean", "prompt": "Modern Tropical garden villa, minimalist layout, even light, clean bright background, emphasizing architectural forms and wood-glass materials.", "result": "Result: Very suitable for profile photo, architectural magazine." },
-        { "title": "9. Magazine / Editorial", "prompt": "Architectural magazine style photo of modern Tropical garden villa, studio light combined with daylight, luxurious tone, balanced frame, light post-processing.", "result": "Result: Beautiful like Architectural Digest magazine, refined light." },
-        { "title": "10. Golden Hour", "prompt": "Tropical garden villa in golden hour light, long shadows, golden reflection on glass and teak wood, warm and romantic atmosphere.", "result": "Result: Emotional, high art, very beautiful for poster." },
-        { "title": "11. Atmospheric / Foggy", "prompt": "Tropical garden villa in early morning mist, hazy light, wet trees, reflecting blurred lake, quiet and deep atmosphere.", "result": "Result: Suggests \"dreamy\" feeling, very cinematic and natural." },
-        { "title": "12. Cinematic Naturalism", "prompt": "A cinematic but natural photo of modern Tropical garden villa, morning light, soft contrast, light film tone, realistic materials.", "result": "Result: Beautiful like movie but still believable as real photo — very balanced." }
+        {
+          "title": "1. Realistic Photo",
+          "prompt": "A realistic photo of modern Tropical garden villa project, shot with full-frame camera, wide angle, early morning natural light, realistic materials including clear glass and teak wood, neutral colors, in quiet green urban environment.",
+          "result": "Result: Photo looks like real life scene, soft light, natural materials."
+        },
+        {
+          "title": "2. Hyper-realistic Render",
+          "prompt": "A hyper-realistic render of modern Tropical garden villa, sunset light, strong reflection, 8K ultra-high detail, reflecting water surface, vivid trees, cinematic quality.",
+          "result": "Result: Impressively beautiful, yellow orange tone, \"wow\" effect, like advertising render."
+        },
+        {
+          "title": "3. Cinematic",
+          "prompt": "A cinematic scene of modern Tropical garden villa, volumetric light through trees, film color tone, anamorphic lens, warm and luxurious atmosphere.",
+          "result": "Result: Looks like a frame in a movie, hazy light, strong depth."
+        },
+        {
+          "title": "4. Architectural Render (CGI)",
+          "prompt": "A 3D render perspective of Tropical garden villa, daylight, V-Ray style render, ray-traced lighting, detailed material texture and realistic reflection.",
+          "result": "Result: Looks like photo exported from 3ds Max, very clean and balanced."
+        },
+        {
+          "title": "5. Natural Lighting (Environmental)",
+          "prompt": "Tropical garden villa in morning natural light, soft color tone, light breeze, soft tree shadows, a quiet and fresh scene.",
+          "result": "Result: Soft tone, bright, close, giving ecological feeling."
+        },
+        {
+          "title": "6. Night Scene / Twilight",
+          "prompt": "Tropical garden villa at night, warm yellow light from interior, reflecting on water surface, blue violet sky, soft diffused light.",
+          "result": "Result: Very beautiful for night scene, has hot-cold contrast."
+        },
+        {
+          "title": "7. Under Construction",
+          "prompt": "Modern Tropical garden villa project under construction, steel frame, scaffolding, workers, realistic ground and materials, noon natural light.",
+          "result": "Result: Vivid construction site photo, simulating realistic construction process."
+        },
+        {
+          "title": "8. Minimalist / Clean",
+          "prompt": "Modern Tropical garden villa, minimalist layout, even light, clean bright background, emphasizing architectural forms and wood-glass materials.",
+          "result": "Result: Very suitable for profile photo, architectural magazine."
+        },
+        {
+          "title": "9. Magazine / Editorial",
+          "prompt": "Architectural magazine style photo of modern Tropical garden villa, studio light combined with daylight, luxurious tone, balanced frame, light post-processing.",
+          "result": "Result: Beautiful like Architectural Digest magazine, refined light."
+        },
+        {
+          "title": "10. Golden Hour",
+          "prompt": "Tropical garden villa in golden hour light, long shadows, golden reflection on glass and teak wood, warm and romantic atmosphere.",
+          "result": "Result: Emotional, high art, very beautiful for poster."
+        },
+        {
+          "title": "11. Atmospheric / Foggy",
+          "prompt": "Tropical garden villa in early morning mist, hazy light, wet trees, reflecting blurred lake, quiet and deep atmosphere.",
+          "result": "Result: Suggests \"dreamy\" feeling, very cinematic and natural."
+        },
+        {
+          "title": "12. Cinematic Naturalism",
+          "prompt": "A cinematic but natural photo of modern Tropical garden villa, morning light, soft contrast, light film tone, realistic materials.",
+          "result": "Result: Beautiful like movie but still believable as real photo — very balanced."
+        }
       ],
       "conclusion": ""
     }
@@ -1878,32 +2267,160 @@
     "next": "Next",
     "page": "Page {{currentPage}} / {{totalPages}}"
   },
-"imageEditor": {
-  "title": "Image Editor",
-  "reset": "Reset",
-  "exposure": "Exposure",
-  "contrast": "Contrast",
-  "saturation": "Saturation",
-  "vibrance": "Vibrance",
-  "temperature": "Temperature",
-  "tint": "Tint",
-  "highlights": "Highlights",
-  "shadows": "Shadows",
-  "clarity": "Clarity",
-  "sharpness": "Sharpness",
-  "dehaze": "Dehaze",
-  "sepia": "Sepia",
-  "invert": "Invert",
-  "hue": "Hue",
-  "blur": "Blur",
-  "grain": "Grain",
-  "vignette": "Vignette",
-  "crop": "Crop",
-  "rotate": "Rotate",
-  "flip": "Flip",
-  "filter": "Color Filter",
-  "preset": "Preset Style",
-  "save": "Save Image",
-  "saving": "Saving..."
-}
+  "imageEditor": {
+    "title": "Image Editor",
+    "reset": "Reset",
+    "exposure": "Exposure",
+    "contrast": "Contrast",
+    "saturation": "Saturation",
+    "vibrance": "Vibrance",
+    "temperature": "Temperature",
+    "tint": "Tint",
+    "highlights": "Highlights",
+    "shadows": "Shadows",
+    "clarity": "Clarity",
+    "sharpness": "Sharpness",
+    "dehaze": "Dehaze",
+    "sepia": "Sepia",
+    "invert": "Invert",
+    "hue": "Hue",
+    "blur": "Blur",
+    "grain": "Grain",
+    "vignette": "Vignette",
+    "crop": "Crop",
+    "rotate": "Rotate",
+    "flip": "Flip",
+    "filter": "Color Filter",
+    "preset": "Preset Style",
+    "save": "Save Image",
+    "saving": "Saving..."
+  },
+  "promptLibraryPage": {
+    "title": "Prompt Library",
+    "subtitle": "Discover pre-made prompts curated by architectural experts.",
+    "backToLibrary": "Back to library",
+    "materials": "Materials",
+    "aspectRatio": "Aspect Ratio",
+    "cameraAngle": "Camera Angle / Viewpoint",
+    "suggestMaterials": "AI Suggest",
+    "suggestingMaterials": "Suggesting...",
+    "defaultCameraAngle": "Auto (Keep the camera angle from input image)",
+    "generateBtn": "Use Prompt & Generate",
+    "generationError": "Sorry, an error occurred. Please try again.",
+    "generateSuccess": "Image generated successfully!",
+    "resultsTab": "Results",
+    "historyTab": "History",
+    "uploadPlaceholder": "Upload your input image (Required)",
+    "materialsPlaceholder": "Applied materials / or let AI suggest...",
+    "views": {
+      "wide": "I. Wide Shots Group",
+      "medium": "II. Medium Shots Group",
+      "artistic": "III. Artistic Shots Group",
+      "upward": "IV. Upward Angle Group",
+      "drone": "V. Drone Angle Group",
+      "items": {
+        "wide-1": "Wide Shot 1 (Sunrise)",
+        "wide-2": "Wide Shot 2 (Sunset)",
+        "medium-1": "Medium Shot 1 (Frontal View)",
+        "medium-2": "Medium Shot 2 (3/4 Left View)",
+        "medium-3": "Medium Shot 3 (3/4 Right View)",
+        "medium-4": "Medium Shot 4 (Main Entrance)",
+        "medium-5": "Medium Shot 5 (Architectural Detail)",
+        "art-1": "Artistic 1 (Foreground Blur)",
+        "art-2": "Artistic 2 (Night Perspective)",
+        "art-3": "Artistic 3 (Reflection)",
+        "upward-1": "Low-angle Upward Shot",
+        "drone-1": "High Drone Side View"
+      }
+    },
+    "categories": {
+      "townHouse": {
+        "title": "Townhouse",
+        "description": "Explore modern and space-optimized townhouse designs.",
+        "items": {
+          "item1": {
+            "title": "Townhouse Model 1",
+            "description": "Modern tropical townhouse prompt 1",
+            "defaultPrompt": "Ảnh thực tế của công trình Kiến trúc nhiệt đới hiện đại..."
+          },
+          "item2": {
+            "title": "Townhouse Model 2",
+            "description": "Modern townhouse prompt 2"
+          },
+          "item3": {
+            "title": "Townhouse Model 3",
+            "description": "Modern townhouse prompt 3"
+          },
+          "item4": {
+            "title": "Townhouse Model 4",
+            "description": "Modern townhouse prompt 4"
+          },
+          "item5": {
+            "title": "Modern Townhouse",
+            "description": "Modern style townhouse"
+          },
+          "item6": {
+            "title": "Minimalist Townhouse",
+            "description": "Minimalist style townhouse"
+          },
+          "item7": {
+            "title": "Tropical Townhouse",
+            "description": "Tropical style townhouse"
+          },
+          "item8": {
+            "title": "Commercial Townhouse",
+            "description": "Commercial mixed-use townhouse"
+          }
+        }
+      },
+      "villa": {
+        "title": "Villa",
+        "description": "Luxurious villas, gardens, and neoclassical styles.",
+        "items": {
+          "item1": {
+            "title": "Neoclassical Villa",
+            "description": "Neoclassical luxury villa prompt"
+          },
+          "item2": {
+            "title": "Modern Villa",
+            "description": "Open space modern villa prompt"
+          },
+          "item3": {
+            "title": "Garden Villa",
+            "description": "Villa with garden landscape prompt"
+          },
+          "item4": {
+            "title": "Resort Villa",
+            "description": "High-end resort villa prompt"
+          },
+          "item5": {
+            "title": "Thai-roof Villa",
+            "description": "Traditional Thai-roof villa prompt"
+          },
+          "item6": {
+            "title": "Japanese-roof Villa",
+            "description": "Minimalist Japanese-roof villa prompt"
+          },
+          "item7": {
+            "title": "Mini Villa",
+            "description": "Compact area mini villa prompt"
+          },
+          "item8": {
+            "title": "Duplex Villa",
+            "description": "Symmetrical duplex villa prompt"
+          }
+        }
+      },
+      "interior": {
+        "title": "Interior",
+        "description": "Refined living space ideas from living room to bedroom.",
+        "items": {
+          "item1": {
+            "title": "Modern Living Room",
+            "description": "Modern minimalist living room prompt"
+          }
+        }
+      }
+    }
+  }
 }

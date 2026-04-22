@@ -8,7 +8,6 @@ import { BoltIcon } from './components/icons/BoltIcon';
 import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
 import Footer from './components/Footer';
 import LanguageSwitcher from './components/LanguageSwitcher';
-import Pagination from './components/Pagination';
 import OnlineStatus from './components/OnlineStatus';
 import { apiClient, getImageSize } from './lib/api';
 
@@ -44,12 +43,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const [history, setHistory] = useState<{ input: string, outputs: string[] }[]>([]);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const [hoveredThumbnail, setHoveredThumbnail] = useState<string | null>(null);
-  
-  // New states
-  const [selectedCameraAngle, setSelectedCameraAngle] = useState<string>('');
-  const [isSuggestingMaterials, setIsSuggestingMaterials] = useState<boolean>(false);
-  const [historyCurrentPage, setHistoryCurrentPage] = useState<number>(1);
-  const HISTORY_PER_PAGE = 5;
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,155 +87,115 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     onNavigate('image-generation', { page: 'image-generation', config: { activeAction: id } });
   };
 
-  const VIEW_GROUPS = [
-    {
-      name: t('promptLibraryPage.views.wide', 'I. Nhóm Toàn cảnh (Wide Shots)'),
-      views: [
-        { id: 'wide-1', name: t('promptLibraryPage.views.items.wide-1', 'Toàn cảnh 1 (Bình minh)'), prompt: 'Wide-angle lens, clear morning light, soft morning mist, peaceful and serene atmosphere, fresh colors. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'wide-2', name: t('promptLibraryPage.views.items.wide-2', 'Toàn cảnh 2 (Hoàng hôn)'), prompt: 'Wide-angle lens, vibrant golden hour lighting, orange and purple clouds in the sky, dramatic long shadows, warm and emotional atmosphere. High resolution 8K, photorealistic architectural photography.' },
-      ]
-    },
-    {
-      name: t('promptLibraryPage.views.medium', 'II. Nhóm Trung cảnh (Medium Shots)'),
-      views: [
-        { id: 'medium-1', name: t('promptLibraryPage.views.items.medium-1', 'Trung cảnh 1 (Góc chính diện)'), prompt: 'Eye-level frontal view, balanced composition, clear view of the main facade. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'medium-2', name: t('promptLibraryPage.views.items.medium-2', 'Trung cảnh 2 (Góc 3/4 bên trái)'), prompt: '3/4 perspective view from the left side, showing depth and the relationship between front and side facades. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'medium-3', name: t('promptLibraryPage.views.items.medium-3', 'Trung cảnh 3 (Góc 3/4 bên phải)'), prompt: '3/4 perspective view from the right side, showing depth and the relationship between front and side facades. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'medium-4', name: t('promptLibraryPage.views.items.medium-4', 'Trung cảnh 4 (Lối vào chính)'), prompt: 'Medium shot focusing on the main entrance and lobby area, inviting perspective, clear view of the transition between outside and inside. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'medium-5', name: t('promptLibraryPage.views.items.medium-5', 'Trung cảnh 5 (Chi tiết kiến trúc)'), prompt: 'Medium-close shot focusing on a specific architectural feature or material intersection. High resolution 8K, photorealistic architectural photography.' },
-      ]
-    },
-    {
-      name: t('promptLibraryPage.views.artistic', 'III. Nhóm Nghệ thuật (Artistic Shots)'),
-      views: [
-        { id: 'art-1', name: t('promptLibraryPage.views.items.art-1', 'Nghệ thuật 1 (Xóa phông tiền cảnh)'), prompt: 'Artistic composition with shallow depth of field. Foreground objects like leaves or a character are softly blurred, while the building remains perfectly sharp in the background. Cinematic feel. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'art-2', name: t('promptLibraryPage.views.items.art-2', 'Nghệ thuật 2 (Phối cảnh đêm)'), prompt: 'Night perspective with glowing interior and exterior lighting. Warm lights contrasting with the deep blue or black night sky. Sparkling and magical atmosphere. High resolution 8K, photorealistic architectural photography.' },
-        { id: 'art-3', name: t('promptLibraryPage.views.items.art-3', 'Nghệ thuật 3 (Phản chiếu)'), prompt: 'Artistic shot focusing on reflections of the building on glass or water surfaces. Symmetrical or abstract composition. High resolution 8K, photorealistic architectural photography.' },
-      ]
-    },
-    {
-      name: t('promptLibraryPage.views.upward', 'IV. Nhóm Ngước nhìn (Upward Angle)'),
-      views: [
-        { id: 'upward-1', name: t('promptLibraryPage.views.items.upward-1', 'Ngước nhìn từ dưới lên'), prompt: 'Dramatic low-angle shot looking up at the building, emphasizing height, scale, and grandeur. High resolution 8K, photorealistic architectural photography.' },
-      ]
-    },
-    {
-      name: t('promptLibraryPage.views.drone', 'V. Nhóm Drone (Drone Angle)'),
-      views: [
-        { id: 'drone-1', name: t('promptLibraryPage.views.items.drone-1', 'Drone (Cao & bên hông)'), prompt: 'High altitude drone view from a side perspective, showing the building in its urban or natural context. High resolution 8K, photorealistic architectural photography.' },
-      ]
-    }
-  ];
-
   const libraryCards = [
     {
-      title: t("promptLibraryPage.categories.townHouse.title", "Nhà Phố"),
-      description: t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích."),
+      title: "Nhà Phố",
+      description: "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.title", "Biệt Thự"),
-      description: t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển."),
+      title: "Biệt Thự",
+      description: "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.interior.title", "Nội Thất"),
-      description: t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ."),
+      title: "Nội Thất",
+      description: "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.",
       imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
     }
   ];
 
   const nhaPhoItems: PromptItem[] = [
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item1.title", "Mẫu nhà phố 1"),
-      description: t("promptLibraryPage.categories.townHouse.items.item1.description", "Prompt mẫu nhà phố kiến trúc hiện đại 1"),
+      title: "Mẫu nhà phố 1",
+      description: "Prompt mẫu nhà phố kiến trúc hiện đại 1",
       imageUrl: "https://i.ibb.co/39b7H18S/617662778-1852561475734147-6334751143682874560-n.jpg",
-      defaultPrompt: t("promptLibraryPage.categories.townHouse.items.item1.defaultPrompt", "Ảnh thực tế của công trình Kiến trúc nhiệt đới hiện đại, ưu tiên không gian xanh và vật liệu tự nhiên., phong cách Hiện đại – Nhiệt đới.\nBối cảnh tại Tọa lạc trong một khu dân cư đô thị.\n{Vật liệu ứng dụng }\nKhông gian xung quanh bao gồm Hệ thống cây xanh đa dạng trên các ban công, Hai cây lớn xanh tốt ở hai bên vỉa hè, hài hòa with cảnh quan tự nhiên.\nPhía xa là Bầu trời u ám, tạo chiều sâu thị giác và cảm giác không gian mở rộng.\nKhung cảnh được ghi lại vào Mùa hè, cây cối tươi tốt và đầy sức sống., Giữa ngày., trong điều kiện thời tiết Trời nhiều mây, ánh sáng dịu và khuếch tán..\nÁnh sáng tự nhiên cân bằng, phản chiếu mềm, vật liệu hiện rõ chi tiết.\nKhông khí tổng thể mang cảm xúc Yên bình, tươi mát và thân thiện..\nGóc nhìn máy ảnh là Chụp thẳng from phía bên kia đường, ngang tầm mắt, lấy trọn vẹn mặt tiền ngôi nhà., sử dụng DSLR full-frame with ống kính góc rộng, DOF nhẹ nhàng, và bố cục theo tỉ lệ vàng."
+      defaultPrompt: "Ảnh thực tế của công trình Kiến trúc nhiệt đới hiện đại, ưu tiên không gian xanh và vật liệu tự nhiên., phong cách Hiện đại – Nhiệt đới.\nBối cảnh tại Tọa lạc trong một khu dân cư đô thị.\n{Vật liệu ứng dụng }\nKhông gian xung quanh bao gồm Hệ thống cây xanh đa dạng trên các ban công, Hai cây lớn xanh tốt ở hai bên vỉa hè, hài hòa with cảnh quan tự nhiên.\nPhía xa là Bầu trời u ám, tạo chiều sâu thị giác và cảm giác không gian mở rộng.\nKhung cảnh được ghi lại vào Mùa hè, cây cối tươi tốt và đầy sức sống., Giữa ngày., trong điều kiện thời tiết Trời nhiều mây, ánh sáng dịu và khuếch tán..\nÁnh sáng tự nhiên cân bằng, phản chiếu mềm, vật liệu hiện rõ chi tiết.\nKhông khí tổng thể mang cảm xúc Yên bình, tươi mát và thân thiện..\nGóc nhìn máy ảnh là Chụp thẳng from phía bên kia đường, ngang tầm mắt, lấy trọn vẹn mặt tiền ngôi nhà., sử dụng DSLR full-frame with ống kính góc rộng, DOF nhẹ nhàng, và bố cục theo tỉ lệ vàng."
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item2.title", "Mẫu nhà phố 2"),
-      description: t("promptLibraryPage.categories.townHouse.items.item2.description", "Prompt mẫu nhà phố kiến trúc hiện đại 2"),
+      title: "Mẫu nhà phố 2",
+      description: "Prompt mẫu nhà phố kiến trúc hiện đại 2",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item3.title", "Mẫu nhà phố 3"),
-      description: t("promptLibraryPage.categories.townHouse.items.item3.description", "Prompt mẫu nhà phố kiến trúc hiện đại 3"),
+      title: "Mẫu nhà phố 3",
+      description: "Prompt mẫu nhà phố kiến trúc hiện đại 3",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item4.title", "Mẫu nhà phố 4"),
-      description: t("promptLibraryPage.categories.townHouse.items.item4.description", "Prompt mẫu nhà phố kiến trúc hiện đại 4"),
+      title: "Mẫu nhà phố 4",
+      description: "Prompt mẫu nhà phố kiến trúc hiện đại 4",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item5.title", "Nhà phố hiện đại"),
-      description: t("promptLibraryPage.categories.townHouse.items.item5.description", "Prompt mẫu nhà phố phong cách hiện đại"),
+      title: "Nhà phố hiện đại",
+      description: "Prompt mẫu nhà phố phong cách hiện đại",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item6.title", "Nhà phố tối giản"),
-      description: t("promptLibraryPage.categories.townHouse.items.item6.description", "Prompt mẫu nhà phố phong cách tối giản"),
+      title: "Nhà phố tối giản",
+      description: "Prompt mẫu nhà phố phong cách tối giản",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item7.title", "Nhà phố nhiệt đới"),
-      description: t("promptLibraryPage.categories.townHouse.items.item7.description", "Prompt mẫu nhà phố phong cách nhiệt đới"),
+      title: "Nhà phố nhiệt đới",
+      description: "Prompt mẫu nhà phố phong cách nhiệt đới",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.townHouse.items.item8.title", "Nhà phố thương mại"),
-      description: t("promptLibraryPage.categories.townHouse.items.item8.description", "Prompt mẫu nhà phố thương mại kết hợp kinh doanh"),
+      title: "Nhà phố thương mại",
+      description: "Prompt mẫu nhà phố thương mại kết hợp kinh doanh",
       imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
     }
   ];
 
   const bietThuItems: PromptItem[] = [
     {
-      title: t("promptLibraryPage.categories.villa.items.item1.title", "Biệt thự tân cổ điển"),
-      description: t("promptLibraryPage.categories.villa.items.item1.description", "Prompt mẫu biệt thự phong cách tân cổ điển sang trọng"),
+      title: "Biệt thự tân cổ điển",
+      description: "Prompt mẫu biệt thự phong cách tân cổ điển sang trọng",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item2.title", "Biệt thự hiện đại"),
-      description: t("promptLibraryPage.categories.villa.items.item2.description", "Prompt mẫu biệt thự hiện đại với không gian mở"),
+      title: "Biệt thự hiện đại",
+      description: "Prompt mẫu biệt thự hiện đại với không gian mở",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item3.title", "Biệt thự nhà vườn"),
-      description: t("promptLibraryPage.categories.villa.items.item3.description", "Prompt mẫu biệt thự kết hợp cảnh quan sân vườn"),
+      title: "Biệt thự nhà vườn",
+      description: "Prompt mẫu biệt thự kết hợp cảnh quan sân vườn",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item4.title", "Biệt thự nghỉ dưỡng"),
-      description: t("promptLibraryPage.categories.villa.items.item4.description", "Prompt mẫu biệt thự nghỉ dưỡng cao cấp (Resort villa)"),
+      title: "Biệt thự nghỉ dưỡng",
+      description: "Prompt mẫu biệt thự nghỉ dưỡng cao cấp (Resort villa)",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item5.title", "Biệt thự mái Thái"),
-      description: t("promptLibraryPage.categories.villa.items.item5.description", "Prompt mẫu biệt thự mái Thái truyền thống"),
+      title: "Biệt thự mái Thái",
+      description: "Prompt mẫu biệt thự mái Thái truyền thống",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item6.title", "Biệt thự mái Nhật"),
-      description: t("promptLibraryPage.categories.villa.items.item6.description", "Prompt mẫu biệt thự mái Nhật tối giản"),
+      title: "Biệt thự mái Nhật",
+      description: "Prompt mẫu biệt thự mái Nhật tối giản",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item7.title", "Biệt thự mini"),
-      description: t("promptLibraryPage.categories.villa.items.item7.description", "Prompt mẫu biệt thự mini diện tích nhỏ gọn"),
+      title: "Biệt thự mini",
+      description: "Prompt mẫu biệt thự mini diện tích nhỏ gọn",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     },
     {
-      title: t("promptLibraryPage.categories.villa.items.item8.title", "Biệt thự song lập"),
-      description: t("promptLibraryPage.categories.villa.items.item8.description", "Prompt mẫu biệt thự song lập đối xứng"),
+      title: "Biệt thự song lập",
+      description: "Prompt mẫu biệt thự song lập đối xứng",
       imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
     }
   ];
 
   const noiThatItems: PromptItem[] = [
     {
-      title: t("promptLibraryPage.categories.interior.items.item1.title", "Phòng khách hiện đại"),
-      description: t("promptLibraryPage.categories.interior.items.item1.description", "Prompt mẫu phòng khách phong cách hiện đại, tối giản"),
+      title: "Phòng khách hiện đại",
+      description: "Prompt mẫu phòng khách phong cách hiện đại, tối giản",
       imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
     },
     {
@@ -292,51 +245,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     }
   };
 
-
-  const handleSuggestMaterials = async () => {
-    if (!activeInputFile) {
-        alert(t("aiAssistant.error", "Vui lòng tải ảnh lên trước!"));
-        return;
-    }
-    
-    setIsSuggestingMaterials(true);
-    try {
-        const inputBase64 = await blobToBase64(activeInputFile);
-        const prompt = "Phân tích hình ảnh kiến trúc đầu vào. Xác định và liệt kê tất cả vật liệu ứng dụng được nhìn thấy. Đối với mỗi vật liệu, hãy cung cấp mô tả chi tiết bao gồm loại vật liệu, đặc điểm bề mặt (ví dụ: mờ, bóng, nhám) và mức độ phản sáng (ví dụ: thấp, trung bình, cao), hoàn thiện mô tả như vật liệu thực tế. Tuyệt đối KHÔNG gộp nhiều vật liệu vào một mô tả duy nhất. Mỗi vật liệu nhìn thấy được trên bất kỳ bề mặt kiến trúc nào (tường, sàn, trần, mái, cột, lan can, mặt đứng, chi tiết trang trí, v.v.) PHẢI được mô tả thành một phần tử JSON độc lập, ngay cả khi chúng cùng tồn tại trên một bề mặt hoặc cấu kiện. Trả về kết quả dưới dạng một mảng JSON chứa các chuỗi ký tự, mỗi chuỗi là một mô tả vật liệu hoàn chỉnh.";
-        
-        const response = await apiClient.generateContent({
-            model: "gemini-2.5-flash",
-            contents: {
-                parts: [
-                    { inlineData: { data: inputBase64, mimeType: activeInputFile.type } },
-                    { text: prompt }
-                ]
-            },
-            config: {
-                responseMimeType: "application/json"
-            }
-        });
-        
-        const textResp = response.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (textResp) {
-            try {
-                // Parse the array of strings and combine them
-                const materialsArr = JSON.parse(textResp);
-                if (Array.isArray(materialsArr)) {
-                    setMaterials(materialsArr.join(", "));
-                }
-            } catch (e) {
-                console.error("Failed to parse JSON", e);
-                setMaterials(textResp);
-            }
-        }
-    } catch (e) {
-        console.error("Error suggesting materials", e);
-    } finally {
-        setIsSuggestingMaterials(false);
-    }
-  };
-
   const handleGenerate = async () => {
     if (!activeInputFile || !selectedItem?.defaultPrompt) return;
 
@@ -353,20 +261,11 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       const inputBase64 = await blobToBase64(activeInputFile);
       
       let finalPrompt = selectedItem.defaultPrompt;
-
       if (materials.trim()) {
         finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', materials.trim());
       } else {
         finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', 'Công trình sử dụng vật liệu như ảnh tải lên.');
       }
-      
-      // Apply Camera angle
-      if (selectedCameraAngle) {
-        finalPrompt += " " + selectedCameraAngle;
-      } else {
-        finalPrompt += " Giữ nguyên góc nhìn như ảnh tải lên,không thay đổi";
-      }
-
 
       const generateOneImage = async () => {
         const response = await apiClient.generateContent({
@@ -423,7 +322,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       <div className="max-w-7xl mx-auto w-full h-full flex flex-col animate-fade-in">
         {/* Breadcrumb */}
         <div className="mb-4 flex items-center gap-2 text-sm text-gray-400">
-          <button onClick={() => { setSelectedCategory(null); setSelectedItem(null); }} className="hover:text-white transition-colors">{t('promptLibraryPage.backToLibrary', 'Thư viện')}</button>
+          <button onClick={() => { setSelectedCategory(null); setSelectedItem(null); }} className="hover:text-white transition-colors">Thư viện</button>
           <span>/</span>
           <button onClick={() => setSelectedItem(null)} className="hover:text-white transition-colors uppercase">{selectedCategory}</button>
           <span>/</span>
@@ -470,8 +369,8 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                 <h3 className="text-white font-bold text-sm">Vật liệu ứng dụng <span className="text-red-500">* Bắt buộc</span></h3>
                 <div className="flex flex-col items-end">
                   <span className="text-xs text-orange-400 mb-1">Gợi ý sử dụng</span>
-                  <button onClick={handleSuggestMaterials} disabled={isSuggestingMaterials} className="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs text-white transition-colors disabled:opacity-50">
-                    <SparklesIcon className="w-3 h-3" /> {isSuggestingMaterials ? t("promptLibraryPage.suggestingMaterials", "Đang gợi ý...") : t("promptLibraryPage.suggestMaterials", "AI Gợi ý")}
+                  <button className="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs text-white transition-colors">
+                    <SparklesIcon className="w-3 h-3" /> AI Gợi ý
                   </button>
                 </div>
               </div>
@@ -510,26 +409,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                 <option value="1:1">1:1 (Vuông)</option>
                 <option value="16:9">16:9 (Ngang)</option>
                 <option value="9:16">9:16 (Dọc)</option>
-              </select>
-            </div>
-
-
-            {/* 7. Góc nhìn Camera */}
-            <div>
-              <h3 className="text-white font-bold mb-2 text-sm">7. {t("promptLibraryPage.cameraAngle", "Góc chụp / Góc nhìn Camera")}</h3>
-              <select 
-                value={selectedCameraAngle}
-                onChange={(e) => setSelectedCameraAngle(e.target.value)}
-                className="w-full bg-[#2a303c] border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500"
-              >
-                <option value="">{t("promptLibraryPage.defaultCameraAngle", "Tự động (Giữ nguyên góc nhìn như ảnh)")}</option>
-                {VIEW_GROUPS.map((group, gIdx) => (
-                    <optgroup label={group.name} key={gIdx} className="bg-[#1e293b]">
-                        {group.views.map((view) => (
-                            <option key={view.id} value={view.prompt}>{view.name}</option>
-                        ))}
-                    </optgroup>
-                ))}
               </select>
             </div>
 
@@ -599,8 +478,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
               ) : (
                 history.length > 0 ? (
                   <div className="flex flex-col gap-6 w-full h-full content-start">
-                    <div className="flex flex-col gap-6 flex-grow overflow-y-auto pr-2 custom-scrollbar">
-                    {paginatedHistory.map((item, idx) => (
+                    {history.map((item, idx) => (
                       <div key={idx} className="bg-[#2a303c] p-4 rounded-lg border border-slate-700">
                         <div className="flex gap-4">
                           <div className="w-1/3">
@@ -624,19 +502,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                         </div>
                       </div>
                     ))}
-                    </div>
-                    {totalHistoryPages > 1 && (
-                      <div className="mt-4 pt-4 border-t border-slate-700">
-                        <Pagination 
-                            currentPage={historyCurrentPage} 
-                            totalPages={totalHistoryPages} 
-                            onPageChange={(page) => {
-                                setHistoryCurrentPage(page);
-                                // Scroll to top if needed
-                            }} 
-                        />
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <div className="text-gray-500 flex flex-col items-center">
@@ -681,9 +546,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     );
   };
 
-  const totalHistoryPages = Math.ceil(history.length / HISTORY_PER_PAGE);
-  const paginatedHistory = history.slice((historyCurrentPage - 1) * HISTORY_PER_PAGE, historyCurrentPage * HISTORY_PER_PAGE);
-
   const renderCategoryContent = () => {
     if (selectedItem) {
       return renderPromptDetail();
@@ -696,18 +558,18 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
 
     if (selectedCategory === 'Nhà Phố') {
       currentItems = nhaPhoItems;
-      currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
-      currentDesc = t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.");
+      currentTitle = "Nhà Phố";
+      currentDesc = "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.";
       tag = "NHÀ";
     } else if (selectedCategory === 'Biệt Thự') {
       currentItems = bietThuItems;
-      currentTitle = t("promptLibraryPage.categories.villa.title", "Biệt Thự");
-      currentDesc = t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.");
+      currentTitle = "Biệt Thự";
+      currentDesc = "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.";
       tag = "BIỆT THỰ";
     } else if (selectedCategory === 'Nội Thất') {
       currentItems = noiThatItems;
-      currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
-      currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
+      currentTitle = "Nội Thất";
+      currentDesc = "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.";
       tag = "NỘI THẤT";
     }
 
@@ -716,7 +578,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         <div className="max-w-7xl mx-auto w-full">
           <div className="mb-8 animate-fade-in">
             <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
-              <button onClick={() => setSelectedCategory(null)} className="hover:text-white transition-colors">{t('promptLibraryPage.backToLibrary', 'Thư viện')}</button>
+              <button onClick={() => setSelectedCategory(null)} className="hover:text-white transition-colors">Thư viện</button>
               <span>/</span>
               <span className="text-white font-bold uppercase">{currentTitle}</span>
             </div>
