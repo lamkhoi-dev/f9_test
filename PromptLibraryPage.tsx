@@ -352,12 +352,18 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     try {
       const inputBase64 = await blobToBase64(activeInputFile);
       
-      let finalPrompt = selectedItem.defaultPrompt;
+      let finalPrompt = selectedItem.defaultPrompt || "Kiến trúc công trình chuyên nghiệp theo bức ảnh tham chiếu tải lên.";
 
       if (materials.trim()) {
-        finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', materials.trim());
+        if (finalPrompt.includes('{Vật liệu ứng dụng }')) {
+          finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', materials.trim());
+        } else {
+          finalPrompt += ` \nSử dụng các thiết kế vật liệu sau: ${materials.trim()}.`;
+        }
       } else {
-        finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', 'Công trình sử dụng vật liệu như ảnh tải lên.');
+        if (finalPrompt.includes('{Vật liệu ứng dụng }')) {
+          finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', 'Công trình sử dụng vật liệu như ảnh tải lên.');
+        }
       }
       
       // Apply Camera angle
@@ -420,7 +426,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     if (!selectedItem) return null;
 
     return (
-      <div className="max-w-7xl mx-auto w-full h-full flex flex-col animate-fade-in">
+      <div className="max-w-full px-4 lg:px-8 mx-auto w-full h-full flex flex-col animate-fade-in">
         {/* Breadcrumb */}
         <div className="mb-4 flex items-center gap-2 text-sm text-gray-400">
           <button onClick={() => { setSelectedCategory(null); setSelectedItem(null); }} className="hover:text-white transition-colors">{t('promptLibraryPage.backToLibrary', 'Thư viện')}</button>
@@ -506,10 +512,18 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                 onChange={(e) => setAspectRatio(e.target.value)}
                 className="w-full bg-[#2a303c] border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500"
               >
-                <option value="auto">Tự động</option>
-                <option value="1:1">1:1 (Vuông)</option>
-                <option value="16:9">16:9 (Ngang)</option>
-                <option value="9:16">9:16 (Dọc)</option>
+                <option value="Auto">Tự động</option>
+                <option value="Auto">Theo ảnh gốc (Source Image)</option>
+                <option value="1:1">Vuông (1:1)</option>
+                <option value="4:3">Ngang (4:3)</option>
+                <option value="3:4">Dọc (3:4)</option>
+                <option value="3:2">Ngang (3:2)</option>
+                <option value="2:3">Dọc (2:3)</option>
+                <option value="7:5">Ngang (7:5)</option>
+                <option value="5:7">Dọc (5:7)</option>
+                <option value="16:9">Ngang (16:9)</option>
+                <option value="9:16">Dọc (9:16)</option>
+                <option value="21:9">Siêu rộng (21:9)</option>
               </select>
             </div>
 
@@ -523,12 +537,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                 className="w-full bg-[#2a303c] border border-slate-600 rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-orange-500"
               >
                 <option value="">{t("promptLibraryPage.defaultCameraAngle", "Tự động (Giữ nguyên góc nhìn như ảnh)")}</option>
-                {VIEW_GROUPS.map((group, gIdx) => (
-                    <optgroup label={group.name} key={gIdx} className="bg-[#1e293b]">
-                        {group.views.map((view) => (
-                            <option key={view.id} value={view.prompt}>{view.name}</option>
-                        ))}
-                    </optgroup>
+                {Array.isArray(t('imageGenerationPage.sidebar.cameraAngleSuggestions', { returnObjects: true })) && 
+                 (t('imageGenerationPage.sidebar.cameraAngleSuggestions', { returnObjects: true }) as string[]).map((angle, idx) => (
+                    <option key={idx} value={angle}>{angle}</option>
                 ))}
               </select>
             </div>
@@ -579,15 +590,16 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
             <div className="flex-grow bg-[#151b28] p-4 flex items-center justify-center overflow-y-auto">
               {activeTab === 'results' ? (
                 generatedImages.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full h-full content-start">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full h-full content-center justify-items-center">
                     {generatedImages.map((img, idx) => (
-                      <img 
-                        key={idx} 
-                        src={img} 
-                        alt={`Generated ${idx}`} 
-                        className="w-full h-auto rounded-lg shadow-lg border border-slate-700 cursor-pointer hover:opacity-90 transition-opacity" 
-                        onClick={() => setZoomedImage(img)}
-                      />
+                      <div key={idx} className="flex items-center justify-center w-full h-full bg-black/20 rounded-lg border border-slate-700 p-2">
+                        <img 
+                          src={img} 
+                          alt={`Generated ${idx}`} 
+                          className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity" 
+                          onClick={() => setZoomedImage(img)}
+                        />
+                      </div>
                     ))}
                   </div>
                 ) : (
