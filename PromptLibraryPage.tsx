@@ -361,7 +361,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           finalPrompt += ` \nSử dụng các thiết kế vật liệu sau: ${materials.trim()}.`;
         }
       } else {
-        const defaultMat = 'Công trình sử dụng vật liệu chính xác như ảnh tải lên, đầy đủ tính chất vật lý như thực tế';
+        const defaultMat = 'The building uses materials as shown in the uploaded image.';
         if (finalPrompt.includes('{Vật liệu ứng dụng }')) {
           finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', defaultMat);
         } else {
@@ -500,7 +500,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                     </div>
                   ) : (
                     <div className="inline-flex items-center gap-1 bg-gray-600/80 text-gray-300 px-2 py-1 rounded text-xs">
-                      Công trình sử dụng vật liệu chính xác như ảnh tải lên, đầy đủ tính chất vật lý như thực tế
+                      The building uses materials as shown in the uploaded image.
                     </div>
                   )}
                 </div>
