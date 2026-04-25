@@ -361,10 +361,11 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           finalPrompt += ` \nSử dụng các thiết kế vật liệu sau: ${materials.trim()}.`;
         }
       } else {
+        const defaultMat = 'Công trình sử dụng vật liệu chính xác như ảnh tải lên, đầy đủ tính chất vật lý như thực tế';
         if (finalPrompt.includes('{Vật liệu ứng dụng }')) {
-          finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', 'Công trình sử dụng vật liệu như ảnh tải lên.');
+          finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', defaultMat);
         } else {
-          finalPrompt += ` \nCông trình sử dụng vật liệu như ảnh tải lên, giữ nguyên chất liệu gốc.`;
+          finalPrompt += ` \n${defaultMat}.`;
         }
       }
       
@@ -492,10 +493,14 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                   className="w-full bg-transparent text-white text-sm focus:outline-none placeholder-gray-500"
                 />
                 <div className="flex flex-wrap gap-2">
-                  {materials && (
+                  {materials ? (
                     <div className="inline-flex items-center gap-1 bg-orange-600/80 text-white px-2 py-1 rounded text-xs">
                       {materials}
                       <button onClick={() => setMaterials('')} className="hover:text-red-300 ml-1">×</button>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-1 bg-gray-600/80 text-gray-300 px-2 py-1 rounded text-xs">
+                      Công trình sử dụng vật liệu chính xác như ảnh tải lên, đầy đủ tính chất vật lý như thực tế
                     </div>
                   )}
                 </div>
