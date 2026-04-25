@@ -363,6 +363,8 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       } else {
         if (finalPrompt.includes('{Vật liệu ứng dụng }')) {
           finalPrompt = finalPrompt.replace('{Vật liệu ứng dụng }', 'Công trình sử dụng vật liệu như ảnh tải lên.');
+        } else {
+          finalPrompt += ` \nCông trình sử dụng vật liệu như ảnh tải lên, giữ nguyên chất liệu gốc.`;
         }
       }
       
