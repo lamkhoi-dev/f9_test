@@ -490,23 +490,19 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                   className="w-full bg-transparent text-white text-sm focus:outline-none placeholder-gray-500"
                 />
                 <div className="flex flex-wrap gap-2">
-                  {materials ? (
+                  {materials && (
                     <div className="inline-flex items-center gap-1 bg-orange-600/80 text-white px-2 py-1 rounded text-xs">
                       {materials}
                       <button onClick={() => setMaterials('')} className="hover:text-red-300 ml-1">×</button>
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-1 bg-gray-600/80 text-gray-300 px-2 py-1 rounded text-xs">
-                      Công trình sử dụng vật liệu như ảnh tải lên.
                     </div>
                   )}
                 </div>
               </div>
             </div>
 
-            {/* 6. Tỉ lệ khung hình */}
+            {/* Tỉ lệ khung hình */}
             <div>
-              <h3 className="text-white font-bold mb-2 text-sm">6. Tỉ lệ khung hình</h3>
+              <h3 className="text-white font-bold mb-2 text-sm">Tỉ lệ khung hình</h3>
               <select 
                 value={aspectRatio}
                 onChange={(e) => setAspectRatio(e.target.value)}
@@ -528,9 +524,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
             </div>
 
 
-            {/* 7. Góc nhìn Camera */}
+            {/* Góc nhìn Camera */}
             <div>
-              <h3 className="text-white font-bold mb-2 text-sm">7. {t("promptLibraryPage.cameraAngle", "Góc chụp / Góc nhìn Camera")}</h3>
+              <h3 className="text-white font-bold mb-2 text-sm">{t("promptLibraryPage.cameraAngle", "Góc chụp / Góc nhìn Camera")}</h3>
               <select 
                 value={selectedCameraAngle}
                 onChange={(e) => setSelectedCameraAngle(e.target.value)}
@@ -592,13 +588,21 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                 generatedImages.length > 0 ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full h-full content-center justify-items-center">
                     {generatedImages.map((img, idx) => (
-                      <div key={idx} className="flex items-center justify-center w-full h-full bg-black/20 rounded-lg border border-slate-700 p-2">
+                      <div key={idx} className="relative flex items-center justify-center w-full h-full bg-black/20 rounded-lg border border-slate-700 p-2 group">
                         <img 
                           src={img} 
                           alt={`Generated ${idx}`} 
                           className="max-w-full max-h-[70vh] object-contain rounded-lg shadow-lg cursor-pointer hover:opacity-90 transition-opacity" 
                           onClick={() => setZoomedImage(img)}
                         />
+                        <a 
+                          href={img} 
+                          download={`[f9render.com]_image_${idx + 1}.png`}
+                          className="absolute bottom-4 left-4 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-white text-xs font-medium px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/80"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                          Tải xuống
+                        </a>
                       </div>
                     ))}
                   </div>
