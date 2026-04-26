@@ -2,6 +2,23 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { GoogleGenAI } from '@google/genai';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Hỗ trợ deploy trên Railway: ghi file credentials từ biến môi trường (nếu có)
+if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
+  const credPath = path.join(__dirname, 'vertex-key.json');
+  fs.writeFileSync(credPath, process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = credPath;
+  console.log('✅ GCP credentials file written from environment variable');
+} else if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+  // Setup fallback cho local dev: trỏ tới file vertex-key.json trong thư mục server
+  process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(__dirname, 'vertex-key.json');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -11,17 +28,15 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json({ limit: '100mb' }));
 
 /**
- * Get GoogleGenAI instance per-request.
- * Priority: x-api-key header > VERTEX_API_KEY env
+ * Get GoogleGenAI instance using Vertex AI (chỉ trừ tiền vào $300 Free Credit)
  */
-function getAI(req) {
-  const key = req.headers['x-api-key'] || process.env.VERTEX_API_KEY;
-  if (!key) {
-    const err = new Error('No API key provided. Please set your key in the app settings.');
-    err.status = 401;
-    throw err;
-  }
-  return new GoogleGenAI({ apiKey: key });
+function getAI() {
+  return new GoogleGenAI({
+    vertexai: {
+      project: process.env.GOOGLE_CLOUD_PROJECT || 'project-fdbf43b8-e8ee-4b6a-90a',
+      location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'
+    }
+  });
 }
 
 // Health check
@@ -29,29 +44,7 @@ app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Validate API key
-app.post('/api/validate-key', async (req, res) => {
-  try {
-    const key = req.headers['x-api-key'];
-    if (!key) {
-      return res.status(400).json({ error: 'Missing x-api-key header' });
-    }
-
-    const ai = new GoogleGenAI({ apiKey: key });
-    // Light call to verify the key works
-    await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: 'Reply with exactly: OK',
-      config: { maxOutputTokens: 5 },
-    });
-
-    console.log(`[validate-key] ✅ Key valid (${key.slice(0, 6)}...${key.slice(-4)})`);
-    res.json({ valid: true });
-  } catch (error) {
-    console.error(`[validate-key] ❌ Invalid key:`, error.message);
-    res.status(401).json({ valid: false, error: error.message || 'Invalid API key' });
-  }
-});
+// Xoá endpoint /api/validate-key vì Vertex AI không kiểm tra API Key đơn lẻ kiểu này nữa.
 
 // Proxy: generateContent (text + image generation)
 app.post('/api/generate-content', async (req, res) => {
@@ -62,7 +55,7 @@ app.post('/api/generate-content', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields: model, contents' });
     }
 
-    const ai = getAI(req);
+    const ai = getAI();
 
     if (config?.imageConfig) {
       console.log(`[generate-content] -> model: ${model} | imageConfig:`, JSON.stringify(config.imageConfig));
@@ -100,7 +93,7 @@ app.post('/api/generate-content-stream', async (req, res) => {
       return res.status(400).json({ error: 'Missing required fields: model, contents' });
     }
 
-    const ai = getAI(req);
+    const ai = getAI();
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
@@ -136,5 +129,5 @@ app.post('/api/generate-content-stream', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 F9 Render API running on http://localhost:${PORT}`);
   console.log(`   Health: http://localhost:${PORT}/api/health`);
-  console.log(`   Fallback Key: ${process.env.VERTEX_API_KEY ? '✅ Configured' : '⚠️  Not set (user key required)'}`);
+  console.log(`   Mode: VERTEX AI (Project: ${process.env.GOOGLE_CLOUD_PROJECT || 'project-fdbf43b8-e8ee-4b6a-90a'})`);
 });

@@ -1,26 +1,7 @@
 /**
  * API client for communicating with the backend proxy server.
- * Replaces direct GoogleGenAI SDK calls from the browser.
+ * Backend uses Vertex AI with Service Account — no user API key needed.
  */
-
-const STORAGE_KEY = 'f9_user_api_key';
-
-function getStoredApiKey(): string | null {
-  try {
-    return localStorage.getItem(STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function buildHeaders(): Record<string, string> {
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const key = getStoredApiKey();
-  if (key) {
-    headers['x-api-key'] = key;
-  }
-  return headers;
-}
 
 interface GenerateContentParams {
   model: string;
@@ -43,13 +24,12 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 export const apiClient = {
   /**
    * Proxy for ai.models.generateContent()
-   * Handles both text and image generation.
-   * Automatically attaches user API key from localStorage.
+   * Handles both text and image generation via Vertex AI backend.
    */
   generateContent: async (params: GenerateContentParams): Promise<GenerateContentResponse> => {
     const res = await fetch(`${API_BASE_URL}/api/generate-content`, {
       method: 'POST',
-      headers: buildHeaders(),
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params),
     });
 
@@ -63,21 +43,6 @@ export const apiClient = {
 
     return res.json();
   },
-};
-
-/**
- * Validate an API key against the backend.
- */
-export const validateApiKey = async (key: string): Promise<boolean> => {
-  try {
-    const res = await fetch(`${API_BASE_URL}/api/validate-key`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': key },
-    });
-    return res.ok;
-  } catch {
-    return false;
-  }
 };
 
 /**

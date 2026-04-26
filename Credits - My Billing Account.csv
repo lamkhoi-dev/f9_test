@@ -1,0 +1,4 @@
+Credit name,Status,Currency,Percent remaining,Remaining value,Original value,Type,Credit ID,Scope,Start date,End date,Credit application type
+Free Trial,Expired,₫,100,7900651,7900651,One-time,FreeTrial:Credit-017E26-30C052-108C89,Certain usage; see the terms for free trial.,2026-04-01,2026-04-02,Net pricing,
+Free Trial,Available,₫,97.59557811947396,7710686.02,7900651,One-time,FreeTrialUpgrade:CreditId-FreeTrial:Credit-017E26-30C052-108C89,Certain usage; see the terms for free trial.,2026-04-02,2026-07-02,Net pricing,
+Trial credit for GenAI App Builder,Available,₫,100,26335501,26335501,One-time,486985b4d4b1c7c1538875c5ccbe181841be4561f81628b03510b6c5c3ff256a,Certain usage; see the terms of the promotion for details.,2026-04-04,2027-04-04,Net pricing,

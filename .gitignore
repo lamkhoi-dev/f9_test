@@ -27,3 +27,6 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# GCP Service Account Key (NEVER commit this)
+server/vertex-key.json
