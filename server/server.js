@@ -39,6 +39,30 @@ function getAI() {
   });
 }
 
+/**
+ * Normalize contents từ format AI Studio → Vertex AI.
+ *
+ * AI Studio chấp nhận:  { parts: [...] }  hoặc  [{ parts: [...] }]
+ * Vertex AI YÊU CẦU:   [{ role: "user", parts: [...] }]
+ *
+ * Hàm này tự động bổ sung role nếu thiếu, đảm bảo luôn là Array.
+ */
+function normalizeContents(contents) {
+  // Đã là Array
+  if (Array.isArray(contents)) {
+    return contents.map(item => ({
+      role: item.role && ['user', 'model'].includes(item.role) ? item.role : 'user',
+      parts: item.parts ?? [],
+    }));
+  }
+  // Object đơn { parts: [...] }
+  if (contents && typeof contents === 'object' && contents.parts) {
+    return [{ role: 'user', parts: contents.parts }];
+  }
+  // Fallback — trả về nguyên để Vertex báo lỗi rõ hơn
+  return contents;
+}
+
 // Health check
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -56,6 +80,7 @@ app.post('/api/generate-content', async (req, res) => {
     }
 
     const ai = getAI();
+    const normalizedContents = normalizeContents(contents);
 
     if (config?.imageConfig) {
       console.log(`[generate-content] -> model: ${model} | imageConfig:`, JSON.stringify(config.imageConfig));
@@ -63,7 +88,7 @@ app.post('/api/generate-content', async (req, res) => {
       console.log(`[generate-content] -> model: ${model} | NO imageConfig`);
     }
 
-    const response = await ai.models.generateContent({ model, contents, config });
+    const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
 
     const result = {
       text: response.text ?? null,
@@ -94,12 +119,13 @@ app.post('/api/generate-content-stream', async (req, res) => {
     }
 
     const ai = getAI();
+    const normalizedContents = normalizeContents(contents);
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    const stream = await ai.models.generateContentStream({ model, contents, config });
+    const stream = await ai.models.generateContentStream({ model, contents: normalizedContents, config });
 
     for await (const chunk of stream) {
       const data = {
