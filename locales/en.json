@@ -2422,5 +2422,11 @@
         }
       }
     }
+  },
+  "user": {
+    "balance": "BALANCE",
+    "credits": "CREDITS",
+    "free": "FREE",
+    "tooltip": "Daily free usage resets at midnight. Credits (VNĐ) never expire."
   }
 }

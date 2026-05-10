@@ -30,3 +30,9 @@ dist-ssr
 
 # GCP Service Account Key (NEVER commit this)
 server/vertex-key.json
+
+# Backend TypeScript compiled output
+server/dist/
+
+# Clone repo (temporary — remove after migration)
+F9-Rendering-AI/

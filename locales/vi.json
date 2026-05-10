@@ -2832,5 +2832,11 @@
         }
       }
     }
+  },
+  "user": {
+    "balance": "SỐ DƯ",
+    "credits": "CREDITS",
+    "free": "FREE",
+    "tooltip": "Số lượt dùng miễn phí sẽ tự động reset vào nửa đêm. Credits (VNĐ) nạp vào sẽ không bao giờ hết hạn."
   }
 }
