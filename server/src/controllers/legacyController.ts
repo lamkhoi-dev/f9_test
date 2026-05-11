@@ -15,7 +15,19 @@ import path from 'path';
 // Bootstrap GCP credentials from env (same logic as original server.js)
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
   const credPath = path.join(__dirname, '../../vertex-key.json');
-  fs.writeFileSync(credPath, process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
+  let credJson = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
+  
+  // Auto-detect base64: if it doesn't start with '{', it's likely base64-encoded
+  if (!credJson.trim().startsWith('{')) {
+    try {
+      credJson = Buffer.from(credJson, 'base64').toString('utf-8');
+      console.log('🔓 Decoded base64 credentials');
+    } catch (e) {
+      console.warn('⚠️ Failed to decode base64 credentials, using as-is');
+    }
+  }
+  
+  fs.writeFileSync(credPath, credJson);
   process.env.GOOGLE_APPLICATION_CREDENTIALS = credPath;
   console.log('✅ GCP credentials file written from environment variable');
 } else if (!process.env.GOOGLE_APPLICATION_CREDENTIALS) {
