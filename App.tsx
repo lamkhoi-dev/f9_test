@@ -21,7 +21,7 @@ import ExteriorViewSuggestionsPage from './components/ExteriorViewSuggestions';
 import { HistoryRecord } from './lib/db';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { PricingProvider } from './contexts/PricingContext';
-import PromptLibraryPage from './pages/PromptLibraryPage';
+import PromptLibraryPage from './PromptLibraryPage';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
@@ -96,8 +96,8 @@ const AppContent: React.FC = () => {
         <Route path="/exterior-view-suggestions" element={<ExteriorViewSuggestionsPage onBack={() => navigate('/')} />} />
 
         {/* Prompt Library */}
-        <Route path="/prompt-library" element={<PromptLibraryPage />} />
-        <Route path="/prompt-library/:categoryId" element={<PromptLibraryPage />} />
+        <Route path="/prompt-library" element={<PromptLibraryPage onNavigate={handleNavigate} />} />
+        <Route path="/prompt-library/:categoryId" element={<PromptLibraryPage onNavigate={handleNavigate} />} />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />
