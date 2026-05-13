@@ -18,10 +18,63 @@ import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
 import AdminPage from './AdminPage';
 import ExteriorViewSuggestionsPage from './components/ExteriorViewSuggestions';
+import UpgradeModal from './components/UpgradeModal';
 import { HistoryRecord } from './lib/db';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { PricingProvider } from './contexts/PricingContext';
 import PromptLibraryPage from './PromptLibraryPage';
+
+// Route guard component for PRO-only pages
+const ProGuard: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { isFreePlan } = useAuth();
+  const [showUpgrade, setShowUpgrade] = useState(isFreePlan);
+
+  if (isFreePlan) {
+    return (
+      <div className="min-h-screen flex flex-col bg-[#0f172a] text-slate-200">
+        <UpgradeModal
+          isOpen={showUpgrade}
+          onClose={() => {
+            setShowUpgrade(false);
+            window.history.back();
+          }}
+          title="Tính năng dành cho PRO"
+          message="Trang này chỉ dành cho tài khoản PRO. Nâng cấp ngay để truy cập đầy đủ các tính năng!"
+        />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg text-gray-400 mb-4">Tính năng này yêu cầu gói PRO</p>
+            <button
+              onClick={() => window.history.back()}
+              className="px-6 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
+            >
+              Quay lại
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+// Shared layout wrapper with Header for all app pages
+const AppLayout: React.FC<{ children: React.ReactNode; onNavigate: (page: string, data?: HistoryRecord) => void }> = ({ children, onNavigate }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex flex-col bg-[#0f172a] text-slate-200 selection:bg-orange-500 selection:text-white">
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 rounded-full blur-[120px]"></div>
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-orange-900/10 rounded-full blur-[120px]"></div>
+      </div>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        <Header onNavigateHistory={() => navigate('/history')} onNavigate={onNavigate} />
+        {children}
+      </div>
+    </div>
+  );
+};
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
@@ -29,13 +82,11 @@ const AppContent: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Helper for components still using onNavigate prop
   const handleNavigate = (page: string = 'home', data?: HistoryRecord) => {
     const path = page === 'home' ? '/' : `/${page}`;
     navigate(path, { state: data });
   };
 
-  // Get restoreData from router state (for history → page restore)
   const restoreData = (location.state as HistoryRecord) || null;
 
   if (isLoading) {
@@ -53,11 +104,11 @@ const AppContent: React.FC = () => {
   return (
     <>
       <Routes>
-        {/* Public Auth Routes */}
+        {/* Public Auth Routes — no header */}
         <Route path="/login" element={<LoginPage onNavigate={handleNavigate} />} />
         <Route path="/signup" element={<SignupPage onNavigate={handleNavigate} />} />
 
-        {/* Admin Route — only for authenticated admins */}
+        {/* Admin Route */}
         <Route
           path="/admin"
           element={
@@ -67,37 +118,73 @@ const AppContent: React.FC = () => {
           }
         />
 
-        {/* Main App Routes — accessible to everyone (guest mode) */}
+        {/* Home — with Banner + CardGrid */}
         <Route
           path="/"
           element={
-            <div className="min-h-screen flex flex-col bg-[#0f172a] text-slate-200 selection:bg-orange-500 selection:text-white">
-              <div className="fixed inset-0 z-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-900/20 rounded-full blur-[120px]"></div>
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-orange-900/10 rounded-full blur-[120px]"></div>
-              </div>
-              <div className="relative z-10 flex flex-col min-h-screen">
-                <Header onNavigateHistory={() => navigate('/history')} onNavigate={handleNavigate} />
-                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
-                  <Banner />
-                  <CardGrid onNavigate={handleNavigate} />
-                </main>
-                <Footer />
-              </div>
-            </div>
+            <AppLayout onNavigate={handleNavigate}>
+              <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+                <Banner />
+                <CardGrid onNavigate={handleNavigate} />
+              </main>
+              <Footer />
+            </AppLayout>
           }
         />
-        <Route path="/history" element={<History onNavigate={handleNavigate} />} />
-        <Route path="/auto-coloring" element={<AutoColoringPage onNavigate={handleNavigate} restoreData={restoreData} />} />
-        <Route path="/download-3d-model" element={<Download3DModelPage onNavigate={handleNavigate} />} />
-        <Route path="/3d-sketch" element={<ThreeDSketchPage onNavigate={handleNavigate} restoreData={restoreData} />} />
-        <Route path="/realistic-model" element={<RealisticModelPage onNavigate={handleNavigate} restoreData={restoreData} />} />
-        <Route path="/image-generation" element={<ImageGenerationPage onNavigate={handleNavigate} restoreData={restoreData} />} />
-        <Route path="/exterior-view-suggestions" element={<ExteriorViewSuggestionsPage onBack={() => navigate('/')} />} />
 
-        {/* Prompt Library */}
-        <Route path="/prompt-library" element={<PromptLibraryPage onNavigate={handleNavigate} />} />
-        <Route path="/prompt-library/:categoryId" element={<PromptLibraryPage onNavigate={handleNavigate} />} />
+        {/* History — with Header */}
+        <Route path="/history" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <History onNavigate={handleNavigate} />
+          </AppLayout>
+        } />
+
+        {/* Image Generation — FREE users allowed (internal tab locking) */}
+        <Route path="/image-generation" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <ImageGenerationPage onNavigate={handleNavigate} restoreData={restoreData} />
+          </AppLayout>
+        } />
+
+        {/* Prompt Library — FREE users allowed (badge + content locking) */}
+        <Route path="/prompt-library" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <PromptLibraryPage onNavigate={handleNavigate} />
+          </AppLayout>
+        } />
+        <Route path="/prompt-library/:categoryId" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <PromptLibraryPage onNavigate={handleNavigate} />
+          </AppLayout>
+        } />
+
+        {/* PRO-only pages — wrapped in ProGuard */}
+        <Route path="/auto-coloring" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <ProGuard><AutoColoringPage onNavigate={handleNavigate} restoreData={restoreData} /></ProGuard>
+          </AppLayout>
+        } />
+        <Route path="/download-3d-model" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <ProGuard><Download3DModelPage onNavigate={handleNavigate} /></ProGuard>
+          </AppLayout>
+        } />
+        <Route path="/3d-sketch" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <ProGuard><ThreeDSketchPage onNavigate={handleNavigate} restoreData={restoreData} /></ProGuard>
+          </AppLayout>
+        } />
+        <Route path="/realistic-model" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <ProGuard><RealisticModelPage onNavigate={handleNavigate} restoreData={restoreData} /></ProGuard>
+          </AppLayout>
+        } />
+
+        <Route path="/exterior-view-suggestions" element={
+          <AppLayout onNavigate={handleNavigate}>
+            <ExteriorViewSuggestionsPage onBack={() => navigate('/')} />
+          </AppLayout>
+        } />
 
         {/* Catch all */}
         <Route path="*" element={<Navigate to="/" replace />} />

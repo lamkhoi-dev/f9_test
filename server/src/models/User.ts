@@ -8,13 +8,15 @@ interface UserAttributes {
   password: string;
   name: string;
   role: 'user' | 'admin';
+  plan: 'free' | 'pro';
+  hasPersonalKey: boolean;
   freeUsageLeft: number;
   dailyFreeLimit: number;
   lastFreeReset: Date;
   balance: number;
 }
 
-type UserCreationAttributes = Optional<UserAttributes, 'id' | 'role' | 'freeUsageLeft' | 'dailyFreeLimit' | 'lastFreeReset' | 'balance'>;
+type UserCreationAttributes = Optional<UserAttributes, 'id' | 'role' | 'plan' | 'hasPersonalKey' | 'freeUsageLeft' | 'dailyFreeLimit' | 'lastFreeReset' | 'balance'>;
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   declare id: string;
@@ -22,6 +24,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   declare password: string;
   declare name: string;
   declare role: 'user' | 'admin';
+  declare plan: 'free' | 'pro';
+  declare hasPersonalKey: boolean;
   declare freeUsageLeft: number;
   declare dailyFreeLimit: number;
   declare lastFreeReset: Date;
@@ -65,6 +69,16 @@ User.init(
       defaultValue: 'user',
       allowNull: false,
     },
+    plan: {
+      type: DataTypes.ENUM('free', 'pro'),
+      defaultValue: 'free',
+      allowNull: false,
+    },
+    hasPersonalKey: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
     freeUsageLeft: {
       type: DataTypes.INTEGER,
       defaultValue: 2,
@@ -82,7 +96,7 @@ User.init(
     },
     balance: {
       type: DataTypes.FLOAT,
-      defaultValue: 0,
+      defaultValue: 30,
       allowNull: false,
     },
   },

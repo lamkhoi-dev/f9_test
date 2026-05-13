@@ -2,7 +2,7 @@
 import React, { useState, ReactNode } from 'react';
 import { ModeContext, useMode } from './mode-context-utils';
 
-export type AppMode = 'free' | 'pro' | 'banana2';
+export type AppMode = 'pro' | 'banana2';
 export type ProResolution = '1k' | '2k' | '4k';
 
 export interface ModeContextType {
@@ -17,21 +17,20 @@ export interface ModeContextType {
 }
 
 export const UI_PRICE_KEYS = {
-  BASIC_1K: 'basic-1k',
+  PRO_1K: 'pro-1k',
   PRO_2K: 'pro-2k',
   PRO_4K: 'pro-4k',
+  BANANA2_1K: 'banana2-1k',
   BANANA2_2K: 'banana2-2k',
   BANANA2_4K: 'banana2-4k',
 };
 
 export const UI_MODE_MODELS: Record<AppMode, string> = {
-  'free': 'gemini-2.5-flash-image',
   'pro': 'gemini-3-pro-image-preview',
   'banana2': 'gemini-3.1-flash-image-preview'
 };
 
 export const UI_MODE_LABELS: Record<AppMode, string> = {
-  'free': 'Basic Ver 2.5',
   'pro': 'Banana Pro',
   'banana2': 'Banana 2'
 };
@@ -73,49 +72,49 @@ export const SERVICE_LABELS: Record<string, string> = {
   [SERVICE_KEYS.ALL]: 'Tất cả dịch vụ'
 };
 
+// Credit costs per resolution
+export const CREDIT_COSTS: Record<ProResolution, number> = {
+  '1k': 10,
+  '2k': 20,
+  '4k': 40,
+};
+
 export { useMode };
 
 export const ModeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [mode, setMode] = useState<AppMode>('free');
-  const [proResolution, setProResolution] = useState<ProResolution>('2k');
+  const [mode, setMode] = useState<AppMode>('pro');
+  const [proResolution, setProResolution] = useState<ProResolution>('1k');
 
   const toggleMode = () => {
-    const newMode = mode === 'free' ? 'pro' : 'free';
+    const newMode = mode === 'pro' ? 'banana2' : 'pro';
     setMode(newMode);
   };
 
   const getModelName = (type: 'text' | 'image' | 'video', customMode?: AppMode) => {
     const activeMode = customMode || mode;
     
-    if (activeMode === 'pro') {
-      return UI_MODE_MODELS.pro;
-    } else if (activeMode === 'banana2') {
+    if (activeMode === 'banana2') {
       return UI_MODE_MODELS.banana2;
-    } else {
-      // Free / Nano Banana
-      switch (type) {
-        case 'image': return 'gemini-2.5-flash-image';
-        case 'text': return 'gemini-2.5-flash';
-        case 'video': return 'veo-3.1-fast-generate-preview';
-        default: return 'gemini-2.5-flash';
-      }
+    }
+    // Default: Banana Pro
+    switch (type) {
+      case 'image': return UI_MODE_MODELS.pro;
+      case 'text': return 'gemini-2.5-flash';
+      case 'video': return 'veo-3.1-fast-generate-preview';
+      default: return 'gemini-2.5-flash';
     }
   };
 
   const getPriceKey = (customMode?: AppMode, customRes?: ProResolution) => {
     const m = customMode || mode;
-    const r = customRes || (m === 'free' ? '1k' as ProResolution : proResolution);
-    
-    if (m === 'free') return UI_PRICE_KEYS.BASIC_1K;
-    if (m === 'pro') return r === '4k' ? UI_PRICE_KEYS.PRO_4K : UI_PRICE_KEYS.PRO_2K;
-    if (m === 'banana2') return r === '4k' ? UI_PRICE_KEYS.BANANA2_4K : UI_PRICE_KEYS.BANANA2_2K;
+    const r = customRes || proResolution;
     return `${m}-${r}`;
   };
 
   return (
     <ModeContext.Provider value={{ 
       mode, setMode, toggleMode, 
-      isPro: mode === 'pro' || mode === 'banana2', 
+      isPro: true, // always true now (no free mode)
       proResolution, setProResolution, 
       getModelName, 
       getPriceKey 

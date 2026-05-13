@@ -7,6 +7,8 @@ interface User {
   phone: string;
   name: string;
   role: 'user' | 'admin';
+  plan: 'free' | 'pro';
+  hasPersonalKey: boolean;
   freeUsageLeft: number;
   balance: number;
 }
@@ -16,6 +18,9 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isFreePlan: boolean;
+  isProPlan: boolean;
+  hasPersonalKey: boolean;
   isLoading: boolean;
   login: (phone: string, password: string) => Promise<void>;
   signup: (name: string, phone: string, password: string) => Promise<void>;
@@ -99,6 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
+        isFreePlan: user?.plan !== 'pro',
+        isProPlan: user?.plan === 'pro',
+        hasPersonalKey: user?.hasPersonalKey === true,
         isLoading,
         login,
         signup,

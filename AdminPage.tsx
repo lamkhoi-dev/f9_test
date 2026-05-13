@@ -12,6 +12,8 @@ import { MagnifyingGlassIcon } from './components/icons/MagnifyingGlassIcon';
 import { WalletIcon } from './components/icons/WalletIcon';
 import { PencilIcon } from './components/icons/PencilIcon';
 import { PlusIcon } from './components/icons/PlusIcon';
+import { TrashIcon } from './components/icons/TrashIcon';
+import { BookOpenIcon } from './components/icons/BookOpenIcon';
 import { ToastContainer, useToast } from './components/Toast';
 
 interface AdminUser {
@@ -29,7 +31,27 @@ interface AdminPageProps {
   onNavigate: (page: string) => void;
 }
 
-type AdminTab = 'users' | 'pricing' | 'keys' | 'stats';
+type AdminTab = 'users' | 'pricing' | 'keys' | 'stats' | 'prompts';
+
+interface PromptCategory {
+  id: string;
+  name: string;
+  description: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+interface AdminPrompt {
+  id: string;
+  categoryId: string;
+  title: string;
+  content: string;
+  thumbnail: string;
+  tier: 'free' | 'pro';
+  sortOrder: number;
+  isActive: boolean;
+  categoryName?: string;
+}
 
 interface ApiKey {
   id: number;
@@ -102,6 +124,17 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [pricingFilter, setPricingFilter] = useState<string>('__all__');
   const [editingPricingId, setEditingPricingId] = useState<number | null>(null);
 
+  // Prompt Library State
+  const [promptCategories, setPromptCategories] = useState<PromptCategory[]>([]);
+  const [adminPrompts, setAdminPrompts] = useState<AdminPrompt[]>([]);
+  const [showPromptModal, setShowPromptModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [editingPrompt, setEditingPrompt] = useState<AdminPrompt | null>(null);
+  const [editingCategory, setEditingCategory] = useState<PromptCategory | null>(null);
+  const [promptForm, setPromptForm] = useState({ title: '', content: '', thumbnail: '', categoryId: '', tier: 'free' as 'free' | 'pro', sortOrder: 0, isActive: true });
+  const [categoryForm, setCategoryForm] = useState({ name: '', description: '', sortOrder: 0, isActive: true });
+  const [promptCategoryFilter, setPromptCategoryFilter] = useState<string>('__all__');
+
   // --- Fetchers ---
   const fetchUsers = async (pageNum: number = 1) => {
     setIsLoading(true);
@@ -154,10 +187,94 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     } finally { setIsLoading(false); }
   };
 
+  const fetchPromptCategories = async () => {
+    try {
+      const res = await apiClient.get('/admin/prompt-categories');
+      setPromptCategories(res.data.data || []);
+    } catch (err: any) {
+      // If backend not ready yet, use local fallback
+      setPromptCategories([
+        { id: 'cat-1', name: 'Nhà Phố', description: 'Mẫu prompt nhà phố', sortOrder: 1, isActive: true },
+        { id: 'cat-2', name: 'Biệt Thự', description: 'Mẫu prompt biệt thự', sortOrder: 2, isActive: true },
+        { id: 'cat-3', name: 'Nội Thất', description: 'Mẫu prompt nội thất', sortOrder: 3, isActive: true },
+      ]);
+    }
+  };
+
+  const fetchAdminPrompts = async () => {
+    try {
+      const res = await apiClient.get('/admin/prompts');
+      setAdminPrompts(res.data.data || []);
+    } catch (err: any) {
+      // Fallback for when backend isn't ready
+      setAdminPrompts([]);
+    }
+  };
+
+  const handleSavePrompt = async () => {
+    try {
+      if (editingPrompt) {
+        await apiClient.put(`/admin/prompts/${editingPrompt.id}`, promptForm);
+        toast.success('Cập nhật prompt thành công!');
+      } else {
+        await apiClient.post('/admin/prompts', promptForm);
+        toast.success('Thêm prompt mới thành công!');
+      }
+      setShowPromptModal(false);
+      setEditingPrompt(null);
+      setPromptForm({ title: '', content: '', thumbnail: '', categoryId: '', tier: 'free', sortOrder: 0, isActive: true });
+      fetchAdminPrompts();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi lưu prompt');
+    }
+  };
+
+  const handleDeletePrompt = async (id: string) => {
+    if (!confirm('Bạn có chắc muốn xóa prompt này?')) return;
+    try {
+      await apiClient.delete(`/admin/prompts/${id}`);
+      toast.success('Xóa prompt thành công!');
+      fetchAdminPrompts();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi xóa prompt');
+    }
+  };
+
+  const handleSaveCategory = async () => {
+    try {
+      if (editingCategory) {
+        await apiClient.put(`/admin/prompt-categories/${editingCategory.id}`, categoryForm);
+        toast.success('Cập nhật chuyên mục thành công!');
+      } else {
+        await apiClient.post('/admin/prompt-categories', categoryForm);
+        toast.success('Thêm chuyên mục mới thành công!');
+      }
+      setShowCategoryModal(false);
+      setEditingCategory(null);
+      setCategoryForm({ name: '', description: '', sortOrder: 0, isActive: true });
+      fetchPromptCategories();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi lưu chuyên mục');
+    }
+  };
+
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm('Xóa chuyên mục sẽ xóa tất cả prompt bên trong. Tiếp tục?')) return;
+    try {
+      await apiClient.delete(`/admin/prompt-categories/${id}`);
+      toast.success('Xóa chuyên mục thành công!');
+      fetchPromptCategories();
+      fetchAdminPrompts();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi xóa chuyên mục');
+    }
+  };
+
   const UI_MODE_OPTIONS = [
-    { key: UI_PRICE_KEYS.BASIC_1K, label: `${UI_MODE_LABELS.free} (1K)` },
+    { key: UI_PRICE_KEYS.PRO_1K, label: `${UI_MODE_LABELS.pro} (1K)` },
     { key: UI_PRICE_KEYS.PRO_2K, label: `${UI_MODE_LABELS.pro} (2K)` },
     { key: UI_PRICE_KEYS.PRO_4K, label: `${UI_MODE_LABELS.pro} (4K)` },
+    { key: UI_PRICE_KEYS.BANANA2_1K, label: `${UI_MODE_LABELS.banana2} (1K)` },
     { key: UI_PRICE_KEYS.BANANA2_2K, label: `${UI_MODE_LABELS.banana2} (2K)` },
     { key: UI_PRICE_KEYS.BANANA2_4K, label: `${UI_MODE_LABELS.banana2} (4K)` },
   ];
@@ -173,6 +290,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     else if (activeTab === 'keys') fetchKeys();
     else if (activeTab === 'pricing') fetchPricing();
     else if (activeTab === 'stats') { fetchStats(); fetchConfigs(); }
+    else if (activeTab === 'prompts') { fetchPromptCategories(); fetchAdminPrompts(); }
   }, [isAdmin, activeTab]);
 
   // --- Handlers ---
@@ -295,6 +413,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     { key: 'users', label: 'Người dùng', icon: <UsersIcon className="w-4 h-4" /> },
     { key: 'pricing', label: 'Bảng giá', icon: <CurrencyIcon className="w-4 h-4" /> },
     { key: 'keys', label: 'API Keys', icon: <KeyIcon className="w-4 h-4" /> },
+    { key: 'prompts', label: 'Thư viện Prompt', icon: <BookOpenIcon className="w-4 h-4" /> },
   ];
 
   const renderTabContent = () => {
@@ -606,6 +725,185 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
     // Configs tab removed per user request
 
+    // --- PROMPTS TAB ---
+    if (activeTab === 'prompts') {
+      const filteredPrompts = promptCategoryFilter === '__all__' 
+        ? adminPrompts 
+        : adminPrompts.filter(p => p.categoryId === promptCategoryFilter);
+
+      return (
+        <div>
+          {/* Categories Section */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-white">Chuyên mục</h2>
+              <button
+                onClick={() => {
+                  setEditingCategory(null);
+                  setCategoryForm({ name: '', description: '', sortOrder: 0, isActive: true });
+                  setShowCategoryModal(true);
+                }}
+                className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors"
+              >
+                <PlusIcon className="w-3.5 h-3.5" /> Thêm chuyên mục
+              </button>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {promptCategories.map(cat => (
+                <div key={cat.id} className="bg-[#111827] border border-gray-800 rounded-xl p-4 flex items-center justify-between">
+                  <div>
+                    <h3 className="text-white font-semibold text-sm">{cat.name}</h3>
+                    <p className="text-gray-500 text-xs mt-0.5">{cat.description}</p>
+                    <span className={`inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${cat.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                      {cat.isActive ? 'Hoạt động' : 'Ẩn'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5 ml-3">
+                    <button 
+                      onClick={() => {
+                        setEditingCategory(cat);
+                        setCategoryForm({ name: cat.name, description: cat.description, sortOrder: cat.sortOrder, isActive: cat.isActive });
+                        setShowCategoryModal(true);
+                      }}
+                      className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+                    >
+                      <PencilIcon className="w-3.5 h-3.5" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteCategory(cat.id)}
+                      className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                    >
+                      <TrashIcon className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {promptCategories.length === 0 && (
+                <p className="text-gray-500 text-sm col-span-3">Chưa có chuyên mục nào. Bấm "Thêm chuyên mục" để bắt đầu.</p>
+              )}
+            </div>
+          </div>
+
+          {/* Prompts Section */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <h2 className="text-lg font-bold text-white">Danh sách Prompt</h2>
+                <select
+                  value={promptCategoryFilter}
+                  onChange={e => setPromptCategoryFilter(e.target.value)}
+                  className="bg-[#1e293b] border border-gray-700 text-white text-xs rounded-lg px-3 py-1.5"
+                >
+                  <option value="__all__">Tất cả chuyên mục</option>
+                  {promptCategories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingPrompt(null);
+                  setPromptForm({ title: '', content: '', thumbnail: '', categoryId: promptCategories[0]?.id || '', tier: 'free', sortOrder: 0, isActive: true });
+                  setShowPromptModal(true);
+                }}
+                className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors"
+              >
+                <PlusIcon className="w-3.5 h-3.5" /> Thêm prompt
+              </button>
+            </div>
+
+            <div className="bg-[#111827] border border-gray-800 rounded-xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-800">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Thumbnail</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tiêu đề</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Chuyên mục</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Tier</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800/50">
+                    {filteredPrompts.length > 0 ? filteredPrompts.map(prompt => (
+                      <tr key={prompt.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="px-4 py-3">
+                          {prompt.thumbnail ? (
+                            <img src={prompt.thumbnail} alt={prompt.title} className="w-12 h-12 rounded-lg object-cover border border-gray-700" />
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center text-gray-600 text-xs">N/A</div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-white font-medium text-sm">{prompt.title}</p>
+                          <p className="text-gray-500 text-xs line-clamp-1 mt-0.5 max-w-[300px]">{prompt.content}</p>
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 text-xs">
+                          {promptCategories.find(c => c.id === prompt.categoryId)?.name || prompt.categoryName || '—'}
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            prompt.tier === 'pro' 
+                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+                              : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                          }`}>
+                            {prompt.tier === 'pro' ? '⭐ PRO' : 'FREE'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${prompt.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                            {prompt.isActive ? 'Hiện' : 'Ẩn'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              onClick={() => {
+                                setEditingPrompt(prompt);
+                                setPromptForm({
+                                  title: prompt.title,
+                                  content: prompt.content,
+                                  thumbnail: prompt.thumbnail,
+                                  categoryId: prompt.categoryId,
+                                  tier: prompt.tier,
+                                  sortOrder: prompt.sortOrder,
+                                  isActive: prompt.isActive,
+                                });
+                                setShowPromptModal(true);
+                              }}
+                              className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+                              title="Sửa"
+                            >
+                              <PencilIcon className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeletePrompt(prompt.id)}
+                              className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                              title="Xóa"
+                            >
+                              <TrashIcon className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )) : (
+                      <tr>
+                        <td colSpan={6} className="px-4 py-12 text-center text-gray-500 text-sm">
+                          Chưa có prompt nào. Bấm "Thêm prompt" để bắt đầu tạo nội dung.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- USERS TAB (fallback) ---
     return (
       <div className="p-6 lg:p-8">
         {/* Header */}
@@ -755,6 +1053,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
         )}
       </div>
     );
+
   };
 
   return (
@@ -1191,6 +1490,195 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                 className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors"
               >
                 {typeof showKeyModal === 'object' ? 'Cập nhật' : 'Tạo mới'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- PROMPT CRUD MODAL --- */}
+      {showPromptModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center" onClick={() => setShowPromptModal(false)}>
+          <div className="bg-[#111827] border border-gray-700 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-white text-lg font-bold mb-4">
+              {editingPrompt ? 'Chỉnh sửa Prompt' : 'Thêm Prompt mới'}
+            </h3>
+
+            <div className="space-y-4">
+              {/* Title */}
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề</label>
+                <input
+                  type="text"
+                  value={promptForm.title}
+                  onChange={e => setPromptForm({ ...promptForm, title: e.target.value })}
+                  className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  placeholder="VD: Mẫu nhà phố hiện đại 1"
+                />
+              </div>
+
+              {/* Content (Prompt text) */}
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Nội dung Prompt</label>
+                <textarea
+                  value={promptForm.content}
+                  onChange={e => setPromptForm({ ...promptForm, content: e.target.value })}
+                  rows={6}
+                  className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors resize-none"
+                  placeholder="Nhập nội dung prompt kiến trúc..."
+                />
+              </div>
+
+              {/* Thumbnail URL */}
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">URL Ảnh đại diện (Thumbnail)</label>
+                <input
+                  type="text"
+                  value={promptForm.thumbnail}
+                  onChange={e => setPromptForm({ ...promptForm, thumbnail: e.target.value })}
+                  className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  placeholder="https://... hoặc /uploads/..."
+                />
+                {promptForm.thumbnail && (
+                  <div className="mt-2 flex items-center gap-2">
+                    <img src={promptForm.thumbnail} alt="Preview" className="w-16 h-16 rounded-lg object-cover border border-gray-700" onError={(e: any) => { e.target.style.display = 'none'; }} />
+                    <span className="text-gray-500 text-xs">Preview</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Category + Tier Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Chuyên mục</label>
+                  <select
+                    value={promptForm.categoryId}
+                    onChange={e => setPromptForm({ ...promptForm, categoryId: e.target.value })}
+                    className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  >
+                    <option value="">-- Chọn --</option>
+                    {promptCategories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tier (Phân loại)</label>
+                  <select
+                    value={promptForm.tier}
+                    onChange={e => setPromptForm({ ...promptForm, tier: e.target.value as 'free' | 'pro' })}
+                    className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  >
+                    <option value="free">🟢 FREE</option>
+                    <option value="pro">⭐ PRO</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Sort Order + Active Row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Thứ tự hiển thị</label>
+                  <input
+                    type="number"
+                    value={promptForm.sortOrder}
+                    onChange={e => setPromptForm({ ...promptForm, sortOrder: parseInt(e.target.value) || 0 })}
+                    className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trạng thái</label>
+                  <select
+                    value={promptForm.isActive ? 'true' : 'false'}
+                    onChange={e => setPromptForm({ ...promptForm, isActive: e.target.value === 'true' })}
+                    className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  >
+                    <option value="true">✅ Hiển thị</option>
+                    <option value="false">❌ Ẩn</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowPromptModal(false)} className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors">
+                Hủy
+              </button>
+              <button
+                onClick={handleSavePrompt}
+                disabled={!promptForm.title || !promptForm.content || !promptForm.categoryId}
+                className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              >
+                {editingPrompt ? 'Cập nhật' : 'Tạo mới'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- CATEGORY CRUD MODAL --- */}
+      {showCategoryModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center" onClick={() => setShowCategoryModal(false)}>
+          <div className="bg-[#111827] border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-white text-lg font-bold mb-4">
+              {editingCategory ? 'Chỉnh sửa Chuyên mục' : 'Thêm Chuyên mục mới'}
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tên chuyên mục</label>
+                <input
+                  type="text"
+                  value={categoryForm.name}
+                  onChange={e => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                  className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  placeholder="VD: Nhà Phố, Biệt Thự, Nội Thất..."
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Mô tả</label>
+                <input
+                  type="text"
+                  value={categoryForm.description}
+                  onChange={e => setCategoryForm({ ...categoryForm, description: e.target.value })}
+                  className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  placeholder="Mô tả ngắn về chuyên mục..."
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Thứ tự</label>
+                  <input
+                    type="number"
+                    value={categoryForm.sortOrder}
+                    onChange={e => setCategoryForm({ ...categoryForm, sortOrder: parseInt(e.target.value) || 0 })}
+                    className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trạng thái</label>
+                  <select
+                    value={categoryForm.isActive ? 'true' : 'false'}
+                    onChange={e => setCategoryForm({ ...categoryForm, isActive: e.target.value === 'true' })}
+                    className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2.5 text-white text-sm focus:border-orange-500 focus:outline-none transition-colors"
+                  >
+                    <option value="true">✅ Hoạt động</option>
+                    <option value="false">❌ Ẩn</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowCategoryModal(false)} className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium transition-colors">
+                Hủy
+              </button>
+              <button
+                onClick={handleSaveCategory}
+                disabled={!categoryForm.name}
+                className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+              >
+                {editingCategory ? 'Cập nhật' : 'Tạo mới'}
               </button>
             </div>
           </div>

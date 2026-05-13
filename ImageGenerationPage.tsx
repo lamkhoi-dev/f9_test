@@ -33,6 +33,8 @@ import FilterDropdown from './components/FilterDropdown';
 import OtherUtilsPage from './components/OtherUtilsPage';
 // Added: Import persistence utilities
 import { saveHistory, HistoryRecord } from './lib/db';
+import { useAuth } from './contexts/AuthContext';
+import UpgradeModal from './components/UpgradeModal';
 
 
 interface ImageGenerationPageProps {
@@ -1152,6 +1154,9 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const { getModelName, isPro, mode, toggleMode, proResolution } = useMode();
     const { isSnowing, toggleSnow } = useSnow();
     const [activeAction, setActiveAction] = useState('exterior');
+    const { isFreePlan } = useAuth();
+    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+    const [upgradeMessage, setUpgradeMessage] = useState('');
     const [activeTab, setActiveTab] = useState('results');
     const [imageType, setImageType] = useState('default');
 
@@ -2221,7 +2226,15 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
         }
     };
 
+    // FREE plan: only allow exterior + interior tabs
+    const FREE_ALLOWED_TABS = ['exterior', 'interior'];
+
     const handleActionChange = (action: string) => {
+        if (isFreePlan && !FREE_ALLOWED_TABS.includes(action)) {
+            setUpgradeMessage('Tính năng này chỉ dành cho tài khoản PRO. Nâng cấp để sử dụng toàn bộ công cụ!');
+            setShowUpgradeModal(true);
+            return;
+        }
         setActiveAction(action);
         if (referenceImage) {
             setStyleAnalysis(null);
@@ -3121,11 +3134,15 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                 ))}
                             </div>
                             <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
-                                {subActionButtons.map(btn => (
-                                     <button key={btn.id} onClick={() => handleActionChange(btn.id)} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeAction === btn.id ? 'bg-orange-500 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}>
-                                        {t(btn.key)}
-                                    </button>
-                                ))}
+                                {subActionButtons.map(btn => {
+                                    const isLocked = isFreePlan && !FREE_ALLOWED_TABS.includes(btn.id);
+                                    return (
+                                        <button key={btn.id} onClick={() => handleActionChange(btn.id)} className={`relative px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeAction === btn.id ? 'bg-orange-500 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'} ${isLocked ? 'opacity-60' : ''}`}>
+                                            {t(btn.key)}
+                                            {isLocked && <span className="absolute -top-1 -right-1 text-[8px] bg-amber-500 text-white px-1 rounded-full font-bold">PRO</span>}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -3336,9 +3353,22 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                 <div className="space-y-2">
                                                     <div className="flex items-baseline justify-between">
                                                         <label htmlFor="design-style" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.designStyleLabel')}</label>
-                                                        <span className="text-red-500 text-xs font-semibold">{t('imageGenerationPage.sidebar.requiredLabel')}</span>
+                                                        {isFreePlan ? (
+                                                            <span className="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">🔒 PRO</span>
+                                                        ) : (
+                                                            <span className="text-red-500 text-xs font-semibold">{t('imageGenerationPage.sidebar.requiredLabel')}</span>
+                                                        )}
                                                     </div>
-                                                    <SmartFilterInput id="design-style" value={designStyle} onChange={setDesignStyle} placeholder={t('imageGenerationPage.sidebar.designStylePlaceholder')} suggestions={Array.isArray(designStyles) ? designStyles : []} />
+                                                    {isFreePlan ? (
+                                                        <div
+                                                            onClick={() => { setUpgradeMessage('Phong cách thiết kế là tính năng PRO. Nâng cấp để tùy chỉnh phong cách!'); setShowUpgradeModal(true); }}
+                                                            className="w-full px-3 py-2.5 bg-gray-700/50 border border-amber-500/30 rounded-lg text-gray-500 text-sm cursor-pointer flex items-center justify-between"
+                                                        >
+                                                            <span>🔒 Nâng cấp PRO để dùng</span>
+                                                        </div>
+                                                    ) : (
+                                                        <SmartFilterInput id="design-style" value={designStyle} onChange={setDesignStyle} placeholder={t('imageGenerationPage.sidebar.designStylePlaceholder')} suggestions={Array.isArray(designStyles) ? designStyles : []} />
+                                                    )}
                                                 </div>
                                                 <div className="space-y-2">
                                                     <div className="flex items-baseline justify-between">
@@ -3696,6 +3726,11 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
             </div>
             <Footer />
         </div>
+        <UpgradeModal 
+            isOpen={showUpgradeModal} 
+            onClose={() => setShowUpgradeModal(false)}
+            message={upgradeMessage}
+        />
         </>
     );
 };

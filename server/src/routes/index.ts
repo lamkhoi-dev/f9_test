@@ -4,8 +4,11 @@ import adminRoutes from './adminRoutes';
 import aiRoutes from './aiRoutes';
 import historyRoutes from './historyRoutes';
 import geminiRoutes from './geminiRoutes';
+import promptRoutes from './promptRoutes';
+import purchaseRoutes from './purchaseRoutes';
 import { getPricing } from '../controllers/adminController';
 import { legacyGenerateContent, legacyGenerateContentStream } from '../controllers/legacyController';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
 
@@ -27,12 +30,16 @@ router.get('/pricing', getPricing);
 router.post('/generate-content', legacyGenerateContent);
 router.post('/generate-content-stream', legacyGenerateContentStream);
 
+// Public prompts (with optional user plan extraction)
+router.use('/prompts', promptRoutes);
+
 // Route modules
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
 router.use('/ai', aiRoutes);
 router.use('/gemini', geminiRoutes);
 router.use('/history', historyRoutes);
+router.use('/purchase', authMiddleware, purchaseRoutes);
 
 export default router;
 

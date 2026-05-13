@@ -3,6 +3,7 @@ import { useLanguage } from './hooks/useLanguage';
 import { useMode } from './contexts/ModeContext';
 import { useSnow } from './contexts/SnowContext';
 import { useApiKey } from './contexts/ApiKeyContext';
+import { useAuth } from './contexts/AuthContext';
 import { SparklesIcon } from './components/icons/SparklesIcon';
 import { BoltIcon } from './components/icons/BoltIcon';
 import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
@@ -10,6 +11,7 @@ import Footer from './components/Footer';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import Pagination from './components/Pagination';
 import OnlineStatus from './components/OnlineStatus';
+import UpgradeModal from './components/UpgradeModal';
 import { apiClient, getImageSize } from './lib/api';
 
 interface PromptLibraryPageProps {
@@ -22,6 +24,7 @@ interface PromptItem {
   description: string;
   imageUrl: string;
   defaultPrompt?: string;
+  tier?: 'free' | 'pro';
 }
 
 const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => {
@@ -29,8 +32,12 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const { mode, toggleMode, getModelName, isPro, proResolution } = useMode();
   const { isSnowing, toggleSnow } = useSnow();
   const { isKeySet, showKeyModal } = useApiKey();
+  const { user } = useAuth();
+  const isFreePlan = user?.plan === 'free';
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<PromptItem | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [upgradeMessage, setUpgradeMessage] = useState('');
 
   // Generation states
   const [activeInputFile, setActiveInputFile] = useState<File | null>(null);
@@ -157,42 +164,50 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       title: t("promptLibraryPage.categories.townHouse.items.item1.title", "Mẫu nhà phố 1"),
       description: t("promptLibraryPage.categories.townHouse.items.item1.description", "Prompt mẫu nhà phố kiến trúc hiện đại 1"),
       imageUrl: "https://i.ibb.co/39b7H18S/617662778-1852561475734147-6334751143682874560-n.jpg",
+      tier: 'free',
       defaultPrompt: t("promptLibraryPage.categories.townHouse.items.item1.defaultPrompt", "Ảnh thực tế của công trình Kiến trúc nhiệt đới hiện đại, ưu tiên không gian xanh và vật liệu tự nhiên., phong cách Hiện đại – Nhiệt đới.\nBối cảnh tại Tọa lạc trong một khu dân cư đô thị.\n{Vật liệu ứng dụng }\nKhông gian xung quanh bao gồm Hệ thống cây xanh đa dạng trên các ban công, Hai cây lớn xanh tốt ở hai bên vỉa hè, hài hòa with cảnh quan tự nhiên.\nPhía xa là Bầu trời u ám, tạo chiều sâu thị giác và cảm giác không gian mở rộng.\nKhung cảnh được ghi lại vào Mùa hè, cây cối tươi tốt và đầy sức sống., Giữa ngày., trong điều kiện thời tiết Trời nhiều mây, ánh sáng dịu và khuếch tán..\nÁnh sáng tự nhiên cân bằng, phản chiếu mềm, vật liệu hiện rõ chi tiết.\nKhông khí tổng thể mang cảm xúc Yên bình, tươi mát và thân thiện..\nGóc nhìn máy ảnh là Chụp thẳng from phía bên kia đường, ngang tầm mắt, lấy trọn vẹn mặt tiền ngôi nhà., sử dụng DSLR full-frame with ống kính góc rộng, DOF nhẹ nhàng, và bố cục theo tỉ lệ vàng.")
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item2.title", "Mẫu nhà phố 2"),
       description: t("promptLibraryPage.categories.townHouse.items.item2.description", "Prompt mẫu nhà phố kiến trúc hiện đại 2"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'free',
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item3.title", "Mẫu nhà phố 3"),
       description: t("promptLibraryPage.categories.townHouse.items.item3.description", "Prompt mẫu nhà phố kiến trúc hiện đại 3"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'free',
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item4.title", "Mẫu nhà phố 4"),
       description: t("promptLibraryPage.categories.townHouse.items.item4.description", "Prompt mẫu nhà phố kiến trúc hiện đại 4"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item5.title", "Nhà phố hiện đại"),
       description: t("promptLibraryPage.categories.townHouse.items.item5.description", "Prompt mẫu nhà phố phong cách hiện đại"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item6.title", "Nhà phố tối giản"),
       description: t("promptLibraryPage.categories.townHouse.items.item6.description", "Prompt mẫu nhà phố phong cách tối giản"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item7.title", "Nhà phố nhiệt đới"),
       description: t("promptLibraryPage.categories.townHouse.items.item7.description", "Prompt mẫu nhà phố phong cách nhiệt đới"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.townHouse.items.item8.title", "Nhà phố thương mại"),
       description: t("promptLibraryPage.categories.townHouse.items.item8.description", "Prompt mẫu nhà phố thương mại kết hợp kinh doanh"),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
+      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg",
+      tier: 'pro',
     }
   ];
 
@@ -200,42 +215,50 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     {
       title: t("promptLibraryPage.categories.villa.items.item1.title", "Biệt thự tân cổ điển"),
       description: t("promptLibraryPage.categories.villa.items.item1.description", "Prompt mẫu biệt thự phong cách tân cổ điển sang trọng"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'free',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item2.title", "Biệt thự hiện đại"),
       description: t("promptLibraryPage.categories.villa.items.item2.description", "Prompt mẫu biệt thự hiện đại với không gian mở"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'free',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item3.title", "Biệt thự nhà vườn"),
       description: t("promptLibraryPage.categories.villa.items.item3.description", "Prompt mẫu biệt thự kết hợp cảnh quan sân vườn"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'free',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item4.title", "Biệt thự nghỉ dưỡng"),
       description: t("promptLibraryPage.categories.villa.items.item4.description", "Prompt mẫu biệt thự nghỉ dưỡng cao cấp (Resort villa)"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item5.title", "Biệt thự mái Thái"),
       description: t("promptLibraryPage.categories.villa.items.item5.description", "Prompt mẫu biệt thự mái Thái truyền thống"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item6.title", "Biệt thự mái Nhật"),
       description: t("promptLibraryPage.categories.villa.items.item6.description", "Prompt mẫu biệt thự mái Nhật tối giản"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item7.title", "Biệt thự mini"),
       description: t("promptLibraryPage.categories.villa.items.item7.description", "Prompt mẫu biệt thự mini diện tích nhỏ gọn"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'pro',
     },
     {
       title: t("promptLibraryPage.categories.villa.items.item8.title", "Biệt thự song lập"),
       description: t("promptLibraryPage.categories.villa.items.item8.description", "Prompt mẫu biệt thự song lập đối xứng"),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
+      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg",
+      tier: 'pro',
     }
   ];
 
@@ -243,42 +266,50 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     {
       title: t("promptLibraryPage.categories.interior.items.item1.title", "Phòng khách hiện đại"),
       description: t("promptLibraryPage.categories.interior.items.item1.description", "Prompt mẫu phòng khách phong cách hiện đại, tối giản"),
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'free',
     },
     {
       title: "Phòng ngủ ấm cúng",
       description: "Prompt mẫu phòng ngủ với ánh sáng vàng ấm áp",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'free',
     },
     {
       title: "Nhà bếp tiện nghi",
       description: "Prompt mẫu không gian bếp đảo hiện đại",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'free',
     },
     {
       title: "Phòng tắm sang trọng",
       description: "Prompt mẫu phòng tắm ốp đá vân mây cao cấp",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'pro',
     },
     {
       title: "Phòng làm việc",
       description: "Prompt mẫu phòng làm việc tại nhà sáng tạo",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'pro',
     },
     {
       title: "Nội thất tân cổ điển",
       description: "Prompt mẫu nội thất chi tiết phào chỉ tân cổ điển",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'pro',
     },
     {
       title: "Nội thất Indochine",
       description: "Prompt mẫu nội thất phong cách Đông Dương",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'pro',
     },
     {
       title: "Nội thất Wabi Sabi",
       description: "Prompt mẫu nội thất phong cách Wabi Sabi mộc mạc",
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
+      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp",
+      tier: 'pro',
     }
   ];
 
@@ -750,32 +781,68 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-fade-in">
-            {currentItems.map((item, index) => (
-              <div key={index} onClick={() => { setSelectedItem(item); setHoveredThumbnail(null); }} className="group bg-[#2a303c] rounded-xl overflow-hidden shadow-lg border border-slate-700 hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col">
+            {currentItems.map((item, index) => {
+              const itemTier = item.tier || 'free';
+              const isLocked = isFreePlan && itemTier === 'pro';
+              
+              return (
                 <div 
-                  className="h-48 w-full relative overflow-hidden"
-                  onMouseEnter={() => setHoveredThumbnail(item.imageUrl)}
-                  onMouseLeave={() => setHoveredThumbnail(null)}
+                  key={index} 
+                  onClick={() => {
+                    if (isLocked) {
+                      setUpgradeMessage(`Mẫu "${item.title}" là nội dung dành cho PRO. Nâng cấp tài khoản để truy cập toàn bộ thư viện prompt.`);
+                      setShowUpgradeModal(true);
+                      return;
+                    }
+                    setSelectedItem(item); 
+                    setHoveredThumbnail(null);
+                  }} 
+                  className={`group bg-[#2a303c] rounded-xl overflow-hidden shadow-lg border transition-all duration-300 hover:-translate-y-1 cursor-pointer flex flex-col ${isLocked ? 'border-slate-600 opacity-80' : 'border-slate-700 hover:border-orange-500/50'}`}
                 >
-                  <img 
-                    src={item.imageUrl} 
-                    alt={item.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
-                  />
-                  <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider z-10">
-                    {tag}
+                  <div 
+                    className="h-48 w-full relative overflow-hidden"
+                    onMouseEnter={() => setHoveredThumbnail(item.imageUrl)}
+                    onMouseLeave={() => setHoveredThumbnail(null)}
+                  >
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title}
+                      className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 ${isLocked ? 'grayscale-[30%]' : ''}`} 
+                    />
+                    {/* Category tag */}
+                    <div className="absolute top-3 left-3 bg-orange-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider z-10">
+                      {tag}
+                    </div>
+                    {/* Tier badge */}
+                    <div className={`absolute top-3 right-3 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider z-10 border ${
+                      itemTier === 'pro' 
+                        ? 'bg-amber-500/90 text-white border-amber-400/50 shadow-lg shadow-amber-500/20' 
+                        : 'bg-emerald-500/90 text-white border-emerald-400/50'
+                    }`}>
+                      {itemTier === 'pro' ? '⭐ PRO' : 'FREE'}
+                    </div>
+                    {/* Lock overlay for PRO items when user is FREE */}
+                    {isLocked && (
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center z-20">
+                        <div className="bg-black/60 backdrop-blur-sm rounded-full p-3">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-400">
+                            <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4 flex-grow flex flex-col">
+                    <h3 className="text-lg font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-gray-400 line-clamp-2">
+                      {item.description}
+                    </p>
                   </div>
                 </div>
-                <div className="p-4 flex-grow flex flex-col">
-                  <h3 className="text-lg font-bold text-white mb-1 group-hover:text-orange-400 transition-colors">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-gray-400 line-clamp-2">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       );
@@ -910,6 +977,15 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
             className="max-w-[80vw] max-h-[80vh] object-contain rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)]" 
           />
         </div>
+      )}
+      {/* Upgrade Modal for FREE users */}
+      {showUpgradeModal && (
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          title="Thư viện Prompt PRO"
+          message={upgradeMessage || 'Nội dung này chỉ dành cho tài khoản PRO. Nâng cấp để truy cập toàn bộ thư viện prompt kiến trúc.'}
+        />
       )}
     </div>
   );
