@@ -75,7 +75,7 @@ export const adminCreateCategory = async (req: Request, res: Response): Promise<
 
 export const adminUpdateCategory = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const category = await PromptCategory.findByPk(id);
     if (!category) { res.status(404).json({ success: false, error: 'Category not found' }); return; }
     await category.update(req.body);
@@ -140,7 +140,7 @@ export const adminCreatePrompt = async (req: Request, res: Response): Promise<vo
 
 export const adminUpdatePrompt = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const prompt = await Prompt.findByPk(id);
     if (!prompt) { res.status(404).json({ success: false, error: 'Prompt not found' }); return; }
     await prompt.update(req.body);

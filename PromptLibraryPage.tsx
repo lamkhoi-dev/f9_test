@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from './hooks/useLanguage';
 import { useMode } from './contexts/ModeContext';
 import { useSnow } from './contexts/SnowContext';
@@ -13,6 +13,7 @@ import Pagination from './components/Pagination';
 import OnlineStatus from './components/OnlineStatus';
 import UpgradeModal from './components/UpgradeModal';
 import { apiClient, getImageSize } from './lib/api';
+import httpClient from './lib/apiClient';
 
 interface PromptLibraryPageProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,11 +21,34 @@ interface PromptLibraryPageProps {
 }
 
 interface PromptItem {
+  id?: string;
   title: string;
   description: string;
   imageUrl: string;
   defaultPrompt?: string;
   tier?: 'free' | 'pro';
+  locked?: boolean;
+}
+
+interface ApiCategory {
+  id: string;
+  name: string;
+  description?: string;
+  sortOrder: number;
+  isActive: boolean;
+}
+
+interface ApiPrompt {
+  id: string;
+  title: string;
+  content: string;
+  thumbnail: string;
+  tier: 'free' | 'pro';
+  categoryId: string;
+  sortOrder: number;
+  isActive: boolean;
+  locked?: boolean;
+  category?: { id: string; name: string };
 }
 
 const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => {
@@ -38,6 +62,11 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const [selectedItem, setSelectedItem] = useState<PromptItem | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMessage, setUpgradeMessage] = useState('');
+
+  // API-driven data states
+  const [apiCategories, setApiCategories] = useState<ApiCategory[]>([]);
+  const [apiPrompts, setApiPrompts] = useState<ApiPrompt[]>([]);
+  const [useApiData, setUseApiData] = useState(false);
 
   // Generation states
   const [activeInputFile, setActiveInputFile] = useState<File | null>(null);
@@ -59,6 +88,29 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const HISTORY_PER_PAGE = 5;
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch categories and prompts from API, fallback to hardcoded
+  useEffect(() => {
+    const fetchApiData = async () => {
+      try {
+        const [catRes, promptRes] = await Promise.all([
+          httpClient.get('/prompts/categories'),
+          httpClient.get('/prompts'),
+        ]);
+        const cats = catRes.data?.data || [];
+        const proms = promptRes.data?.data || [];
+        if (cats.length > 0) {
+          setApiCategories(cats);
+          setApiPrompts(proms);
+          setUseApiData(true);
+        }
+      } catch (err) {
+        console.log('[PromptLibrary] API not available, using hardcoded data');
+        setUseApiData(false);
+      }
+    };
+    fetchApiData();
+  }, []);
 
   const blobToBase64 = (blob: Blob): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -748,21 +800,46 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     let currentDesc = "";
     let tag = "";
 
-    if (selectedCategory === 'Nhà Phố') {
-      currentItems = nhaPhoItems;
-      currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
-      currentDesc = t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.");
-      tag = "NHÀ";
-    } else if (selectedCategory === 'Biệt Thự') {
-      currentItems = bietThuItems;
-      currentTitle = t("promptLibraryPage.categories.villa.title", "Biệt Thự");
-      currentDesc = t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.");
-      tag = "BIỆT THỰ";
-    } else if (selectedCategory === 'Nội Thất') {
-      currentItems = noiThatItems;
-      currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
-      currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
-      tag = "NỘI THẤT";
+    // Try API data first, fallback to hardcoded
+    if (useApiData && selectedCategory) {
+      const matchedCat = apiCategories.find(c => c.name === selectedCategory);
+      if (matchedCat) {
+        currentTitle = matchedCat.name;
+        currentDesc = matchedCat.description || '';
+        tag = matchedCat.name.toUpperCase();
+        currentItems = apiPrompts
+          .filter(p => p.categoryId === matchedCat.id)
+          .map(p => ({
+            id: p.id,
+            title: p.title,
+            description: p.content ? p.content.substring(0, 80) + '...' : '',
+            imageUrl: p.thumbnail || 'https://placehold.co/400x300/1e293b/64748b?text=No+Image',
+            defaultPrompt: p.locked ? '' : p.content,
+            tier: p.tier,
+            locked: p.locked,
+          }));
+      }
+    }
+
+    // Fallback to hardcoded data if API didn't provide items
+    if (currentItems.length === 0 && selectedCategory) {
+      if (selectedCategory === 'Nhà Phố') {
+        currentItems = nhaPhoItems;
+        currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
+        currentDesc = t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.");
+        tag = "NHÀ";
+      } else if (selectedCategory === 'Biệt Thự') {
+        currentItems = bietThuItems;
+        currentTitle = t("promptLibraryPage.categories.villa.title", "Biệt Thự");
+        currentDesc = t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.");
+        tag = "BIỆT THỰ";
+      } else if (selectedCategory === 'Nội Thất') {
+        currentItems = noiThatItems;
+        currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
+        currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
+        tag = "NỘI THẤT";
+      }
+      if (!tag) tag = selectedCategory.toUpperCase();
     }
 
     if (selectedCategory && currentItems.length > 0) {
@@ -848,6 +925,15 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       );
     }
 
+    // Build cards from API or hardcoded
+    const displayCards = useApiData && apiCategories.length > 0
+      ? apiCategories.map(cat => ({
+          title: cat.name,
+          description: cat.description || '',
+          imageUrl: apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || 'https://placehold.co/600x400/1e293b/64748b?text=' + encodeURIComponent(cat.name),
+        }))
+      : libraryCards;
+
     return (
       <div className="max-w-6xl mx-auto w-full">
         <div className="text-center mb-12 animate-fade-in">
@@ -860,7 +946,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-fade-in">
-          {libraryCards.map((card, index) => (
+          {displayCards.map((card, index) => (
             <div 
               key={index} 
               onClick={() => { setSelectedCategory(card.title); setHoveredThumbnail(null); }}
