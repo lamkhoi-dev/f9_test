@@ -21,6 +21,8 @@ interface AdminUser {
   phone: string;
   name: string;
   role: 'user' | 'admin';
+  plan: 'free' | 'pro';
+  hasPersonalKey: boolean;
   freeUsageLeft: number;
   dailyFreeLimit: number;
   balance: number;
@@ -108,7 +110,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [createError, setCreateError] = useState('');
 
   const [editModal, setEditModal] = useState<AdminUser | null>(null);
-  const [editData, setEditData] = useState({ name: '', password: '', balance: 0, role: 'user' as 'user' | 'admin', freeUsageLeft: 0, dailyFreeLimit: 0 });
+  const [editData, setEditData] = useState({ name: '', password: '', balance: 0, role: 'user' as 'user' | 'admin', plan: 'free' as 'free' | 'pro', hasPersonalKey: false, freeUsageLeft: 0, dailyFreeLimit: 0 });
   const [isEditing, setIsEditing] = useState(false);
   const [editError, setEditError] = useState('');
 
@@ -386,7 +388,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
 
   const openEditModal = (u: AdminUser) => {
     setEditModal(u);
-    setEditData({ name: u.name, password: '', balance: u.balance, role: u.role, freeUsageLeft: u.freeUsageLeft, dailyFreeLimit: u.dailyFreeLimit || 0 });
+    setEditData({ name: u.name, password: '', balance: u.balance, role: u.role, plan: u.plan || 'free', hasPersonalKey: u.hasPersonalKey || false, freeUsageLeft: u.freeUsageLeft, dailyFreeLimit: u.dailyFreeLimit || 0 });
     setEditError('');
   };
 
@@ -478,6 +480,43 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               </div>
               {globalFreeLimit && (
                 <p className="text-xs text-emerald-400 mt-2">Hiện tại: <span className="font-bold">{globalFreeLimit.value} lượt/ngày</span></p>
+              )}
+            </div>
+          </div>
+
+          {/* Personal Key Price Config */}
+          <div className="mt-8">
+            <h3 className="text-lg font-bold text-white mb-4">🔑 Cấu hình Key cá nhân</h3>
+            <div className="bg-[#111827] border border-gray-800 p-6 rounded-2xl max-w-md">
+              <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Giá mua Key cá nhân (credits)</label>
+              <p className="text-[10px] text-gray-600 mb-3">Số credit cần trừ khi user mua key cá nhân để dùng API riêng.</p>
+              <div className="flex gap-3">
+                <input
+                  type="number"
+                  defaultValue={configs.find((c: ConfigItem) => c.key === 'personal_key_price')?.value || '50'}
+                  id="personalKeyPrice"
+                  min="0"
+                  className="flex-1 bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                />
+                <button
+                  onClick={() => {
+                    const val = (document.getElementById('personalKeyPrice') as HTMLInputElement)?.value || '50';
+                    const existing = configs.find((c: ConfigItem) => c.key === 'personal_key_price');
+                    if (existing) {
+                      handleUpdateConfig(existing, val);
+                    } else {
+                      apiClient.post('/admin/configs', { key: 'personal_key_price', value: val, description: 'Giá mua key cá nhân (credits)' })
+                        .then(() => fetchConfigs())
+                        .catch((e: any) => toast.error(e.response?.data?.message || e.message));
+                    }
+                  }}
+                  className="px-5 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-bold text-sm transition-colors"
+                >
+                  Lưu
+                </button>
+              </div>
+              {configs.find((c: ConfigItem) => c.key === 'personal_key_price') && (
+                <p className="text-xs text-emerald-400 mt-2">Hiện tại: <span className="font-bold">{configs.find((c: ConfigItem) => c.key === 'personal_key_price')?.value} credits</span></p>
               )}
             </div>
           </div>
@@ -956,6 +995,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                       <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tên</th>
                       <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">SĐT</th>
                       <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Role</th>
+                      <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Gói</th>
+                      <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Key</th>
                       <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Số dư</th>
                       <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Lượt miễn phí</th>
                       <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Thao tác</th>
@@ -976,6 +1017,22 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                           }`}>
                             {u.role}
                           </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            u.plan === 'pro'
+                              ? 'bg-yellow-500/15 text-yellow-400 border border-yellow-500/30'
+                              : 'bg-gray-500/15 text-gray-400 border border-gray-500/30'
+                          }`}>
+                            {u.plan === 'pro' ? '⭐ PRO' : 'FREE'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          {u.hasPersonalKey ? (
+                            <span className="inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">🔑 Có</span>
+                          ) : (
+                            <span className="text-[10px] text-gray-600">—</span>
+                          )}
                         </td>
                         <td className="px-4 py-3.5 text-center">
                           <span className={`font-mono text-sm font-semibold ${u.balance > 0 ? 'text-green-400' : 'text-gray-500'}`}>
@@ -1266,6 +1323,33 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                     <option value="user">User</option>
                     <option value="admin">Admin</option>
                   </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Gói dịch vụ</label>
+                  <select
+                    value={editData.plan}
+                    onChange={(e) => setEditData({ ...editData, plan: e.target.value as 'free' | 'pro' })}
+                    className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  >
+                    <option value="free">FREE</option>
+                    <option value="pro">⭐ PRO</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1">Personal Key</label>
+                  <button
+                    type="button"
+                    onClick={() => setEditData({ ...editData, hasPersonalKey: !editData.hasPersonalKey })}
+                    className={`w-full py-2.5 rounded-lg text-sm font-bold transition-all border ${
+                      editData.hasPersonalKey
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                        : 'bg-[#0f172a] border-gray-600 text-gray-400'
+                    }`}
+                  >
+                    {editData.hasPersonalKey ? '🔑 Đã kích hoạt' : 'Chưa kích hoạt'}
+                  </button>
                 </div>
               </div>
               <div>

@@ -16,6 +16,7 @@ import { ArrowRightOnRectangleIcon } from './icons/ArrowRightOnRectangleIcon';
 import { CpuChipIcon } from './icons/CpuChipIcon';
 import AISettingsModal from './AISettingsModal';
 import UpgradeModal from './UpgradeModal';
+import PurchasePersonalKey from './PurchasePersonalKey';
 
 const LockClosedIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -39,6 +40,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
   const [isAISettingsOpen, setIsAISettingsOpen] = useState(false);
   const [isPersonalAI, setIsPersonalAI] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showPurchaseKey, setShowPurchaseKey] = useState(false);
   const modeDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuth();
@@ -314,6 +316,20 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
                         </button>
                       )}
 
+                      {!hasPersonalKey && (
+                        <button
+                          onClick={() => {
+                            setShowPurchaseKey(true);
+                            setIsUserDropdownOpen(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-xs font-semibold text-amber-400 hover:bg-amber-500/10 rounded-lg flex items-center gap-2 transition-colors"
+                        >
+                          <span className="text-sm">🔑</span>
+                          <span>Mua Key Cá Nhân</span>
+                          <span className="ml-auto text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold">MỚI</span>
+                        </button>
+                      )}
+
                       {isAdmin && (
                         <button
                           onClick={() => {
@@ -383,6 +399,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
       onClose={() => setShowUpgradeModal(false)}
       title="Cần nâng cấp PRO"
       message="Chế độ 2K và 4K chỉ dành cho tài khoản PRO. Nâng cấp ngay để trải nghiệm chất lượng cao nhất!"
+    />
+    <PurchasePersonalKey
+      isOpen={showPurchaseKey}
+      onClose={() => setShowPurchaseKey(false)}
     />
     </>
   );
