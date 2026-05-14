@@ -18,7 +18,7 @@ const start = async () => {
         await db.sequelize.authenticate();
         console.log('✅ PostgreSQL connected successfully');
 
-        await db.sequelize.sync({ alter: false });
+        await db.sequelize.sync({ alter: true });
         console.log('✅ Database synced');
 
         // Seed default admin
