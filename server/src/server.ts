@@ -38,6 +38,19 @@ const start = async () => {
           await existing.save();
           console.log('🔑 Default admin credentials verified & updated');
         }
+
+        // Seed default image resolution pricing (upsert — safe to re-run on every boot)
+        const Pricing = (await import('./models/Pricing')).default;
+        const defaultPricing = [
+          { model: 'image-generation', resolution: '1k', service: 'all', price: 10 },
+          { model: 'image-generation', resolution: '2k', service: 'all', price: 20 },
+          { model: 'image-generation', resolution: '4k', service: 'all', price: 30 },
+        ];
+        for (const p of defaultPricing) {
+          await Pricing.upsert(p);
+        }
+        console.log('💰 Pricing seeded: 1K=10cr, 2K=20cr, 4K=30cr');
+
       } catch (dbError: any) {
         console.warn('⚠️  Database not available:', dbError.message);
         console.warn('   Auth/Admin/Billing features disabled. Legacy endpoints still work.');
@@ -59,4 +72,3 @@ const start = async () => {
 };
 
 start();
-

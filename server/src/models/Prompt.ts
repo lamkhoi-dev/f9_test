@@ -53,9 +53,10 @@ Prompt.init(
       defaultValue: '',
     },
     tier: {
-      type: DataTypes.ENUM('free', 'pro'),
+      type: DataTypes.STRING,
       allowNull: false,
       defaultValue: 'free',
+      validate: { isIn: [['free', 'pro']] },
     },
     sortOrder: {
       type: DataTypes.INTEGER,

@@ -91,13 +91,16 @@ class UsageService {
 
       // --- Needs payment: look up pricing ---
       const targetService = service || 'all';
+      // When priceKey provided, also match by resolution for per-quality pricing (1k/2k/4k)
       let pricing = priceKey 
-        ? await Pricing.findOne({ where: { model: priceKey, service: targetService }, transaction: t })
+        ? await Pricing.findOne({ where: { model: priceKey, resolution: normalizedResolution, service: targetService }, transaction: t })
+            ?? await Pricing.findOne({ where: { model: priceKey, service: targetService }, transaction: t })
         : await Pricing.findOne({ where: { model, resolution: normalizedResolution, service: targetService }, transaction: t });
       
       if (!pricing && targetService !== 'all') {
         pricing = priceKey 
-          ? await Pricing.findOne({ where: { model: priceKey, service: 'all' }, transaction: t })
+          ? await Pricing.findOne({ where: { model: priceKey, resolution: normalizedResolution, service: 'all' }, transaction: t })
+              ?? await Pricing.findOne({ where: { model: priceKey, service: 'all' }, transaction: t })
           : await Pricing.findOne({ where: { model, resolution: normalizedResolution, service: 'all' }, transaction: t });
       }
       

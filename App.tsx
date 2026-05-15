@@ -158,25 +158,25 @@ const AppContent: React.FC = () => {
           </AppLayout>
         } />
 
-        {/* PRO-only pages — wrapped in ProGuard */}
+        {/* Previously PRO-only — now open to all users */}
         <Route path="/auto-coloring" element={
           <AppLayout onNavigate={handleNavigate}>
-            <ProGuard><AutoColoringPage onNavigate={handleNavigate} restoreData={restoreData} /></ProGuard>
+            <AutoColoringPage onNavigate={handleNavigate} restoreData={restoreData} />
           </AppLayout>
         } />
         <Route path="/download-3d-model" element={
           <AppLayout onNavigate={handleNavigate}>
-            <ProGuard><Download3DModelPage onNavigate={handleNavigate} /></ProGuard>
+            <Download3DModelPage onNavigate={handleNavigate} />
           </AppLayout>
         } />
         <Route path="/3d-sketch" element={
           <AppLayout onNavigate={handleNavigate}>
-            <ProGuard><ThreeDSketchPage onNavigate={handleNavigate} restoreData={restoreData} /></ProGuard>
+            <ThreeDSketchPage onNavigate={handleNavigate} restoreData={restoreData} />
           </AppLayout>
         } />
         <Route path="/realistic-model" element={
           <AppLayout onNavigate={handleNavigate}>
-            <ProGuard><RealisticModelPage onNavigate={handleNavigate} restoreData={restoreData} /></ProGuard>
+            <RealisticModelPage onNavigate={handleNavigate} restoreData={restoreData} />
           </AppLayout>
         } />
 

@@ -104,8 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin',
-        isFreePlan: user?.plan !== 'pro',
-        isProPlan: user?.plan === 'pro',
+        // Explicitly treat null/undefined plan as 'free' to avoid false-PRO edge cases
+        isFreePlan: !user || (user.plan ?? 'free') !== 'pro',
+        isProPlan: (user?.plan ?? 'free') === 'pro',
         hasPersonalKey: user?.hasPersonalKey === true,
         isLoading,
         login,

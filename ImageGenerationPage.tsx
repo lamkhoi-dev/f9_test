@@ -3353,22 +3353,9 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                 <div className="space-y-2">
                                                     <div className="flex items-baseline justify-between">
                                                         <label htmlFor="design-style" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.designStyleLabel')}</label>
-                                                        {isFreePlan ? (
-                                                            <span className="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full font-bold">🔒 PRO</span>
-                                                        ) : (
-                                                            <span className="text-red-500 text-xs font-semibold">{t('imageGenerationPage.sidebar.requiredLabel')}</span>
-                                                        )}
+                                                        <span className="text-red-500 text-xs font-semibold">{t('imageGenerationPage.sidebar.requiredLabel')}</span>
                                                     </div>
-                                                    {isFreePlan ? (
-                                                        <div
-                                                            onClick={() => { setUpgradeMessage('Phong cách thiết kế là tính năng PRO. Nâng cấp để tùy chỉnh phong cách!'); setShowUpgradeModal(true); }}
-                                                            className="w-full px-3 py-2.5 bg-gray-700/50 border border-amber-500/30 rounded-lg text-gray-500 text-sm cursor-pointer flex items-center justify-between"
-                                                        >
-                                                            <span>🔒 Nâng cấp PRO để dùng</span>
-                                                        </div>
-                                                    ) : (
-                                                        <SmartFilterInput id="design-style" value={designStyle} onChange={setDesignStyle} placeholder={t('imageGenerationPage.sidebar.designStylePlaceholder')} suggestions={Array.isArray(designStyles) ? designStyles : []} />
-                                                    )}
+                                                    <SmartFilterInput id="design-style" value={designStyle} onChange={setDesignStyle} placeholder={t('imageGenerationPage.sidebar.designStylePlaceholder')} suggestions={Array.isArray(designStyles) ? designStyles : []} />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <div className="flex items-baseline justify-between">
@@ -3430,7 +3417,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                                 value={environmentalCharacteristics}
                                                                 onChange={setEnvironmentalCharacteristics}
                                                                 placeholder={t('imageGenerationPage.sidebar.environmentalCharacteristicsPlaceholder')}
-                                                                suggestions={Array.isArray(environmentalCharacteristicsList) ? environmentalCharacteristicsList : []}
+                                                                suggestions={isFreePlan ? [] : (Array.isArray(environmentalCharacteristicsList) ? environmentalCharacteristicsList : [])}
                                                             />
                                                         </div>
                                                          <button

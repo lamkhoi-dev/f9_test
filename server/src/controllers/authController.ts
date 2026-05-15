@@ -84,9 +84,14 @@ export const login = async (req: Request, res: Response) => {
       message: 'Đăng nhập thành công',
       data: { user: user.toSafeJSON(), token },
     });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ success: false, message: 'Lỗi server khi đăng nhập' });
+  } catch (error: any) {
+    console.error('Login error:', error.message || error);
+    // Sequelize errors (table not found, DB down) come here — return 503, not 401
+    if (error.name?.includes('Sequelize') || error.message?.includes('relation') || error.message?.includes('ECONNREFUSED')) {
+      res.status(503).json({ success: false, message: 'Dịch vụ đăng nhập tạm thời không khả dụng. Vui lòng thử lại.' });
+    } else {
+      res.status(500).json({ success: false, message: 'Lỗi server khi đăng nhập' });
+    }
   }
 };
 

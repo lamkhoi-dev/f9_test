@@ -128,8 +128,9 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
     usage = await UsageService.checkAndPrepareUsage(
       user.id, 
       modelName, 
-      resolution, 
-      priceKey, 
+      resolution,
+      // Use standardized priceKey for image-generation billing (1k=10, 2k=20, 4k=30)
+      priceKey || 'image-generation',
       service,
       page,
       config,

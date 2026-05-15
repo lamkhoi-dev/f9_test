@@ -65,14 +65,16 @@ User.init(
       allowNull: false,
     },
     role: {
-      type: DataTypes.ENUM('user', 'admin'),
+      type: DataTypes.STRING,
       defaultValue: 'user',
       allowNull: false,
+      validate: { isIn: [['user', 'admin']] },
     },
     plan: {
-      type: DataTypes.ENUM('free', 'pro'),
+      type: DataTypes.STRING,
       defaultValue: 'free',
       allowNull: false,
+      validate: { isIn: [['free', 'pro']] },
     },
     hasPersonalKey: {
       type: DataTypes.BOOLEAN,
