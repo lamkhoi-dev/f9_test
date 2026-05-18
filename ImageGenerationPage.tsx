@@ -2047,7 +2047,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                     },
                 });
 
-                const imageParts = response.candidates?.[0]?.content?.parts.filter(part => part.inlineData);
+                const imageParts = response.candidates?.[0]?.content?.parts?.filter(part => part.inlineData);
                 if (imageParts && imageParts.length > 0) {
                     const resultImages = imageParts.map(part => `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
                     const finalImages = [resultImages[0]];
@@ -2114,7 +2114,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                     },
                 });
         
-                const imagePart = response.candidates?.[0]?.content?.parts.find(part => part.inlineData);
+                const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
                 if (imagePart && imagePart.inlineData) {
                     return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
                 }
@@ -2318,7 +2318,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                 },
             });
     
-            const imagePart = response.candidates?.[0]?.content?.parts.find(part => part.inlineData);
+            const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
     
             if (imagePart && imagePart.inlineData) {
                 const resultImage = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
@@ -2351,7 +2351,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                 config: { responseModalities: ['IMAGE'] }
             });
 
-            const imagePart = response.candidates?.[0]?.content?.parts.find(part => part.inlineData);
+            const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
             if (imagePart && imagePart.inlineData) {
                 const resultBase64 = imagePart.inlineData.data;
                 const mimeType = imagePart.inlineData.mimeType;
