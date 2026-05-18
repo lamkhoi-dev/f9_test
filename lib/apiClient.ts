@@ -52,13 +52,30 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
+let isHandling401 = false;
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('f9_token');
-      localStorage.removeItem('f9_user');
-      window.location.reload();
+      const requestUrl = error.config?.url || '';
+      const hasToken = !!localStorage.getItem('f9_token');
+
+      // Don't auto-logout for admin sub-resource calls (they use the same token)
+      // Only logout if we actually had a token (not already logged out)
+      // and the failing request was an auth-level call (not a data API call)
+      const isAuthCall = requestUrl.includes('/auth/');
+      const isAdminCall = requestUrl.includes('/admin/');
+
+      if (hasToken && !isAdminCall && !isHandling401) {
+        isHandling401 = true;
+        localStorage.removeItem('f9_token');
+        localStorage.removeItem('f9_user');
+        setTimeout(() => {
+          isHandling401 = false;
+          window.location.reload();
+        }, 100);
+      }
     }
     return Promise.reject(error);
   }

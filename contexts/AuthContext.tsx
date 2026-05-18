@@ -79,13 +79,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshUser = useCallback(async () => {
     try {
       const res = await apiClient.get('/auth/me');
-      const userData = res.data.data;
-      setUser(userData);
-      localStorage.setItem('f9_user', JSON.stringify(userData));
-      } catch (err) {
-        console.error('Failed to refresh user profile:', err);
+      // /auth/me returns { success, data: { user: {...} } }
+      const userData: User = res.data.data?.user ?? res.data.data;
+      if (userData?.id) {
+        setUser(userData);
+        localStorage.setItem('f9_user', JSON.stringify(userData));
       }
-    }, [user?.id]);
+    } catch (err) {
+      console.error('Failed to refresh user profile:', err);
+    }
+  }, [user?.id]);
   
     // Listen for AI generation success to refresh balance
     useEffect(() => {

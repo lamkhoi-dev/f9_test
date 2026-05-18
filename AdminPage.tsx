@@ -214,6 +214,14 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   };
 
   const handleSavePrompt = async () => {
+    if (!promptForm.categoryId) {
+      toast.warning('Vui lòng chọn chuyên mục!');
+      return;
+    }
+    if (!promptForm.title.trim() || !promptForm.content.trim()) {
+      toast.warning('Tiêu đề và nội dung prompt không được để trống!');
+      return;
+    }
     try {
       if (editingPrompt) {
         await apiClient.put(`/admin/prompts/${editingPrompt.id}`, promptForm);
@@ -227,7 +235,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setPromptForm({ title: '', content: '', thumbnail: '', categoryId: '', tier: 'free', sortOrder: 0, isActive: true });
       fetchAdminPrompts();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Lỗi khi lưu prompt');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi khi lưu prompt';
+      toast.error(msg);
     }
   };
 
@@ -238,7 +247,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       toast.success('Xóa prompt thành công!');
       fetchAdminPrompts();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Lỗi khi xóa prompt');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi khi xóa prompt';
+      toast.error(msg);
     }
   };
 
@@ -256,7 +266,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setCategoryForm({ name: '', description: '', sortOrder: 0, isActive: true });
       fetchPromptCategories();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Lỗi khi lưu chuyên mục');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi khi lưu chuyên mục';
+      toast.error(msg);
     }
   };
 
@@ -268,7 +279,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       fetchPromptCategories();
       fetchAdminPrompts();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Lỗi khi xóa chuyên mục');
+      const msg = err.response?.data?.message || err.response?.data?.error || 'Lỗi khi xóa chuyên mục';
+      toast.error(msg);
     }
   };
 
@@ -335,6 +347,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     setEditError('');
     try {
       await apiClient.put(`/admin/users/${editModal.id}`, editData);
+      toast.success('Cập nhật user thành công!');
       setEditModal(null);
       fetchUsers(page);
     } catch (err: any) {
@@ -343,6 +356,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       setIsEditing(false);
     }
   };
+
 
   const handleSaveKey = async () => {
     try {
