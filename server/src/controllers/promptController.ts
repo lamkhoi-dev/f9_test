@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
-import Prompt from '../models/Prompt';
-import PromptCategory from '../models/PromptCategory';
+// Import via index to ensure all associations (hasMany/belongsTo) are registered
+import db from '../models';
+const Prompt = db.Prompt;
+const PromptCategory = db.PromptCategory;
 
 // ─── Public endpoints ───
 
@@ -56,6 +58,7 @@ export const adminListCategories = async (_req: Request, res: Response): Promise
     });
     res.json({ success: true, data: categories });
   } catch (error: any) {
+    console.error('[adminListCategories] Error:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -107,15 +110,17 @@ export const adminListPrompts = async (req: Request, res: Response): Promise<voi
   try {
     const { categoryId } = req.query;
     const where: any = {};
-    if (categoryId) where.categoryId = categoryId;
+    if (categoryId) where.categoryId = categoryId as string;
 
+    // Note: no 'include' here to avoid association timing issues.
+    // The frontend resolves category names from its own promptCategories state.
     const prompts = await Prompt.findAll({
       where,
-      include: [{ model: PromptCategory, as: 'category', attributes: ['id', 'name'] }],
       order: [['sortOrder', 'ASC'], ['createdAt', 'DESC']],
     });
     res.json({ success: true, data: prompts });
   } catch (error: any) {
+    console.error('[adminListPrompts] Error:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
