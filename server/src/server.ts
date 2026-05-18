@@ -51,6 +51,10 @@ const start = async () => {
         }
         console.log('💰 Pricing seeded: 1K=10cr, 2K=20cr, 4K=30cr');
 
+        // Seed default prompt library (3 categories + 24 prompts)
+        const { seedPromptLibrary } = await import('./seedPrompts');
+        await seedPromptLibrary();
+
       } catch (dbError: any) {
         console.warn('⚠️  Database not available:', dbError.message);
         console.warn('   Auth/Admin/Billing features disabled. Legacy endpoints still work.');
