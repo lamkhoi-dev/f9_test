@@ -800,8 +800,28 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     let currentDesc = "";
     let tag = "";
 
-    // Try API data first, fallback to hardcoded
-    if (useApiData && selectedCategory) {
+    // 1. Check hardcoded categories FIRST (always available)
+    if (selectedCategory) {
+      if (selectedCategory === 'Nhà Phố') {
+        currentItems = nhaPhoItems;
+        currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
+        currentDesc = t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.");
+        tag = "NHÀ";
+      } else if (selectedCategory === 'Biệt Thự') {
+        currentItems = bietThuItems;
+        currentTitle = t("promptLibraryPage.categories.villa.title", "Biệt Thự");
+        currentDesc = t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.");
+        tag = "BIỆT THỰ";
+      } else if (selectedCategory === 'Nội Thất') {
+        currentItems = noiThatItems;
+        currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
+        currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
+        tag = "NỘI THẤT";
+      }
+    }
+
+    // 2. If not a hardcoded category, try API data (for admin-created categories)
+    if (currentItems.length === 0 && useApiData && selectedCategory) {
       const matchedCat = apiCategories.find(c => c.name === selectedCategory);
       if (matchedCat) {
         currentTitle = matchedCat.name;
@@ -818,26 +838,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
             tier: p.tier,
             locked: p.locked,
           }));
-      }
-    }
-
-    // Fallback to hardcoded data if API didn't provide items
-    if (currentItems.length === 0 && selectedCategory) {
-      if (selectedCategory === 'Nhà Phố') {
-        currentItems = nhaPhoItems;
-        currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
-        currentDesc = t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.");
-        tag = "NHÀ";
-      } else if (selectedCategory === 'Biệt Thự') {
-        currentItems = bietThuItems;
-        currentTitle = t("promptLibraryPage.categories.villa.title", "Biệt Thự");
-        currentDesc = t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.");
-        tag = "BIỆT THỰ";
-      } else if (selectedCategory === 'Nội Thất') {
-        currentItems = noiThatItems;
-        currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
-        currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
-        tag = "NỘI THẤT";
       }
       if (!tag) tag = selectedCategory.toUpperCase();
     }
@@ -925,14 +925,18 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       );
     }
 
-    // Build cards from API or hardcoded
-    const displayCards = useApiData && apiCategories.length > 0
-      ? apiCategories.map(cat => ({
-          title: cat.name,
-          description: cat.description || '',
-          imageUrl: apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || 'https://placehold.co/600x400/1e293b/64748b?text=' + encodeURIComponent(cat.name),
-        }))
-      : libraryCards;
+    // Always show hardcoded 3 categories first, then append API-only categories
+    const hardcodedTitles = libraryCards.map(c => c.title);
+    const apiOnlyCards = (useApiData && apiCategories.length > 0)
+      ? apiCategories
+          .filter(cat => !hardcodedTitles.includes(cat.name)) // skip duplicates
+          .map(cat => ({
+            title: cat.name,
+            description: cat.description || '',
+            imageUrl: apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || 'https://placehold.co/600x400/1e293b/64748b?text=' + encodeURIComponent(cat.name),
+          }))
+      : [];
+    const displayCards = [...libraryCards, ...apiOnlyCards];
 
     return (
       <div className="max-w-6xl mx-auto w-full">
