@@ -1,7 +1,12 @@
 import axios from 'axios';
 
-// In production (Vercel), use the full backend URL; in dev, use Vite proxy '/api'
-let envURL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Support both VITE_API_URL and legacy VITE_API_BASE_URL (prefer VITE_API_URL)
+let envURL = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '/api';
+
+// Add https:// if URL is a bare hostname (Railway sometimes strips protocol)
+if (envURL && !envURL.startsWith('http') && !envURL.startsWith('/')) {
+  envURL = 'https://' + envURL;
+}
 
 // Robustness Fix: Automatically append '/api' if it's an external URL and missing the prefix
 if (envURL.startsWith('http') && !envURL.endsWith('/api') && !envURL.includes('/api/')) {
