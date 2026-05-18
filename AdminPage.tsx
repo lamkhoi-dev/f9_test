@@ -194,12 +194,9 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       const res = await apiClient.get('/admin/prompt-categories');
       setPromptCategories(res.data.data || []);
     } catch (err: any) {
-      // If backend not ready yet, use local fallback
-      setPromptCategories([
-        { id: 'cat-1', name: 'Nhà Phố', description: 'Mẫu prompt nhà phố', sortOrder: 1, isActive: true },
-        { id: 'cat-2', name: 'Biệt Thự', description: 'Mẫu prompt biệt thự', sortOrder: 2, isActive: true },
-        { id: 'cat-3', name: 'Nội Thất', description: 'Mẫu prompt nội thất', sortOrder: 3, isActive: true },
-      ]);
+      console.error('[fetchPromptCategories] failed:', err.response?.data || err.message);
+      toast.error('Không tải được danh sách chuyên mục. Kiểm tra server logs.');
+      setPromptCategories([]);
     }
   };
 
@@ -208,7 +205,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       const res = await apiClient.get('/admin/prompts');
       setAdminPrompts(res.data.data || []);
     } catch (err: any) {
-      // Fallback for when backend isn't ready
+      console.error('[fetchAdminPrompts] failed:', err.response?.data || err.message);
+      toast.error('Không tải được danh sách prompt: ' + (err.response?.data?.message || err.message));
       setAdminPrompts([]);
     }
   };
