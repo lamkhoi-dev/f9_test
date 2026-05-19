@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { apiClient, getImageSizeConfig, getImageSize } from './lib/api';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode } from './contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from './contexts/ModeContext';
 import { usePricing } from './contexts/PricingContext';
 import { useSnow } from './contexts/SnowContext';
 import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
@@ -1252,9 +1252,11 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const AI_SUGGESTION_COST = 5; // credits per AI suggestion use
 
     // Compute current pricing for the generate button
+    // Use CREDIT_COSTS as source of truth (1k=10, 2k=20, 4k=40)
+    // DB lookup is unreliable because model keys in DB ('image-generation') don't match getPriceKey format ('pro-1k')
     const currentPriceKey = useMemo(() => getPriceKey(mode, proResolution), [getPriceKey, mode, proResolution]);
-    const basePrice = getPrice(currentPriceKey, 'realistic') ?? getPrice(currentPriceKey) ?? 0;
-    const totalPrice = basePrice * numberOfImages + aiSuggestionCount * AI_SUGGESTION_COST;
+    const basePrice = CREDIT_COSTS[proResolution] ?? getPrice(currentPriceKey, 'realistic') ?? getPrice(currentPriceKey) ?? 0;
+    const totalPrice = basePrice * (isFreePlan ? 1 : numberOfImages) + aiSuggestionCount * AI_SUGGESTION_COST;
 
     const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE);
     const paginatedHistory = useMemo(() => {
