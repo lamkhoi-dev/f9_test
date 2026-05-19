@@ -1252,8 +1252,8 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const AI_SUGGESTION_COST = 5; // credits per AI suggestion use
 
     // Compute current pricing for the generate button
-    const currentPriceKey = useMemo(() => getPriceKey(mode, activeAction === 'exterior' ? 'exterior' : 'interior'), [getPriceKey, mode, activeAction]);
-    const basePrice = getPrice(currentPriceKey, 'image-generation') ?? 0;
+    const currentPriceKey = useMemo(() => getPriceKey(mode, proResolution), [getPriceKey, mode, proResolution]);
+    const basePrice = getPrice(currentPriceKey, 'realistic') ?? getPrice(currentPriceKey) ?? 0;
     const totalPrice = basePrice * numberOfImages + aiSuggestionCount * AI_SUGGESTION_COST;
 
     const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE);
