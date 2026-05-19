@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { apiClient, getImageSizeConfig, getImageSize } from './lib/api';
 import { useLanguage } from './hooks/useLanguage';
 import { useMode } from './contexts/ModeContext';
+import { usePricing } from './contexts/PricingContext';
 import { useSnow } from './contexts/SnowContext';
 import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
 import LanguageSwitcher from './components/LanguageSwitcher';
@@ -1151,7 +1152,8 @@ Instructions:
 
 const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, restoreData }) => {
     const { t, locale } = useLanguage();
-    const { getModelName, isPro, mode, toggleMode, proResolution } = useMode();
+    const { getModelName, isPro, mode, toggleMode, proResolution, getPriceKey } = useMode();
+    const { getPrice } = usePricing();
     const { isSnowing, toggleSnow } = useSnow();
     const [activeAction, setActiveAction] = useState('exterior');
     const { isFreePlan } = useAuth();
@@ -1244,8 +1246,15 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const [sketchupResult, setSketchupResult] = useState<string | null>(null);
     const [sketchupHistory, setSketchupHistory] = useState<{ input: string; output: string }[]>([]);
     const [numberOfImages, setNumberOfImages] = useState(1);
+    const [aiSuggestionCount, setAiSuggestionCount] = useState(0);
     
     const ITEMS_PER_PAGE = 10;
+    const AI_SUGGESTION_COST = 5; // credits per AI suggestion use
+
+    // Compute current pricing for the generate button
+    const currentPriceKey = useMemo(() => getPriceKey(mode, activeAction === 'exterior' ? 'exterior' : 'interior'), [getPriceKey, mode, activeAction]);
+    const basePrice = getPrice(currentPriceKey, 'image-generation') ?? 0;
+    const totalPrice = basePrice * numberOfImages + aiSuggestionCount * AI_SUGGESTION_COST;
 
     const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE);
     const paginatedHistory = useMemo(() => {
@@ -1720,6 +1729,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
             
             if (Array.isArray(result) && result.length > 0) {
                 setEnvironmentalCharacteristics(result.slice(0, 10));
+                setAiSuggestionCount(prev => prev + 1); // accrue 5-credit cost
             } else {
                 console.warn("AI did not return a valid array of suggestions.");
             }
@@ -1764,7 +1774,8 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
             const result = JSON.parse(response.text);
             
             if (Array.isArray(result) && result.length > 0) {
-                setAppliedMaterials(result); 
+                setAppliedMaterials(result);
+                setAiSuggestionCount(prev => prev + 1); // accrue 5-credit cost
             } else {
                 console.warn("AI did not return a valid array of material suggestions.");
             }
@@ -2169,6 +2180,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                     }
                 });
                 setCurrentPage(1);
+                setAiSuggestionCount(0); // reset after successful generation
             } else {
                  console.error("Rendering failed: No image generated.");
             }
@@ -3623,8 +3635,32 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                             </div>
 
                             <div className="flex-shrink-0 p-4 bg-[#202633] border-t border-gray-700 z-10">
+                                {/* Credit cost breakdown */}
+                                {totalPrice > 0 && !isLoading && (
+                                    <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
+                                        <div className="flex justify-between">
+                                            <span>Tạo ảnh ({numberOfImages} x {basePrice} credits)</span>
+                                            <span className="text-orange-300 font-semibold">{basePrice * numberOfImages} cr</span>
+                                        </div>
+                                        {aiSuggestionCount > 0 && (
+                                            <div className="flex justify-between">
+                                                <span>AI Gợi ý ({aiSuggestionCount} x {AI_SUGGESTION_COST} credits)</span>
+                                                <span className="text-yellow-300 font-semibold">{aiSuggestionCount * AI_SUGGESTION_COST} cr</span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
+                                            <span className="font-semibold text-white">Tổng cộng</span>
+                                            <span className="font-bold text-orange-400">{totalPrice} credits</span>
+                                        </div>
+                                    </div>
+                                )}
                                 <button onClick={handleGenerate} disabled={!activeInputFile || isLoading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">
-                                    {isLoading ? t('imageGenerationPage.sidebar.generating') : t('imageGenerationPage.sidebar.generateBtn')}
+                                    {isLoading
+                                        ? t('imageGenerationPage.sidebar.generating')
+                                        : totalPrice > 0
+                                            ? `${t('imageGenerationPage.sidebar.generateBtn')} — ${totalPrice} credits`
+                                            : t('imageGenerationPage.sidebar.generateBtn')
+                                    }
                                 </button>
                             </div>
                         </aside>
