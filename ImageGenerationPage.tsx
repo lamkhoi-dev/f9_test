@@ -1700,17 +1700,13 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
     };
 
     const handleAiSuggestEnvironment = async () => {
-        if (!constructionType || !designStyle || !locationContext) {
-            return;
-        }
-
         setIsSuggesting(true);
         try {
             
             const prompt = t('imageGenerationPage.prompts.aiEnvironmentSuggestionPrompt', {
-                constructionType: constructionType,
-                designStyle: designStyle,
-                locationContext: locationContext,
+                constructionType: constructionType || 'công trình kiến trúc',
+                designStyle: designStyle || 'thiết kế hiện đại',
+                locationContext: locationContext || 'khu vực đô thị',
             });
 
             const schema = {
@@ -3439,6 +3435,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                             type="button"
                                                             onClick={handleAiSuggestEnvironment}
                                                             disabled={isFreePlan || isSuggesting}
+                                                            title={!constructionType || !designStyle || !locationContext ? 'Cần chọn Loại công trình, Phong cách & Vị trí trước' : 'AI gợi ý đặc điểm môi trường'}
                                                             className="flex-shrink-0 bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold px-3 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed min-h-[44px]"
                                                         >
                                                             <SparklesIcon className="w-4 h-4" />
