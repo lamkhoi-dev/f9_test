@@ -800,8 +800,33 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     let currentDesc = "";
     let tag = "";
 
-    // 1. Check hardcoded categories FIRST (always available)
-    if (selectedCategory) {
+    // 1. Try API data first — admin edits (images, titles, prompts) come from here
+    if (useApiData && selectedCategory) {
+      const matchedCat = apiCategories.find(c => c.name === selectedCategory);
+      if (matchedCat) {
+        const apiItems = apiPrompts
+          .filter(p => p.categoryId === matchedCat.id)
+          .map(p => ({
+            id: p.id,
+            title: p.title,
+            description: p.content ? p.content.substring(0, 80) + '...' : '',
+            imageUrl: p.thumbnail || 'https://placehold.co/400x300/1e293b/64748b?text=No+Image',
+            defaultPrompt: p.locked ? '' : p.content,
+            tier: p.tier,
+            locked: p.locked,
+          }));
+
+        if (apiItems.length > 0) {
+          currentItems = apiItems;
+          currentTitle = matchedCat.name;
+          currentDesc = matchedCat.description || '';
+          tag = matchedCat.name.toUpperCase();
+        }
+      }
+    }
+
+    // 2. Fallback to hardcoded arrays when API has no data for this category
+    if (currentItems.length === 0 && selectedCategory) {
       if (selectedCategory === 'Nhà Phố') {
         currentItems = nhaPhoItems;
         currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
@@ -817,29 +842,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
         currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
         tag = "NỘI THẤT";
+      } else {
+        tag = selectedCategory.toUpperCase();
       }
-    }
-
-    // 2. If not a hardcoded category, try API data (for admin-created categories)
-    if (currentItems.length === 0 && useApiData && selectedCategory) {
-      const matchedCat = apiCategories.find(c => c.name === selectedCategory);
-      if (matchedCat) {
-        currentTitle = matchedCat.name;
-        currentDesc = matchedCat.description || '';
-        tag = matchedCat.name.toUpperCase();
-        currentItems = apiPrompts
-          .filter(p => p.categoryId === matchedCat.id)
-          .map(p => ({
-            id: p.id,
-            title: p.title,
-            description: p.content ? p.content.substring(0, 80) + '...' : '',
-            imageUrl: p.thumbnail || 'https://placehold.co/400x300/1e293b/64748b?text=No+Image',
-            defaultPrompt: p.locked ? '' : p.content,
-            tier: p.tier,
-            locked: p.locked,
-          }));
-      }
-      if (!tag) tag = selectedCategory.toUpperCase();
     }
 
     if (selectedCategory && currentItems.length > 0) {
@@ -925,7 +930,20 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       );
     }
 
-    // Always show hardcoded 3 categories first, then append API-only categories
+    // Build display cards: hardcoded 3 categories first, then API-only extras
+    // For hardcoded categories, prefer API thumbnail if admin updated it
+    const getApiThumbnail = (categoryName: string): string | null => {
+      if (!useApiData) return null;
+      const cat = apiCategories.find(c => c.name === categoryName);
+      if (!cat) return null;
+      return apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || null;
+    };
+
+    const enrichedLibraryCards = libraryCards.map(card => ({
+      ...card,
+      imageUrl: getApiThumbnail(card.title) || card.imageUrl,
+    }));
+
     const hardcodedTitles = libraryCards.map(c => c.title);
     const apiOnlyCards = (useApiData && apiCategories.length > 0)
       ? apiCategories
@@ -936,7 +954,8 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
             imageUrl: apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || 'https://placehold.co/600x400/1e293b/64748b?text=' + encodeURIComponent(cat.name),
           }))
       : [];
-    const displayCards = [...libraryCards, ...apiOnlyCards];
+    const displayCards = [...enrichedLibraryCards, ...apiOnlyCards];
+
 
     return (
       <div className="max-w-6xl mx-auto w-full">
