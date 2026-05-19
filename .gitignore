@@ -36,3 +36,4 @@ server/dist/
 
 # Clone repo (temporary — remove after migration)
 F9-Rendering-AI/
+.sql
