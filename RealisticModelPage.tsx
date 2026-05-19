@@ -13,7 +13,7 @@ import { BoltIcon } from './components/icons/BoltIcon';
 import { ArrowPathIcon } from './components/icons/ArrowPathIcon';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode } from './contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from './contexts/ModeContext';
 import FilterDropdown from './components/FilterDropdown';
 import Footer from './components/Footer';
 import Pagination from './components/Pagination';
@@ -34,6 +34,7 @@ interface HistoryItem {
 const RealisticModelPage: React.FC<RealisticModelPageProps> = ({ onNavigate, restoreData }) => {
     const { t } = useLanguage();
     const { getModelName, isPro, proResolution } = useMode();
+    const creditCost = CREDIT_COSTS[proResolution] ?? 10;
     const [inputImage, setInputImage] = useState<{ url: string; file: File } | null>(null);
     const [outputImage, setOutputImage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -259,6 +260,7 @@ const RealisticModelPage: React.FC<RealisticModelPageProps> = ({ onNavigate, res
                                 <>
                                     <SparklesPlaceholderIcon className="w-5 h-5" />
                                     <span>{t('realisticModel.generateBtn')}</span>
+                                    <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">💳 {creditCost} cr</span>
                                 </>
                             )}
                         </button>

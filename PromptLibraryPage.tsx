@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode } from './contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from './contexts/ModeContext';
 import { useSnow } from './contexts/SnowContext';
 import { useApiKey } from './contexts/ApiKeyContext';
 import { useAuth } from './contexts/AuthContext';
@@ -54,6 +54,7 @@ interface ApiPrompt {
 const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => {
   const { t } = useLanguage();
   const { mode, toggleMode, getModelName, isPro, proResolution } = useMode();
+  const creditCost = CREDIT_COSTS[proResolution] ?? 10;
   const { isSnowing, toggleSnow } = useSnow();
   const { isKeySet, showKeyModal } = useApiKey();
   const { user } = useAuth();
@@ -564,6 +565,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                   <span className="text-xs text-orange-400 mb-1">Gợi ý sử dụng</span>
                   <button onClick={handleSuggestMaterials} disabled={isSuggestingMaterials} className="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-2 py-1 rounded text-xs text-white transition-colors disabled:opacity-50">
                     <SparklesIcon className="w-3 h-3" /> {isSuggestingMaterials ? t("promptLibraryPage.suggestingMaterials", "Đang gợi ý...") : t("promptLibraryPage.suggestMaterials", "AI Gợi ý")}
+                    {!isSuggestingMaterials && <span className="bg-orange-500/80 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium">+5 cr</span>}
                   </button>
                 </div>
               </div>
@@ -644,7 +646,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
             <button 
               onClick={handleGenerate}
               disabled={!activeInputFile || isLoading}
-              className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-orange-500 hover:to-red-600 text-white font-bold py-3 rounded-lg transition-all duration-300 mt-auto disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
+              className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-orange-500 hover:to-red-600 text-white font-bold py-3 rounded-lg transition-all duration-300 mt-auto disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
             >
               {isLoading ? (
                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -652,7 +654,10 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               ) : (
-                "Tạo Ảnh ngay"
+                <>
+                  <span>Tạo Ảnh ngay</span>
+                  <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">💳 {creditCost} cr</span>
+                </>
               )}
             </button>
           </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode } from './contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from './contexts/ModeContext';
 import { ArrowUpTrayIcon } from './components/icons/ArrowUpTrayIcon';
 import { ClipboardIcon } from './components/icons/ClipboardIcon';
 import { PlusIcon } from './components/icons/PlusIcon';
@@ -41,7 +41,8 @@ const hexToRgb = (hex: string) => {
 
 const ImageEditMainPage: React.FC = () => {
     const { t } = useLanguage();
-    const { getModelName, isPro } = useMode();
+    const { getModelName, isPro, proResolution } = useMode();
+    const creditCost = CREDIT_COSTS[proResolution] ?? 10;
     const [mainImage, setMainImage] = useState<string | null>(null);
     const mainFileInputRef = useRef<HTMLInputElement>(null);
     const [activeTool, setActiveTool] = useState<'pencil' | 'box' | 'eraser' | ''>('');
@@ -1165,8 +1166,14 @@ const ImageEditMainPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3">
-                    <button onClick={handleGenerate} disabled={isLoading || !mainImage} className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2.5 rounded-md transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">{t('imageGenerationPage.editPage.createImageBtn')}</button>
-                    <button onClick={handleDetailZoom} disabled={isLoading || !mainImage} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-md transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">{t('imageGenerationPage.editPage.createDetailZoomBtn')}</button>
+                    <button onClick={handleGenerate} disabled={isLoading || !mainImage} className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2.5 rounded-md transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <span>{t('imageGenerationPage.editPage.createImageBtn')}</span>
+                        {!isLoading && <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">💳 {creditCost} cr</span>}
+                    </button>
+                    <button onClick={handleDetailZoom} disabled={isLoading || !mainImage} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-md transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                        <span>{t('imageGenerationPage.editPage.createDetailZoomBtn')}</span>
+                        {!isLoading && <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">💳 {creditCost} cr</span>}
+                    </button>
                 </div>
                 
                 <div className="space-y-2">

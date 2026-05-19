@@ -14,7 +14,7 @@ import CustomSelect from './components/CustomSelect';
 
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode } from './contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from './contexts/ModeContext';
 import Footer from './components/Footer';
 
 import { saveHistory, HistoryRecord } from './lib/db';
@@ -32,6 +32,7 @@ interface HistoryItem {
 const AutoColoringPage: React.FC<AutoColoringPageProps> = ({ onNavigate, restoreData }) => {
     const { t } = useLanguage();
     const { getModelName, isPro, proResolution } = useMode();
+    const creditCost = CREDIT_COSTS[proResolution] ?? 10;
     const [activeTab, setActiveTab] = useState('results');
     
     // State for filters and inputs
@@ -322,8 +323,13 @@ const AutoColoringPage: React.FC<AutoColoringPageProps> = ({ onNavigate, restore
                         <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={8} className="w-full bg-slate-700 border border-slate-600 text-white rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder={t('autoColoring.descriptionPlaceholder')}></textarea>
                     </div>
 
-                    <button onClick={() => handleGenerate()} disabled={!inputImage || isLoading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-lg transition-colors disabled:bg-gray-500 mt-auto">
-                        {isLoading ? t('autoColoring.generatingMessage') : t('autoColoring.generateBtn')}
+                    <button onClick={() => handleGenerate()} disabled={!inputImage || isLoading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-lg transition-colors disabled:bg-gray-500 mt-auto flex items-center justify-center gap-2">
+                        {isLoading ? t('autoColoring.generatingMessage') : (
+                            <>
+                                <span>{t('autoColoring.generateBtn')}</span>
+                                <span className="text-xs font-normal bg-white/20 px-2 py-0.5 rounded-full">💳 {creditCost} cr</span>
+                            </>
+                        )}
                     </button>
                 </aside>
 
