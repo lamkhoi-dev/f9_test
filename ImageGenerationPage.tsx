@@ -3436,7 +3436,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                          <button
                                                             type="button"
                                                             onClick={handleAiSuggestEnvironment}
-                                                            disabled={isFreePlan || isSuggesting || !constructionType || !designStyle || !locationContext}
+                                                            disabled={isFreePlan || isSuggesting}
                                                             className="flex-shrink-0 bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold px-3 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed min-h-[44px]"
                                                         >
                                                             <SparklesIcon className="w-4 h-4" />
