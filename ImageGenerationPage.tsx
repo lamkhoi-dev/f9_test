@@ -3379,7 +3379,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                         value={locationContext} 
                                                         onChange={setLocationContext} 
                                                         placeholder={t('imageGenerationPage.sidebar.locationContextPlaceholder')} 
-                                                        suggestions={Array.isArray(locationContexts) ? locationContexts : []} 
+                                                        suggestions={isFreePlan ? [] : (Array.isArray(locationContexts) ? locationContexts : [])} 
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
@@ -3400,17 +3400,18 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                                 value={appliedMaterials}
                                                                 onChange={setAppliedMaterials}
                                                                 placeholder={t('imageGenerationPage.sidebar.appliedMaterialsPlaceholder')}
-                                                                suggestions={Array.isArray(appliedMaterialsList) ? appliedMaterialsList : []}
+                                                                suggestions={isFreePlan ? [] : (Array.isArray(appliedMaterialsList) ? appliedMaterialsList : [])}
                                                             />
                                                         </div>
                                                         <button
                                                             type="button"
                                                             onClick={handleAiSuggestMaterials}
-                                                            disabled={isSuggestingMaterials || !originalInputImage}
+                                                            disabled={isFreePlan || isSuggestingMaterials || !originalInputImage}
                                                             className="flex-shrink-0 bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold px-3 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed min-h-[44px]"
                                                         >
                                                             <SparklesIcon className="w-4 h-4" />
                                                             <span>{isSuggestingMaterials ? t('imageGenerationPage.sidebar.aiSuggesting') : t('imageGenerationPage.sidebar.aiSuggestionBtn')}</span>
+                                                            {!isSuggestingMaterials && <span className="text-yellow-400 text-xs font-bold">+5 cr</span>}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -3435,17 +3436,18 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                          <button
                                                             type="button"
                                                             onClick={handleAiSuggestEnvironment}
-                                                            disabled={isSuggesting || !constructionType || !designStyle || !locationContext}
+                                                            disabled={isFreePlan || isSuggesting || !constructionType || !designStyle || !locationContext}
                                                             className="flex-shrink-0 bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold px-3 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed min-h-[44px]"
                                                         >
                                                             <SparklesIcon className="w-4 h-4" />
                                                             <span>{isSuggesting ? t('imageGenerationPage.sidebar.aiSuggesting') : t('imageGenerationPage.sidebar.aiSuggestionBtn')}</span>
+                                                            {!isSuggesting && <span className="text-yellow-400 text-xs font-bold">+5 cr</span>}
                                                         </button>
                                                     </div>
                                                 </div>
                                                  <div className="space-y-2">
                                                     <label htmlFor="distant-context" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.distantContextLabel')}</label>
-                                                    <SmartFilterInput id="distant-context" value={distantContext} onChange={setDistantContext} placeholder={t('imageGenerationPage.sidebar.distantContextPlaceholder')} suggestions={Array.isArray(distantContexts) ? distantContexts : []} />
+                                                    <SmartFilterInput id="distant-context" value={distantContext} onChange={setDistantContext} placeholder={t('imageGenerationPage.sidebar.distantContextPlaceholder')} suggestions={isFreePlan ? [] : (Array.isArray(distantContexts) ? distantContexts : [])} />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label htmlFor="season" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.seasonLabel')}</label>
@@ -3550,7 +3552,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                 </div>
                                                 <MaterialFilter onDescriptionChange={setMaterialDescription} activeInputFile={activeInputFile} />
                                                 <ContextLocationViewFilter onDescriptionChange={setContextLocationViewDescription} />
-                                                <LightingFilter onDescriptionChange={setLightingSystemDescription} activeInputFile={activeInputFile} />
+                                                <LightingFilter onDescriptionChange={setLightingSystemDescription} activeInputFile={activeInputFile} isFreePlan={isFreePlan} />
                                                 <LightToneFilter onDescriptionChange={setLightToneDescription} />
                                                 <TimeAndClimateFilter onDescriptionChange={setTimeAndClimateDescription} />
                                                 <CustomSelect label={t('imageGenerationPage.sidebar.renderQualityStyleLabel')} options={Array.isArray(renderQualityStyles) ? renderQualityStyles : []} value={renderQualityStyle} onChange={setRenderQualityStyle} placeholder={t('imageGenerationPage.sidebar.renderQualityStylePlaceholder')} />
@@ -3564,24 +3566,39 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                             <label htmlFor="description" className="font-bold text-white">4. {t('imageGenerationPage.sidebar.descriptionLabel')}</label>
                                             <span className="text-red-500 text-xs font-semibold">{t('imageGenerationPage.sidebar.readCarefullyLabel')}</span>
                                         </div>
-                                        <textarea
-                                            id="description"
-                                            value={description}
-                                            onChange={(e) => {
-                                                setDescription(e.target.value);
-                                                setSelectedTemplate('');
-                                            }}
-                                            rows={8}
-                                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                            placeholder={t('imageGenerationPage.sidebar.descriptionPlaceholder')}
-                                        ></textarea>
-                                         <button
-                                            onClick={handleOptimizePrompt}
-                                            disabled={isOptimizing || (!description && !originalInputImage)}
-                                            className="w-full bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                        >
-                                            {isOptimizing ? t('imageGenerationPage.sidebar.optimizingPrompt') : t('imageGenerationPage.sidebar.optimizePromptBtn')}
-                                        </button>
+                                        {isFreePlan ? (
+                                            <div className="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col items-center justify-center gap-3 min-h-[100px]">
+                                                <SparklesIcon className="w-6 h-6 text-orange-400" />
+                                                <p className="text-sm text-gray-300 text-center font-medium">Hãy Nâng cấp PRO để sử dụng đầy đủ tính năng</p>
+                                                <button
+                                                    onClick={() => { setUpgradeMessage('Nâng cấp PRO để sử dụng tính năng Mô tả Prompt và Tạo Prompt từ Ảnh!'); setShowUpgradeModal(true); }}
+                                                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition-colors"
+                                                >
+                                                    Nâng cấp PRO
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <textarea
+                                                    id="description"
+                                                    value={description}
+                                                    onChange={(e) => {
+                                                        setDescription(e.target.value);
+                                                        setSelectedTemplate('');
+                                                    }}
+                                                    rows={8}
+                                                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                                    placeholder={t('imageGenerationPage.sidebar.descriptionPlaceholder')}
+                                                ></textarea>
+                                                <button
+                                                    onClick={handleOptimizePrompt}
+                                                    disabled={isOptimizing || (!description && !originalInputImage)}
+                                                    className="w-full bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:bg-gray-700 disabled:cursor-not-allowed"
+                                                >
+                                                    {isOptimizing ? t('imageGenerationPage.sidebar.optimizingPrompt') : t('imageGenerationPage.sidebar.optimizePromptBtn')}
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
 
                                     {activeAction === 'exterior' && (
@@ -3610,26 +3627,30 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                     </div>
 
                                     <div className="space-y-2">
-                                        <label className="font-bold text-white">{t('imageGenerationPage.sidebar.numberOfResultsLabel')}</label>
+                                        <div className="flex items-center gap-2">
+                                            <label className="font-bold text-white">{t('imageGenerationPage.sidebar.numberOfResultsLabel')}</label>
+                                            {isFreePlan && <span className="text-xs bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full">PRO</span>}
+                                        </div>
                                         <div className="flex items-center justify-between bg-slate-800 rounded-lg">
                                             <button 
                                                 onClick={() => setNumberOfImages(n => Math.max(1, n - 1))}
-                                                disabled={numberOfImages <= 1}
+                                                disabled={isFreePlan || numberOfImages <= 1}
                                                 className="px-5 py-2 text-2xl font-bold text-white rounded-md hover:bg-slate-700 disabled:opacity-50"
                                                 aria-label="Decrease image count"
                                             >
                                                 -
                                             </button>
-                                            <span className="text-xl font-bold text-white" aria-live="polite">{numberOfImages}</span>
+                                            <span className="text-xl font-bold text-white" aria-live="polite">{isFreePlan ? 1 : numberOfImages}</span>
                                             <button 
                                                 onClick={() => setNumberOfImages(n => Math.min(4, n + 1))}
-                                                disabled={numberOfImages >= 4}
+                                                disabled={isFreePlan || numberOfImages >= 4}
                                                 className="px-5 py-2 text-2xl font-bold text-white rounded-md hover:bg-slate-700 disabled:opacity-50"
                                                 aria-label="Increase image count"
                                             >
                                                 +
                                             </button>
                                         </div>
+                                        {isFreePlan && <p className="text-xs text-gray-500 text-center">Nâng cấp PRO để tạo tối đa 4 ảnh/lần</p>}
                                     </div>
                                 </div>
                             </div>

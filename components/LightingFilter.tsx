@@ -9,6 +9,7 @@ import { SparklesIcon } from './icons/SparklesIcon';
 interface LightingFilterProps {
   onDescriptionChange: (desc: string) => void;
   activeInputFile: File | null;
+  isFreePlan?: boolean;
 }
 
 const filterCategories = [
@@ -28,9 +29,10 @@ interface SubAccordionProps {
     onSelectionChange: (category: string, value: string) => void;
     getSuggestions: (optionsArray: any) => string[];
     t: (key: string, options?: { [key: string]: string | number }) => any;
+    isFreePlan?: boolean;
 }
 
-const SubAccordion: React.FC<SubAccordionProps> = ({ category, selections, openSubAccordion, onToggle, onSelectionChange, getSuggestions, t }) => {
+const SubAccordion: React.FC<SubAccordionProps> = ({ category, selections, openSubAccordion, onToggle, onSelectionChange, getSuggestions, t, isFreePlan }) => {
     const title = String(t(`imageGenerationPage.sidebar.lightingSystem.${category}.title`) || '');
     const suggestions = getSuggestions(t(`imageGenerationPage.sidebar.lightingSystem.${category}.options`));
     const value = selections[category] || '';
@@ -50,7 +52,7 @@ const SubAccordion: React.FC<SubAccordionProps> = ({ category, selections, openS
                 value={value}
                 onChange={(v) => onSelectionChange(category, v)}
                 placeholder={title}
-                suggestions={suggestions}
+                suggestions={isFreePlan ? [] : suggestions}
               />
             </Accordion>
         </div>
@@ -66,7 +68,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
     });
 };
 
-const LightingFilter: React.FC<LightingFilterProps> = ({ onDescriptionChange, activeInputFile }) => {
+const LightingFilter: React.FC<LightingFilterProps> = ({ onDescriptionChange, activeInputFile, isFreePlan }) => {
   const { t } = useLanguage();
   const [displayDescription, setDisplayDescription] = useState('');
   const [hasManualInput, setHasManualInput] = useState(false);
@@ -229,11 +231,12 @@ const LightingFilter: React.FC<LightingFilterProps> = ({ onDescriptionChange, ac
     <button
         type="button"
         onClick={handleAiSuggest}
-        disabled={isSuggesting || !activeInputFile}
+        disabled={isFreePlan || isSuggesting || !activeInputFile}
         className="flex-shrink-0 bg-slate-600 hover:bg-slate-500 text-white font-bold px-3 py-1 rounded-md text-xs flex items-center gap-2 transition-colors disabled:bg-gray-700 disabled:text-gray-500 disabled:cursor-not-allowed"
     >
         <SparklesIcon className="w-4 h-4" />
         <span>{isSuggesting ? t('imageGenerationPage.sidebar.aiSuggesting') : t('imageGenerationPage.sidebar.aiSuggestionBtn')}</span>
+        {!isSuggesting && <span className="text-yellow-400 text-xs font-bold">+5 cr</span>}
     </button>
   );
 
@@ -272,7 +275,7 @@ const LightingFilter: React.FC<LightingFilterProps> = ({ onDescriptionChange, ac
                         value={selectedTemplate}
                         onChange={handleTemplateChange}
                         placeholder={String(t('imageGenerationPage.sidebar.lightingSystem.lightingTemplate.placeholder') || '')}
-                        suggestions={lightingTemplates}
+                        suggestions={isFreePlan ? [] : lightingTemplates}
                     />
                 </div>
 
@@ -287,6 +290,7 @@ const LightingFilter: React.FC<LightingFilterProps> = ({ onDescriptionChange, ac
                             onSelectionChange={handleSelectionChange}
                             getSuggestions={getSuggestions}
                             t={t}
+                            isFreePlan={isFreePlan}
                         />
                     ))}
                 </div>
