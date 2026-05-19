@@ -79,7 +79,7 @@ export const adminCreateCategory = async (req: Request, res: Response): Promise<
 
 export const adminUpdateCategory = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
+    const id = String(req.params.id);
     const category = await PromptCategory.findByPk(id);
     if (!category) {
       res.status(404).json({ success: false, message: 'Không tìm thấy chuyên mục' });
@@ -138,7 +138,7 @@ export const adminCreatePrompt = async (req: Request, res: Response): Promise<vo
     }
 
     // Verify category exists
-    const category = await PromptCategory.findByPk(categoryId);
+    const category = await PromptCategory.findByPk(String(categoryId));
     if (!category) {
       res.status(400).json({ success: false, message: 'Chuyên mục không tồn tại' });
       return;
@@ -160,7 +160,7 @@ export const adminCreatePrompt = async (req: Request, res: Response): Promise<vo
 
 export const adminUpdatePrompt = async (req: Request, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
+    const id = String(req.params.id);
     const prompt = await Prompt.findByPk(id);
     if (!prompt) {
       res.status(404).json({ success: false, message: 'Không tìm thấy prompt' });
