@@ -27,10 +27,20 @@ export const apiClient = {
    * Handles both text and image generation via Vertex AI backend.
    */
   generateContent: async (params: GenerateContentParams): Promise<GenerateContentResponse> => {
+    let userCredentials = undefined;
+    try {
+      const stored = localStorage.getItem('f9_gcp_credentials');
+      if (stored) {
+        userCredentials = JSON.parse(stored);
+      }
+    } catch (e) {
+      // Ignore parsing errors, it will just fallback to system credentials
+    }
+
     const res = await fetch(`${API_BASE_URL}/api/generate-content`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(params),
+      body: JSON.stringify({ ...params, userCredentials }),
     });
 
     if (!res.ok) {

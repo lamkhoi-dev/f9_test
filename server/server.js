@@ -28,9 +28,25 @@ app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json({ limit: '100mb' }));
 
 /**
- * Get GoogleGenAI instance using Vertex AI (chỉ trừ tiền vào $300 Free Credit)
+ * Get GoogleGenAI instance using Vertex AI.
+ * Uses personal Service Account JSON if provided, else falls back to system.
  */
-function getAI() {
+function getAI(userCredentials) {
+  if (userCredentials && userCredentials.project_id && userCredentials.client_email && userCredentials.private_key) {
+    return new GoogleGenAI({
+      vertexai: {
+        project: userCredentials.project_id,
+        location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1'
+      },
+      googleAuthOptions: {
+        credentials: {
+          client_email: userCredentials.client_email,
+          private_key: userCredentials.private_key,
+        }
+      }
+    });
+  }
+
   return new GoogleGenAI({
     vertexai: {
       project: process.env.GOOGLE_CLOUD_PROJECT || 'project-fdbf43b8-e8ee-4b6a-90a',
@@ -73,13 +89,13 @@ app.get('/api/health', (_req, res) => {
 // Proxy: generateContent (text + image generation)
 app.post('/api/generate-content', async (req, res) => {
   try {
-    const { model, contents, config } = req.body;
+    const { model, contents, config, userCredentials } = req.body;
 
     if (!model || !contents) {
       return res.status(400).json({ error: 'Missing required fields: model, contents' });
     }
 
-    const ai = getAI();
+    const ai = getAI(userCredentials);
     const normalizedContents = normalizeContents(contents);
 
     if (config?.imageConfig) {
@@ -112,13 +128,13 @@ app.post('/api/generate-content', async (req, res) => {
 // Proxy: generateContentStream (streaming)
 app.post('/api/generate-content-stream', async (req, res) => {
   try {
-    const { model, contents, config } = req.body;
+    const { model, contents, config, userCredentials } = req.body;
 
     if (!model || !contents) {
       return res.status(400).json({ error: 'Missing required fields: model, contents' });
     }
 
-    const ai = getAI();
+    const ai = getAI(userCredentials);
     const normalizedContents = normalizeContents(contents);
 
     res.setHeader('Content-Type', 'text/event-stream');
