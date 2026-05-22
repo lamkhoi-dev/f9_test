@@ -41,16 +41,7 @@ function getAI(req: Request): GoogleGenAI {
   let personalCredentials: any = null;
 
   if (userCredentialsHeader) {
-    try {
-      if (userCredentialsHeader.startsWith('{')) {
-        personalCredentials = JSON.parse(userCredentialsHeader);
-      } else {
-        const decoded = Buffer.from(userCredentialsHeader, 'base64').toString('utf-8');
-        personalCredentials = JSON.parse(decoded);
-      }
-    } catch (e) {
-      personalCredentials = userCredentialsHeader;
-    }
+    personalCredentials = KeyService.parseUserCredentialsHeader(userCredentialsHeader);
   } else if (userCredentialsBody) {
     personalCredentials = userCredentialsBody;
   }
