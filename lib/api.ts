@@ -59,7 +59,23 @@ export const apiClient = {
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({ error: res.statusText }));
-      const error = new Error(errorData.error || `API Error: ${res.status}`);
+      let errorMessage = errorData.error || `API Error: ${res.status}`;
+      
+      try {
+        if (typeof errorMessage === 'string') {
+          const jsonMatch = errorMessage.match(/(\{.*\})/s);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[1]);
+            if (parsed.error && parsed.error.message) {
+              errorMessage = parsed.error.message;
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+
+      const error = new Error(errorMessage);
       (error as any).status = res.status;
       (error as any).details = errorData.details;
       throw error;

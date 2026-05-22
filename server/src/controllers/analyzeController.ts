@@ -134,18 +134,33 @@ export const analyzeContent = async (req: AuthRequest, res: Response) => {
   }
 
 
-  console.error('analyzeContent: all models failed.', lastError?.message);
+  let errMsg = lastError?.message || 'Unknown error';
+  try {
+    if (typeof errMsg === 'string') {
+      const jsonMatch = errMsg.match(/(\{.*\})/s);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[1]);
+        if (parsed.error && parsed.error.message) {
+          errMsg = parsed.error.message;
+        }
+      }
+    }
+  } catch (e) {
+    // Ignore
+  }
+
+  console.error('analyzeContent: all models failed.', errMsg);
 
   if (req.headers['x-user-credentials']) {
     res.status(400).json({
       success: false,
-      message: `Lỗi AI cá nhân: ${lastError?.message || 'Unknown error'}`,
+      message: `Lỗi AI cá nhân: ${errMsg}`,
     });
     return;
   }
 
   res.status(500).json({
     success: false,
-    message: `Không thể phân tích ảnh tham chiếu: ${lastError?.message?.slice(0, 100) || 'Unknown error'}`,
+    message: `Không thể phân tích ảnh tham chiếu: ${errMsg.slice(0, 100)}`,
   });
 };

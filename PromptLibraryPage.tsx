@@ -501,7 +501,20 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       }
     } catch (error: any) {
       console.error("Error generating image:", error);
-      const serverMsg = error.response?.data?.message || error.message || '';
+      let serverMsg = error.response?.data?.message || error.response?.data?.error || error.message || '';
+      try {
+        if (typeof serverMsg === 'string') {
+          const jsonMatch = serverMsg.match(/(\{.*\})/s);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[1]);
+            if (parsed.error && parsed.error.message) {
+              serverMsg = parsed.error.message;
+            }
+          }
+        }
+      } catch (e) {
+        // Ignore parse error
+      }
       const errorMsg = serverMsg || "Có lỗi xảy ra khi tạo ảnh. Vui lòng thử lại.";
       alert(errorMsg);
     } finally {

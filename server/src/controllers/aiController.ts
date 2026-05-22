@@ -317,11 +317,26 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         res.json({ success: true, data: finalData });
         return;
       } catch (imagenErr: any) {
-        console.error(`❌ Imagen REST failed: ${imagenErr.message?.slice(0, 300)}`);
+        let errMsg = imagenErr.message;
+        try {
+          if (typeof errMsg === 'string') {
+            const jsonMatch = errMsg.match(/(\{.*\})/s);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[1]);
+              if (parsed.error && parsed.error.message) {
+                errMsg = parsed.error.message;
+              }
+            }
+          }
+        } catch (e) {
+          // Ignore
+        }
+
+        console.error(`❌ Imagen REST failed: ${errMsg?.slice(0, 300)}`);
         
         if (isPersonalAI) {
-          if (usage.usageLogId) await UsageService.failUsage(usage.usageLogId, imagenErr.message);
-          res.status(400).json({ success: false, message: `Lỗi AI cá nhân: ${imagenErr.message}` });
+          if (usage.usageLogId) await UsageService.failUsage(usage.usageLogId, errMsg);
+          res.status(400).json({ success: false, message: `Lỗi AI cá nhân: ${errMsg}` });
           return;
         }
         
@@ -435,11 +450,26 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
       if (keyId) await KeyService.markKeyFailed(keyId);
     }
 
+    let errMsg = error.message;
+    try {
+      if (typeof errMsg === 'string') {
+        const jsonMatch = errMsg.match(/(\{.*\})/s);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed.error && parsed.error.message) {
+            errMsg = parsed.error.message;
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+
     const isPersonalAI = !!req.headers['x-user-credentials'];
     res.status(isPersonalAI ? 400 : (error.status || 500)).json({
       success: false,
-      message: isPersonalAI ? `Lỗi AI cá nhân: ${error.message}` : 'Lỗi khi gọi AI',
-      error: error.message,
+      message: isPersonalAI ? `Lỗi AI cá nhân: ${errMsg}` : 'Lỗi khi gọi AI',
+      error: errMsg,
     });
   }
 };

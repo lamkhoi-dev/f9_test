@@ -107,10 +107,25 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
 
     res.json(result);
   } catch (error: any) {
-    console.error('[generate-content] Error:', error.message);
+    let errMsg = error.message || 'Internal server error';
+    try {
+      if (typeof errMsg === 'string') {
+        const jsonMatch = errMsg.match(/(\{.*\})/s);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed.error && parsed.error.message) {
+            errMsg = parsed.error.message;
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore parse error
+    }
+
+    console.error('[generate-content] Error:', errMsg);
     const status = error.status || 500;
     res.status(status).json({
-      error: error.message || 'Internal server error',
+      error: errMsg,
       details: error.details || null,
     });
   }
@@ -148,11 +163,26 @@ export const legacyGenerateContentStream = async (req: Request, res: Response): 
     res.write('data: [DONE]\n\n');
     res.end();
   } catch (error: any) {
-    console.error('[generate-content-stream] Error:', error.message);
+    let errMsg = error.message;
+    try {
+      if (typeof errMsg === 'string') {
+        const jsonMatch = errMsg.match(/(\{.*\})/s);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[1]);
+          if (parsed.error && parsed.error.message) {
+            errMsg = parsed.error.message;
+          }
+        }
+      }
+    } catch (e) {
+      // Ignore
+    }
+    
+    console.error('[generate-content-stream] Error:', errMsg);
     if (!res.headersSent) {
-      res.status(error.status || 500).json({ error: error.message });
+      res.status(error.status || 500).json({ error: errMsg });
     } else {
-      res.write(`data: ${JSON.stringify({ error: error.message })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: errMsg })}\n\n`);
       res.end();
     }
   }
