@@ -424,10 +424,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const handleGenerate = async () => {
     if (!activeInputFile || !selectedItem?.defaultPrompt) return;
 
-    if (isPro && !isKeySet) {
-      showKeyModal();
-      return;
-    }
 
     setIsLoading(true);
     setGeneratedImages([]);
@@ -462,8 +458,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
 
 
       const generateOneImage = async () => {
-        const response = await apiClient.generateContent({
+        const response = await httpClient.post('/ai/generate-image', {
           model: getModelName('image'),
+          prompt: finalPrompt,
           contents: {
             parts: [
               { inlineData: { data: inputBase64, mimeType: activeInputFile.type } },
@@ -479,8 +476,14 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           },
         });
 
-        const imagePart = response.candidates?.[0]?.content?.parts.find((part: any) => part.inlineData);
-        if (imagePart && imagePart.inlineData) {
+        const data = response.data?.data;
+        // Check CDN URL format
+        if (data?.candidates?.[0]?.content?.parts?.[0]?.fileData?.fileUri) {
+          return data.candidates[0].content.parts[0].fileData.fileUri;
+        }
+        // Check inline data format
+        const imagePart = data?.candidates?.[0]?.content?.parts?.find((part: any) => part.inlineData);
+        if (imagePart?.inlineData) {
           return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
         }
         return null;
@@ -498,11 +501,8 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       }
     } catch (error: any) {
       console.error("Error generating image:", error);
-      let errorMsg = "Có lỗi xảy ra khi tạo ảnh. Vui lòng thử lại.";
-      if (error.message?.includes("permission denied") || error.message?.includes("403") || error.message?.includes("404") || error.message?.includes("Requested entity was not found")) {
-          errorMsg = "Lỗi quyền truy cập: Vui lòng chọn API Key từ dự án có tính phí (Paid Project) để sử dụng mô hình tạo ảnh cao cấp.";
-          showKeyModal();
-      }
+      const serverMsg = error.response?.data?.message || error.message || '';
+      const errorMsg = serverMsg || "Có lỗi xảy ra khi tạo ảnh. Vui lòng thử lại.";
       alert(errorMsg);
     } finally {
       setIsLoading(false);

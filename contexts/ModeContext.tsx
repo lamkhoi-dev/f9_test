@@ -26,8 +26,8 @@ export const UI_PRICE_KEYS = {
 };
 
 export const UI_MODE_MODELS: Record<AppMode, string> = {
-  'pro': 'gemini-3-pro-image-preview',
-  'banana2': 'gemini-3.1-flash-image-preview'
+  'pro': 'imagen-3.0-generate-001',
+  'banana2': 'gemini-2.0-flash-preview-image-generation'
 };
 
 export const UI_MODE_LABELS: Record<AppMode, string> = {

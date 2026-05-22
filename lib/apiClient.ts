@@ -66,13 +66,12 @@ apiClient.interceptors.response.use(
       const requestUrl = error.config?.url || '';
       const hasToken = !!localStorage.getItem('f9_token');
 
-      // Don't auto-logout for admin sub-resource calls (they use the same token)
-      // Only logout if we actually had a token (not already logged out)
-      // and the failing request was an auth-level call (not a data API call)
-      const isAuthCall = requestUrl.includes('/auth/');
-      const isAdminCall = requestUrl.includes('/admin/');
+      // Only auto-logout for data API calls, NOT for auth endpoint calls themselves.
+      // This prevents a loop where /auth/me returning 401 triggers a reload
+      // during page load, which cancels any in-progress login flow.
+      const isAuthEndpoint = requestUrl.includes('/auth/');
 
-      if (hasToken && !isAdminCall && !isHandling401) {
+      if (hasToken && !isAuthEndpoint && !isHandling401) {
         isHandling401 = true;
         localStorage.removeItem('f9_token');
         localStorage.removeItem('f9_user');
