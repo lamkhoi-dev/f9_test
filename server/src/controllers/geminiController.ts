@@ -17,25 +17,41 @@ export const describeImage = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const vertexConfig = await KeyService.getVertexAIConfig();
-    if (!vertexConfig) {
-       res.status(503).json({ success: false, message: 'No Vertex AI credentials found' });
-       return;
+    const userCredentialsHeader = req.headers['x-user-credentials'] as string;
+    let personalCredentials: any = null;
+    let isPersonalAI = false;
+    let currentProjectId = '';
+
+    if (userCredentialsHeader) {
+      personalCredentials = KeyService.parseUserCredentialsHeader(userCredentialsHeader);
+      isPersonalAI = !!personalCredentials;
     }
 
-    const ai = new GoogleGenAI({
-      vertexai: true,
-      project: vertexConfig.projectId,
-      location: vertexConfig.location || 'us-central1',
-      googleAuthOptions: { credentials: vertexConfig.credentials },
-    });
+    let ai;
+    if (isPersonalAI) {
+      console.log(`🔑 Describe: Using personal AI credentials`);
+      ai = KeyService.getCustomVertexAI(personalCredentials);
+    } else {
+      const vertexConfig = await KeyService.getVertexAIConfig();
+      if (!vertexConfig) {
+         res.status(503).json({ success: false, message: 'No Vertex AI credentials found' });
+         return;
+      }
+      currentProjectId = vertexConfig.projectId;
+      ai = new GoogleGenAI({
+        vertexai: true,
+        project: vertexConfig.projectId,
+        location: vertexConfig.location || 'us-central1',
+        googleAuthOptions: { credentials: vertexConfig.credentials },
+      });
+    }
 
     // Strip header if present
     const raw = imageBase64.includes(',') ? imageBase64.split(',')[1] : imageBase64;
 
     const modelString = 'gemini-2.5-flash';
 
-    console.log(`🔍 Describe image using model: ${modelString} (Project: ${vertexConfig.projectId})`);
+    console.log(`🔍 Describe image using model: ${modelString} (Project: ${currentProjectId || 'AI Studio'})`);
 
     const result = await ai.models.generateContent({
       model: modelString,
@@ -59,13 +75,12 @@ export const describeImage = async (req: AuthRequest, res: Response) => {
       data: result
     });
 
-
-
   } catch (error: any) {
     console.error('Describe image error:', error);
-    res.status(500).json({
+    const isPersonalAI = !!req.headers['x-user-credentials'];
+    res.status(isPersonalAI ? 400 : 500).json({
       success: false,
-      message: `Lỗi phân tích: ${error.message}`
+      message: isPersonalAI ? `Lỗi AI cá nhân: ${error.message}` : `Lỗi phân tích: ${error.message}`
     });
   }
 };

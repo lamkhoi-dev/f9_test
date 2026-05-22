@@ -79,15 +79,25 @@ class VertexDirectService {
    * 
    * POST https://{LOCATION}-aiplatform.googleapis.com/v1/projects/{PROJECT_ID}/locations/{LOCATION}/publishers/google/models/{MODEL_ID}:predict
    */
-  async generateImage(params: VertexGenerateParams, customConfig?: { credentials: any; projectId: string; location: string; keyId?: number }): Promise<any> {
+  async generateImage(params: VertexGenerateParams, customConfig?: { credentials: any; projectId: string; location: string; keyId?: number; isPersonal?: boolean }): Promise<any> {
     let config = customConfig || await KeyService.getVertexAIConfig();
     
-    // REST API needs service account credentials (object) for Bearer token.
-    // If credentials is a string (API key), it can't generate Bearer tokens.
-    // Fall back to env var service account credentials.
-    if (config && typeof config.credentials === 'string') {
-      console.log(`⚠️ DB key is API key type — falling back to env service account for REST API`);
-      config = await this.getEnvServiceAccountConfig();
+    if ((config as any)?.isPersonal) {
+      if (typeof config.credentials === 'string') {
+        throw new Error('Vertex AI yêu cầu Service Account JSON cá nhân hợp lệ (không chấp nhận API Key chuỗi)');
+      }
+      if (!config.credentials || typeof config.credentials !== 'object') {
+        throw new Error('Không tìm thấy Service Account JSON cá nhân hợp lệ');
+      }
+      KeyService.validateServiceAccount(config.credentials);
+    } else {
+      // REST API needs service account credentials (object) for Bearer token.
+      // If credentials is a string (API key), it can't generate Bearer tokens.
+      // Fall back to env var service account credentials.
+      if (config && typeof config.credentials === 'string') {
+        console.log(`⚠️ DB key is API key type — falling back to env service account for REST API`);
+        config = await this.getEnvServiceAccountConfig();
+      }
     }
     
     if (!config?.credentials || typeof config.credentials !== 'object') {
@@ -186,14 +196,24 @@ class VertexDirectService {
    * 
    * POST .../models/imagen-3.0-capability-001:predict
    */
-  async editImage(params: VertexGenerateParams, customConfig?: { credentials: any; projectId: string; location: string; keyId?: number }): Promise<any> {
+  async editImage(params: VertexGenerateParams, customConfig?: { credentials: any; projectId: string; location: string; keyId?: number; isPersonal?: boolean }): Promise<any> {
     // Try DB keys first (they have their own service account + project)
     // Fall back to env credentials if DB key is API key type
     let config = customConfig || await KeyService.getVertexAIConfig();
     
-    if (config && typeof config.credentials === 'string') {
-      console.log(`⚠️ DB key id=${config.keyId} is API key type — falling back to env service account`);
-      config = await this.getEnvServiceAccountConfig();
+    if ((config as any)?.isPersonal) {
+      if (typeof config.credentials === 'string') {
+        throw new Error('Vertex AI yêu cầu Service Account JSON cá nhân hợp lệ (không chấp nhận API Key chuỗi)');
+      }
+      if (!config.credentials || typeof config.credentials !== 'object') {
+        throw new Error('Không tìm thấy Service Account JSON cá nhân hợp lệ');
+      }
+      KeyService.validateServiceAccount(config.credentials);
+    } else {
+      if (config && typeof config.credentials === 'string') {
+        console.log(`⚠️ DB key id=${config.keyId} is API key type — falling back to env service account`);
+        config = await this.getEnvServiceAccountConfig();
+      }
     }
     
     if (!config?.credentials || typeof config.credentials !== 'object') {

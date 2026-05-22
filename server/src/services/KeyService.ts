@@ -102,18 +102,60 @@ class KeyService {
     return { ai: new GoogleGenAI(initConfig), keyId: key.id };
   }
 
+  static validateServiceAccount(credentials: any): void {
+    if (!credentials) {
+      throw new Error('Cấu hình credentials không được trống');
+    }
+    if (typeof credentials === 'object') {
+      const { client_email, private_key, project_id } = credentials;
+      const missing = [];
+      if (!client_email) missing.push('client_email');
+      if (!private_key) missing.push('private_key');
+      if (!project_id) missing.push('project_id');
+      
+      if (missing.length > 0) {
+        throw new Error(`Service Account JSON thiếu thông tin bắt buộc: ${missing.join(', ')}`);
+      }
+    } else if (typeof credentials === 'string') {
+      if (!credentials.trim()) {
+        throw new Error('API Key hoặc Service Account không được để trống');
+      }
+    }
+  }
+
+  static parseUserCredentialsHeader(header: string): any {
+    if (!header) return null;
+    let decoded = header;
+    // If it doesn't look like raw JSON, attempt base64 decode
+    if (!header.startsWith('{')) {
+      try {
+        decoded = Buffer.from(header, 'base64').toString('utf-8');
+      } catch (e) {
+        decoded = header;
+      }
+    }
+    // Attempt JSON parse
+    try {
+      return JSON.parse(decoded);
+    } catch (e) {
+      return decoded; // Fallback to string API key
+    }
+  }
+
   /**
    * Get AI instance with custom user credentials (bypasses system rotation).
    */
   static getCustomVertexAI(credentials: any, projectId?: string): any {
+    this.validateServiceAccount(credentials);
+
     const initConfig: any = {
-      vertexai: true,
-      project: credentials?.project_id || projectId || process.env.GOOGLE_CLOUD_PROJECT,
-      location: 'us-central1',
       httpOptions: { timeout: 20 * 60 * 1000 },
     };
 
     if (typeof credentials === 'object' && credentials !== null) {
+      initConfig.vertexai = true;
+      initConfig.project = credentials.project_id || projectId || process.env.GOOGLE_CLOUD_PROJECT;
+      initConfig.location = 'us-central1';
       initConfig.googleAuthOptions = { credentials };
     } else {
       initConfig.apiKey = credentials;

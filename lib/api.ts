@@ -29,9 +29,23 @@ export const apiClient = {
   generateContent: async (params: GenerateContentParams): Promise<GenerateContentResponse> => {
     let userCredentials = undefined;
     try {
-      const stored = localStorage.getItem('f9_gcp_credentials');
-      if (stored) {
-        userCredentials = JSON.parse(stored);
+      const aiConfigStr = localStorage.getItem('f9_user_api_config');
+      if (aiConfigStr) {
+        const aiConfig = JSON.parse(aiConfigStr);
+        if (aiConfig.usePersonalKey && aiConfig.credentials) {
+          try {
+            userCredentials = JSON.parse(aiConfig.credentials);
+          } catch (e) {
+            userCredentials = aiConfig.credentials;
+          }
+        }
+      }
+
+      if (!userCredentials) {
+        const stored = localStorage.getItem('f9_gcp_credentials');
+        if (stored) {
+          userCredentials = JSON.parse(stored);
+        }
       }
     } catch (e) {
       // Ignore parsing errors, it will just fallback to system credentials

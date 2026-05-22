@@ -11,6 +11,7 @@ import { Request, Response } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
+import KeyService from '../services/KeyService';
 
 // Bootstrap GCP credentials from env (same logic as original server.js)
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
@@ -34,7 +35,31 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
   process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(__dirname, '../../vertex-key.json');
 }
 
-function getAI(): GoogleGenAI {
+function getAI(req: Request): GoogleGenAI {
+  const userCredentialsHeader = req.headers['x-user-credentials'] as string;
+  const userCredentialsBody = req.body?.userCredentials;
+  let personalCredentials: any = null;
+
+  if (userCredentialsHeader) {
+    try {
+      if (userCredentialsHeader.startsWith('{')) {
+        personalCredentials = JSON.parse(userCredentialsHeader);
+      } else {
+        const decoded = Buffer.from(userCredentialsHeader, 'base64').toString('utf-8');
+        personalCredentials = JSON.parse(decoded);
+      }
+    } catch (e) {
+      personalCredentials = userCredentialsHeader;
+    }
+  } else if (userCredentialsBody) {
+    personalCredentials = userCredentialsBody;
+  }
+
+  if (personalCredentials) {
+    console.log('🚀 [legacyController] Using Personal AI Credentials');
+    return KeyService.getCustomVertexAI(personalCredentials);
+  }
+
   return new GoogleGenAI({
     vertexai: {
       project: process.env.GOOGLE_CLOUD_PROJECT || 'project-fdbf43b8-e8ee-4b6a-90a',
@@ -70,7 +95,7 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       return;
     }
 
-    const ai = getAI();
+    const ai = getAI(req);
     const normalizedContents = normalizeContents(contents);
 
     if (config?.imageConfig) {
@@ -109,7 +134,7 @@ export const legacyGenerateContentStream = async (req: Request, res: Response): 
       return;
     }
 
-    const ai = getAI();
+    const ai = getAI(req);
     const normalizedContents = normalizeContents(contents);
 
     res.setHeader('Content-Type', 'text/event-stream');

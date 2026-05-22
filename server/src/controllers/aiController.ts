@@ -77,21 +77,8 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
   let isPersonalAI = false;
 
   if (userCredentialsHeader) {
-    try {
-      // Try to parse as JSON (user might send raw or base64)
-      if (userCredentialsHeader.startsWith('{')) {
-        personalCredentials = JSON.parse(userCredentialsHeader);
-      } else {
-        // Assume base64 if not starting with {
-        const decoded = Buffer.from(userCredentialsHeader, 'base64').toString('utf-8');
-        personalCredentials = JSON.parse(decoded);
-      }
-      isPersonalAI = true;
-    } catch (e) {
-      // Fallback: If not JSON/base64 JSON, it's a legacy API Key string
-      personalCredentials = userCredentialsHeader;
-      isPersonalAI = !!personalCredentials;
-    }
+    personalCredentials = KeyService.parseUserCredentialsHeader(userCredentialsHeader);
+    isPersonalAI = !!personalCredentials;
   }
 
   let ai: any;
@@ -108,9 +95,14 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
   }
 
   if (isPersonalAI) {
-    // Bypass billing and system key rotation
-    ai = KeyService.getCustomVertexAI(personalCredentials);
-    console.log(`🚀 Using Personal AI Credentials for user ${user?.id}`);
+    try {
+      // Bypass billing and system key rotation
+      ai = KeyService.getCustomVertexAI(personalCredentials);
+      console.log(`🚀 Using Personal AI Credentials for user ${user?.id}`);
+    } catch (err: any) {
+      res.status(401).json({ success: false, message: `Lỗi cấu hình AI cá nhân: ${err.message}` });
+      return;
+    }
   } else {
     // 1. Check & Prepare Usage (Pre-flight) - Standard Billing
     const priceKey = config?.priceKey;
@@ -272,6 +264,13 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         }
         console.log(`📝 Final imagen prompt: "${finalImagenPrompt.slice(0, 200)}..."`);
 
+        const customConfig = isPersonalAI ? {
+          credentials: personalCredentials,
+          projectId: (personalCredentials && typeof personalCredentials === 'object') ? personalCredentials.project_id : '',
+          location: 'us-central1',
+          isPersonal: true
+        } : undefined;
+
         let result;
         if (baseImageBase64) {
           // IMAGE-TO-IMAGE: CONTROL mode locks geometry via edge map
@@ -287,7 +286,7 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
             numberOfImages: imageCount || 1,
             useControlMode: true,
             controlType: 'CONTROL_TYPE_SCRIBBLE',
-          });
+          }, customConfig);
         } else {
           // TEXT-TO-IMAGE (New Creation)
           console.log(`📡 Using generateImage (txt2img)...`);
@@ -297,7 +296,7 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
             aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
             model: 'imagen-3.0-generate-001',
             numberOfImages: imageCount || 1,
-          });
+          }, customConfig);
         }
 
         // Upload to Gommo CDN
@@ -319,6 +318,12 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         return;
       } catch (imagenErr: any) {
         console.error(`❌ Imagen REST failed: ${imagenErr.message?.slice(0, 300)}`);
+        
+        if (isPersonalAI) {
+          if (usage.usageLogId) await UsageService.failUsage(usage.usageLogId, imagenErr.message);
+          res.status(400).json({ success: false, message: `Lỗi AI cá nhân: ${imagenErr.message}` });
+          return;
+        }
         
         // Fallback to Gommo — use a CLEAN prompt, not raw finalPrompt
         // Raw finalPrompt has "ẢNH ĐẦU VÀO", "ẢNH THAM CHIẾU" labels
@@ -430,9 +435,10 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
       if (keyId) await KeyService.markKeyFailed(keyId);
     }
 
-    res.status(error.status || 500).json({
+    const isPersonalAI = !!req.headers['x-user-credentials'];
+    res.status(isPersonalAI ? 400 : (error.status || 500)).json({
       success: false,
-      message: 'Lỗi khi gọi AI',
+      message: isPersonalAI ? `Lỗi AI cá nhân: ${error.message}` : 'Lỗi khi gọi AI',
       error: error.message,
     });
   }

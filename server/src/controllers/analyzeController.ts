@@ -11,7 +11,17 @@ const ANALYSIS_MODELS = ['gemini-2.5-flash', 'gemini-2.0-flash'];
  * 1. Active VertexKey from DB (excluding specific broken keys)
  * 2. Env var credentials (GOOGLE_APPLICATION_CREDENTIALS_JSON)
  */
-async function getAI(): Promise<{ ai: any; keyId: number } | null> {
+async function getAI(req: AuthRequest): Promise<{ ai: any; keyId: number } | null> {
+  const userCredentialsHeader = req.headers['x-user-credentials'] as string;
+  if (userCredentialsHeader) {
+    const personalCredentials = KeyService.parseUserCredentialsHeader(userCredentialsHeader);
+    if (personalCredentials) {
+      console.log(`🔑 Using personal AI credentials`);
+      const ai = KeyService.getCustomVertexAI(personalCredentials);
+      return { ai, keyId: 0 };
+    }
+  }
+
   // Try active key from DB first
   const vertex = await KeyService.getVertexAI();
   if (vertex?.ai && vertex.keyId !== 9) {
@@ -70,9 +80,18 @@ export const analyzeContent = async (req: AuthRequest, res: Response) => {
     console.log(`🧠 Brainstorming Mode: Analyzing text-only prompt...`);
   }
 
-  const vertex = await getAI();
-  if (!vertex?.ai) {
+  let vertex;
+  try {
+    vertex = await getAI(req);
+  } catch (err: any) {
+    res.status(401).json({
+      success: false,
+      message: `Lỗi cấu hình AI cá nhân: ${err.message}`,
+    });
+    return;
+  }
 
+  if (!vertex?.ai) {
     res.status(503).json({
       success: false,
       message: 'Không có credentials AI khả dụng để phân tích.',
@@ -116,6 +135,15 @@ export const analyzeContent = async (req: AuthRequest, res: Response) => {
 
 
   console.error('analyzeContent: all models failed.', lastError?.message);
+
+  if (req.headers['x-user-credentials']) {
+    res.status(400).json({
+      success: false,
+      message: `Lỗi AI cá nhân: ${lastError?.message || 'Unknown error'}`,
+    });
+    return;
+  }
+
   res.status(500).json({
     success: false,
     message: `Không thể phân tích ảnh tham chiếu: ${lastError?.message?.slice(0, 100) || 'Unknown error'}`,
