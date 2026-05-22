@@ -37,7 +37,15 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const updateUser = async (req: Request, res: Response) => {
   const { id } = req.params;
-  await User.update(req.body, { where: { id } });
+  const updates = { ...req.body };
+  
+  // Nếu password bị bỏ trống từ client (admin UI), thì xoá đi để khỏi update thành rỗng
+  if (!updates.password || updates.password.trim() === '') {
+    delete updates.password;
+  }
+
+  // individualHooks: true để đảm bảo hook `beforeUpdate` (hash bcrypt) được chạy nếu có đổi password
+  await User.update(updates, { where: { id }, individualHooks: true });
   res.json({ success: true, message: 'User updated' });
 };
 
