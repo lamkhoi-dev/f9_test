@@ -458,7 +458,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
 
 
       const generateOneImage = async () => {
-        const response = await httpClient.post('/ai/generate-image', {
+        const response = await httpClient.post('/ai/generate', {
           model: getModelName('image'),
           prompt: finalPrompt,
           contents: {
