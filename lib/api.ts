@@ -24,37 +24,14 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 export const apiClient = {
   /**
    * Proxy for ai.models.generateContent()
-   * Handles both text and image generation via Vertex AI backend.
+   * Always uses the system's server-side credentials.
+   * Personal key injection has been removed to prevent stale keys from causing generation errors.
    */
   generateContent: async (params: GenerateContentParams): Promise<GenerateContentResponse> => {
-    let userCredentials = undefined;
-    try {
-      const aiConfigStr = localStorage.getItem('f9_user_api_config');
-      if (aiConfigStr) {
-        const aiConfig = JSON.parse(aiConfigStr);
-        if (aiConfig.usePersonalKey && aiConfig.credentials) {
-          try {
-            userCredentials = JSON.parse(aiConfig.credentials);
-          } catch (e) {
-            userCredentials = aiConfig.credentials;
-          }
-        }
-      }
-
-      if (!userCredentials) {
-        const stored = localStorage.getItem('f9_gcp_credentials');
-        if (stored) {
-          userCredentials = JSON.parse(stored);
-        }
-      }
-    } catch (e) {
-      // Ignore parsing errors, it will just fallback to system credentials
-    }
-
     const res = await fetch(`${API_BASE_URL}/api/generate-content`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...params, userCredentials }),
+      body: JSON.stringify(params),
     });
 
     if (!res.ok) {
