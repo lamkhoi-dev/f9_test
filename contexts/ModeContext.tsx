@@ -26,8 +26,12 @@ export const UI_PRICE_KEYS = {
 };
 
 export const UI_MODE_MODELS: Record<AppMode, string> = {
-  'pro': 'imagen-3.0-generate-001',
-  'banana2': 'gemini-2.0-flash-preview-image-generation'
+  // Banana Pro: Gemini 3 Pro Image (reasoning model, best quality)
+  // Ref: https://cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-pro-image
+  'pro': 'gemini-3-pro-image-preview',
+  // Banana 2: Gemini 3.1 Flash Image (fast, image generation & editing)
+  // Ref: https://cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-1-flash-image
+  'banana2': 'gemini-3.1-flash-image-preview',
 };
 
 export const UI_MODE_LABELS: Record<AppMode, string> = {

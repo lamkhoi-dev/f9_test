@@ -55,22 +55,29 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
     return;
   }
 
-  // Model name normalization: translate old/deprecated model names to current ones.
-  // IMPORTANT: 'imagen-3.0-generate-001' is the CORRECT production model — do NOT remap it!
-  let modelName = req.body.model || 'imagen-3.0-generate-001';
+  // Model name normalization: translate old/deprecated model IDs to current ones.
+  // Gemini 3 Pro Image / 3.1 Flash Image are the CORRECT production models — do NOT remap them!
+  // Default: Banana Pro (gemini-3-pro-image-preview) when no model specified
+  let modelName = req.body.model || 'gemini-3-pro-image-preview';
   const legacyModelRemap: Record<string, string> = {
-    'google_image_gen_banana': 'imagen-3.0-generate-001',
-    'google_image_gen_banana_pro': 'imagen-3.0-generate-001',
-    'imagen-3.0-generate-002': 'imagen-3.0-generate-001',
-    'image-generation@006': 'imagen-3.0-generate-001',
-    'imagegeneration@006': 'imagen-3.0-generate-001',
-    'gemini-2.0-flash-preview-image-generation': 'imagen-3.0-generate-001',
+    // Legacy internal aliases
+    'google_image_gen_banana': 'gemini-3-pro-image-preview',
+    'google_image_gen_banana_pro': 'gemini-3-pro-image-preview',
+    // Old Imagen 3 REST models (deprecated by Google, migrating to gemini-2.5-flash-image)
+    'imagen-3.0-generate-001': 'gemini-3-pro-image-preview',
+    'imagen-3.0-generate-002': 'gemini-3-pro-image-preview',
+    'imagen-3.0-fast-generate-001': 'gemini-3.1-flash-image-preview',
+    'imagen-3.0-capability-001': 'gemini-3.1-flash-image-preview',
+    'imagen-3.0-capability-002': 'gemini-3.1-flash-image-preview',
+    // Old imagegeneration@ format
+    'image-generation@006': 'gemini-3-pro-image-preview',
+    'imagegeneration@006': 'gemini-3-pro-image-preview',
+    // Old Gemini flash image names
+    'gemini-2.0-flash-preview-image-generation': 'gemini-3.1-flash-image-preview',
     'gemini-2.0-flash-exp': 'gemini-2.5-flash',
     'gemini-2.0-flash': 'gemini-2.5-flash',
-    // New model aliases from ModeContext
-    'gemini-3-pro-image-preview': 'imagen-3.0-generate-001',
-    'gemini-3.1-flash-image-preview': 'imagen-3.0-generate-001',
-    'gemini-2.5-flash-image': 'imagen-3.0-generate-001',
+    // gemini-2.5-flash-image is valid but older than Gemini 3
+    'gemini-2.5-flash-image': 'gemini-3.1-flash-image-preview',
   };
   if (legacyModelRemap[modelName]) {
     console.log(`🔄 Model remap: ${modelName} → ${legacyModelRemap[modelName]}`);
@@ -210,25 +217,29 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
     const wantsImage = config?.responseModalities?.includes('IMAGE') ||
                        imageModel.includes('imagen') || imageModel.includes('image-generation') ||
                        imageModel.includes('banana_pro') || imageModel.includes('flash-exp') ||
-                       imageModel.includes('flash-preview-image') || imageModel.includes('image-preview');
+                       imageModel.includes('flash-preview-image') || imageModel.includes('image-preview') ||
+                       imageModel.includes('-image-preview') || imageModel.includes('gemini-3'); // Gemini 3 Pro/Flash Image
 
     const isImagenModel = imageModel.includes('imagen') || imageModel.includes('image-generation') || 
-                          imageModel.includes('banana_pro');
+                          imageModel.includes('banana_pro') ||
+                          imageModel.includes('-image-preview') || imageModel.includes('gemini-3'); // Gemini 3 Pro/Flash Image
 
     // Log the decision tree for debugging
     console.log(`📊 Route Decision: wantsImage=${wantsImage}, isImagenModel=${isImagenModel}, hasImageParts=${hasImageParts}, hasAI=${!!ai}`);
     console.log(`📝 Prompt (first 200 chars): "${finalPrompt.slice(0, 200)}"`);
 
     // ─────────────────────────────────────────────────────────
-    // PATH 2: IMAGE GENERATION — Imagen 3 via REST API (predict endpoint)
-    // Uses VertexDirectService for direct HTTP calls with Bearer token.
-    // SDK generateImages() is unreliable — this calls the REST API directly.
+    // PATH 2: IMAGE GENERATION — Gemini 3 Pro Image / Flash Image via SDK
+    // Primary: gemini-3-pro-image-preview (Banana Pro)
+    // Secondary: gemini-3.1-flash-image-preview (Banana 2)
+    // Uses VertexDirectService for REST API calls with Bearer token.
     // ─────────────────────────────────────────────────────────
     if (wantsImage) {
       const aspectRatio = config?.imageConfig?.aspectRatio || '1:1';
-      console.log(`🖼️ PATH: Imagen 3 generation...`);
+      const isGemini3Model = imageModel.includes('gemini-3') || imageModel.includes('-image-preview');
+      console.log(`🖼️ PATH 2: Image generation (model=${modelName}, isGemini3=${isGemini3Model})...`);
       try {
-        // 1. Identify "Base Image" (Structure) and "Style Image" from parts
+        // 1. Identify \"Base Image\" (Structure) and \"Style Image\" from parts
         const imageParts = (parts || []).filter((p: any) => p.inlineData && p.inlineData.data);
         const baseImageBase64 = imageParts[0]?.inlineData?.data;
         const baseImageMimeType = imageParts[0]?.inlineData?.mimeType || 'image/jpeg';
@@ -258,54 +269,72 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         const negativePrompt = 'watercolor, oil painting, paint strokes, brush texture, acrylic, pastel, artistic, impressionist, sketch lines, pencil marks, cartoon, illustration, 3d render, CGI, digital art, plastic textures, oversaturated, vibrant neon, glowing, fake, blurry, watermark, low quality, distorted architecture, different layout, modified structure, extra floors, missing windows, altered proportions, noisy, grainy, rough edges, painterly';
 
         // ── PROMPT CONSTRUCTION ──
-        // CONTROL mode: structure locked by edge map, STYLE image NOT sent (incompatible).
-        // All style info comes from cleanedPrompt text. [1] = Control image (sketch).
         let finalImagenPrompt: string;
 
         if (baseImageBase64) {
-          // CONTROL mode: Reference [1] only. Smooth photorealism prompt.
           finalImagenPrompt = isInterior
             ? `Crisp, clean, ultra-high-resolution photograph of the interior space shown in [1]. ${cleanedPrompt ? cleanedPrompt + '.' : ''} Smooth polished surfaces, clean sharp edges, professional interior photography with soft even studio lighting, no noise or grain, pristine materials with accurate reflections, 8K DSLR quality, crystal clear details, magazine-quality smooth finish.`
             : `Crisp, clean, ultra-high-resolution photograph of the building shown in [1]. ${cleanedPrompt ? cleanedPrompt + '.' : ''} Smooth clean concrete and glass surfaces, sharp architectural edges, professional architectural photography with soft natural daylight, no noise or grain, pristine building facade, lush green landscaping, clear blue sky, 8K DSLR quality, crystal clear details, magazine-quality smooth finish.`;
         } else {
-          // TEXT-ONLY: No input image, full prompt-driven generation
           finalImagenPrompt = `${typePrefix}. ${cleanedPrompt}`;
         }
-        console.log(`📝 Final imagen prompt: "${finalImagenPrompt.slice(0, 200)}..."`);
+        console.log(`📝 Final prompt: "${finalImagenPrompt.slice(0, 200)}..."`);
 
-        const customConfig = isPersonalAI ? {
-          credentials: personalCredentials,
-          projectId: (personalCredentials && typeof personalCredentials === 'object') ? personalCredentials.project_id : '',
-          location: 'us-central1',
-          isPersonal: true
-        } : undefined;
+        let result: any;
 
-        let result;
-        if (baseImageBase64) {
-          // IMAGE-TO-IMAGE: CONTROL mode locks geometry via edge map
-          console.log(`📡 Using editImage (CONTROL mode) for structural preservation...`);
-          result = await VertexDirectService.editImage({
-            prompt: finalImagenPrompt,
-            negativePrompt,
-            aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
-            imageBase64: baseImageBase64,
-            imageMimeType: baseImageMimeType,
-            styleImageBase64: styleImageBase64,
-            styleImageMimeType: styleImageMimeType,
-            numberOfImages: imageCount || 1,
-            useControlMode: true,
-            controlType: 'CONTROL_TYPE_SCRIBBLE',
-          }, customConfig);
+        if (isGemini3Model && ai) {
+          // ── GEMINI 3 SDK PATH (Banana Pro / Banana 2) ──
+          // gemini-3-pro-image-preview and gemini-3.1-flash-image-preview use SDK
+          console.log(`📡 Using Gemini 3 SDK (model=${modelName})...`);
+          const genParts: any[] = [];
+          if (baseImageBase64) {
+            genParts.push({ inlineData: { data: baseImageBase64, mimeType: baseImageMimeType } });
+          }
+          genParts.push({ text: finalImagenPrompt });
+
+          const sdkResult = await ai.models.generateContent({
+            model: modelName,
+            contents: [{ role: 'user', parts: genParts }],
+            config: {
+              responseModalities: ['IMAGE', 'TEXT'],
+              numberOfImages: imageCount || 1,
+            },
+          });
+
+          result = sdkResult;
         } else {
-          // TEXT-TO-IMAGE (New Creation)
-          console.log(`📡 Using generateImage (txt2img)...`);
-          result = await VertexDirectService.generateImage({
-            prompt: finalImagenPrompt,
-            negativePrompt,
-            aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
-            model: 'imagen-3.0-generate-001',
-            numberOfImages: imageCount || 1,
-          }, customConfig);
+          // ── VERTEX REST PATH (VertexDirectService) ──
+          const customConfig = isPersonalAI ? {
+            credentials: personalCredentials,
+            projectId: (personalCredentials && typeof personalCredentials === 'object') ? personalCredentials.project_id : '',
+            location: 'us-central1',
+            isPersonal: true
+          } : undefined;
+
+          if (baseImageBase64) {
+            console.log(`📡 Using editImage (CONTROL mode) for structural preservation...`);
+            result = await VertexDirectService.editImage({
+              prompt: finalImagenPrompt,
+              negativePrompt,
+              aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+              imageBase64: baseImageBase64,
+              imageMimeType: baseImageMimeType,
+              styleImageBase64: styleImageBase64,
+              styleImageMimeType: styleImageMimeType,
+              numberOfImages: imageCount || 1,
+              useControlMode: true,
+              controlType: 'CONTROL_TYPE_SCRIBBLE',
+            }, customConfig);
+          } else {
+            console.log(`📡 Using generateImage (txt2img REST)...`);
+            result = await VertexDirectService.generateImage({
+              prompt: finalImagenPrompt,
+              negativePrompt,
+              aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+              model: 'imagen-3.0-generate-001',
+              numberOfImages: imageCount || 1,
+            }, customConfig);
+          }
         }
 
         // Upload to Gommo CDN
