@@ -280,9 +280,10 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         }
         console.log(`📝 Final prompt: "${finalImagenPrompt.slice(0, 200)}..."`);
 
-        // ── VERTEX REST PATH — Imagen 3 via VertexDirectService ──
-        // System path: Railway service account is authorized for Imagen 3 REST API.
-        // Personal key path: uses personal credentials as customConfig.
+        // ── PATH A: GEMINI 3 SDK (Banana Pro / Banana 2) ──
+        // gemini-3-pro-image-preview and gemini-3.1-flash-image-preview are Vertex AI Gemini models.
+        // Service account from Railway CAN call these — same platform.
+        // If SDK fails → fallback to Imagen 3 REST.
         const customConfig = isPersonalAI ? {
           credentials: personalCredentials,
           projectId: (personalCredentials && typeof personalCredentials === 'object') ? personalCredentials.project_id : '',
@@ -291,32 +292,79 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         } : undefined;
 
         let result: any;
-        if (baseImageBase64) {
-          // IMAGE-TO-IMAGE: CONTROL mode locks structure via edge map
-          console.log(`📡 editImage (CONTROL/SCRIBBLE, model=imagen-3.0-generate-001)...`);
-          result = await VertexDirectService.editImage({
-            prompt: finalImagenPrompt,
-            negativePrompt,
-            aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
-            imageBase64: baseImageBase64,
-            imageMimeType: baseImageMimeType,
-            styleImageBase64: styleImageBase64,
-            styleImageMimeType: styleImageMimeType,
-            numberOfImages: imageCount || 1,
-            useControlMode: true,
-            controlType: 'CONTROL_TYPE_SCRIBBLE',
-          }, customConfig);
+
+        if (isGemini3Model && ai && !isPersonalAI) {
+          // Gemini 3 via Vertex AI SDK
+          console.log(`📡 Gemini 3 SDK (model=${modelName})...`);
+          const genParts: any[] = [];
+          if (baseImageBase64) {
+            genParts.push({ inlineData: { data: baseImageBase64, mimeType: baseImageMimeType } });
+          }
+          genParts.push({ text: finalImagenPrompt });
+
+          try {
+            const sdkResult = await ai.models.generateContent({
+              model: modelName,
+              contents: [{ role: 'user', parts: genParts }],
+              config: { responseModalities: ['IMAGE'] },
+            });
+            result = sdkResult;
+            console.log(`✅ Gemini 3 SDK success`);
+          } catch (gemini3Err: any) {
+            console.warn(`⚠️ Gemini 3 SDK failed (${gemini3Err.message?.slice(0, 100)}), falling back to Imagen 3 REST...`);
+            // Fallback to Imagen 3 REST
+            if (baseImageBase64) {
+              result = await VertexDirectService.editImage({
+                prompt: finalImagenPrompt,
+                negativePrompt,
+                aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+                imageBase64: baseImageBase64,
+                imageMimeType: baseImageMimeType,
+                styleImageBase64,
+                styleImageMimeType,
+                numberOfImages: imageCount || 1,
+                useControlMode: true,
+                controlType: 'CONTROL_TYPE_SCRIBBLE',
+              });
+            } else {
+              result = await VertexDirectService.generateImage({
+                prompt: finalImagenPrompt,
+                negativePrompt,
+                aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+                model: 'imagen-3.0-generate-001',
+                numberOfImages: imageCount || 1,
+              });
+            }
+          }
         } else {
-          // TEXT-TO-IMAGE (New Creation)
-          console.log(`📡 generateImage (txt2img, model=imagen-3.0-generate-001)...`);
-          result = await VertexDirectService.generateImage({
-            prompt: finalImagenPrompt,
-            negativePrompt,
-            aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
-            model: 'imagen-3.0-generate-001',
-            numberOfImages: imageCount || 1,
-          }, customConfig);
+          // ── PATH B: Imagen 3 REST (VertexDirectService) ──
+          // Used for: personal key users, or non-Gemini3 model requests
+          if (baseImageBase64) {
+            console.log(`📡 editImage (CONTROL/SCRIBBLE, imagen-3.0-generate-001)...`);
+            result = await VertexDirectService.editImage({
+              prompt: finalImagenPrompt,
+              negativePrompt,
+              aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+              imageBase64: baseImageBase64,
+              imageMimeType: baseImageMimeType,
+              styleImageBase64,
+              styleImageMimeType,
+              numberOfImages: imageCount || 1,
+              useControlMode: true,
+              controlType: 'CONTROL_TYPE_SCRIBBLE',
+            }, customConfig);
+          } else {
+            console.log(`📡 generateImage (txt2img, imagen-3.0-generate-001)...`);
+            result = await VertexDirectService.generateImage({
+              prompt: finalImagenPrompt,
+              negativePrompt,
+              aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+              model: 'imagen-3.0-generate-001',
+              numberOfImages: imageCount || 1,
+            }, customConfig);
+          }
         }
+
 
         // Upload to Gommo CDN
         let finalData: any = result;
