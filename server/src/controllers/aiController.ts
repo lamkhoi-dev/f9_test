@@ -280,61 +280,42 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
         }
         console.log(`📝 Final prompt: "${finalImagenPrompt.slice(0, 200)}..."`);
 
+        // ── VERTEX REST PATH — Imagen 3 via VertexDirectService ──
+        // System path: Railway service account is authorized for Imagen 3 REST API.
+        // Personal key path: uses personal credentials as customConfig.
+        const customConfig = isPersonalAI ? {
+          credentials: personalCredentials,
+          projectId: (personalCredentials && typeof personalCredentials === 'object') ? personalCredentials.project_id : '',
+          location: 'us-central1',
+          isPersonal: true
+        } : undefined;
+
         let result: any;
-
-        if (isGemini3Model && ai) {
-          // ── GEMINI 3 SDK PATH (Banana Pro / Banana 2) ──
-          // gemini-3-pro-image-preview and gemini-3.1-flash-image-preview use SDK
-          console.log(`📡 Using Gemini 3 SDK (model=${modelName})...`);
-          const genParts: any[] = [];
-          if (baseImageBase64) {
-            genParts.push({ inlineData: { data: baseImageBase64, mimeType: baseImageMimeType } });
-          }
-          genParts.push({ text: finalImagenPrompt });
-
-          const sdkResult = await ai.models.generateContent({
-            model: modelName,
-            contents: [{ role: 'user', parts: genParts }],
-            config: {
-              responseModalities: ['IMAGE', 'TEXT'],
-              numberOfImages: imageCount || 1,
-            },
-          });
-
-          result = sdkResult;
+        if (baseImageBase64) {
+          // IMAGE-TO-IMAGE: CONTROL mode locks structure via edge map
+          console.log(`📡 editImage (CONTROL/SCRIBBLE, model=imagen-3.0-generate-001)...`);
+          result = await VertexDirectService.editImage({
+            prompt: finalImagenPrompt,
+            negativePrompt,
+            aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+            imageBase64: baseImageBase64,
+            imageMimeType: baseImageMimeType,
+            styleImageBase64: styleImageBase64,
+            styleImageMimeType: styleImageMimeType,
+            numberOfImages: imageCount || 1,
+            useControlMode: true,
+            controlType: 'CONTROL_TYPE_SCRIBBLE',
+          }, customConfig);
         } else {
-          // ── VERTEX REST PATH (VertexDirectService) ──
-          const customConfig = isPersonalAI ? {
-            credentials: personalCredentials,
-            projectId: (personalCredentials && typeof personalCredentials === 'object') ? personalCredentials.project_id : '',
-            location: 'us-central1',
-            isPersonal: true
-          } : undefined;
-
-          if (baseImageBase64) {
-            console.log(`📡 Using editImage (CONTROL mode) for structural preservation...`);
-            result = await VertexDirectService.editImage({
-              prompt: finalImagenPrompt,
-              negativePrompt,
-              aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
-              imageBase64: baseImageBase64,
-              imageMimeType: baseImageMimeType,
-              styleImageBase64: styleImageBase64,
-              styleImageMimeType: styleImageMimeType,
-              numberOfImages: imageCount || 1,
-              useControlMode: true,
-              controlType: 'CONTROL_TYPE_SCRIBBLE',
-            }, customConfig);
-          } else {
-            console.log(`📡 Using generateImage (txt2img REST)...`);
-            result = await VertexDirectService.generateImage({
-              prompt: finalImagenPrompt,
-              negativePrompt,
-              aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
-              model: 'imagen-3.0-generate-001',
-              numberOfImages: imageCount || 1,
-            }, customConfig);
-          }
+          // TEXT-TO-IMAGE (New Creation)
+          console.log(`📡 generateImage (txt2img, model=imagen-3.0-generate-001)...`);
+          result = await VertexDirectService.generateImage({
+            prompt: finalImagenPrompt,
+            negativePrompt,
+            aspectRatio: aspectRatio === 'auto' ? '1:1' : aspectRatio,
+            model: 'imagen-3.0-generate-001',
+            numberOfImages: imageCount || 1,
+          }, customConfig);
         }
 
         // Upload to Gommo CDN
