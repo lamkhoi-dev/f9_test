@@ -24,13 +24,29 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 export const apiClient = {
   /**
    * Proxy for ai.models.generateContent()
-   * Always uses the system's server-side credentials.
-   * Personal key injection has been removed to prevent stale keys from causing generation errors.
+   * Default: uses system server-side credentials.
+   * Personal mode: when user has toggled ON "usePersonalKey" in AISettingsModal,
+   * sends their GCP Service Account credentials via x-user-credentials header.
    */
   generateContent: async (params: GenerateContentParams): Promise<GenerateContentResponse> => {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+    // Personal key injection — only when explicitly toggled ON by user
+    try {
+      const saved = localStorage.getItem('f9_user_api_config');
+      if (saved) {
+        const config = JSON.parse(saved);
+        if (config.usePersonalKey && config.credentials && config.credentials.trim()) {
+          headers['x-user-credentials'] = btoa(config.credentials);
+        }
+      }
+    } catch (e) {
+      // Ignore — fallback to system credentials
+    }
+
     const res = await fetch(`${API_BASE_URL}/api/generate-content`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify(params),
     });
 

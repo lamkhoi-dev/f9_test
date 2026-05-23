@@ -34,16 +34,43 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
   process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(__dirname, '../../vertex-key.json');
 }
 
-function getAI(): GoogleGenAI {
-  // Legacy endpoint: always uses the system's server-side Vertex AI credentials.
-  // Personal key injection has been removed — stale localStorage keys were causing
-  // generation failures. Personal keys are supported via the /api/ai/generate endpoint only.
+function getAI(personalCredentials?: any): GoogleGenAI {
+  if (personalCredentials) {
+    // Personal key mode: use user's own GCP service account
+    return new GoogleGenAI({
+      vertexai: true,
+      project: personalCredentials.project_id,
+      location: personalCredentials.location || process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
+      googleAuthOptions: { credentials: personalCredentials },
+    } as any);
+  }
+  // System mode: use Railway server-side Vertex AI credentials
   return new GoogleGenAI({
     vertexai: {
       project: process.env.GOOGLE_CLOUD_PROJECT || 'project-fdbf43b8-e8ee-4b6a-90a',
       location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
     },
   } as any);
+}
+
+/**
+ * Parse and validate personal credentials from x-user-credentials header (base64-encoded JSON).
+ * Returns credentials object if valid service account JSON, null otherwise.
+ */
+function parsePersonalCredentials(req: Request): any | null {
+  const header = req.headers['x-user-credentials'] as string | undefined;
+  if (!header) return null;
+  try {
+    const decoded = Buffer.from(header, 'base64').toString('utf-8');
+    const parsed = JSON.parse(decoded);
+    // Must be a valid service account with required fields
+    if (parsed.type === 'service_account' && parsed.project_id && parsed.client_email && parsed.private_key) {
+      return parsed;
+    }
+  } catch (e) {
+    // Invalid header — ignore, use system credentials
+  }
+  return null;
 }
 
 /**
@@ -73,13 +100,16 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       return;
     }
 
-    const ai = getAI();
+    const personalCredentials = parsePersonalCredentials(req);
+    const ai = getAI(personalCredentials);
     const normalizedContents = normalizeContents(contents);
 
-    if (config?.imageConfig) {
+    if (personalCredentials) {
+      console.log(`[generate-content] -> model: ${model} | 🔑 PERSONAL key (project=${personalCredentials.project_id})`);
+    } else if (config?.imageConfig) {
       console.log(`[generate-content] -> model: ${model} | imageConfig:`, JSON.stringify(config.imageConfig));
     } else {
-      console.log(`[generate-content] -> model: ${model} | NO imageConfig`);
+      console.log(`[generate-content] -> model: ${model} | NO imageConfig (system credentials)`);
     }
 
     const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
@@ -127,8 +157,12 @@ export const legacyGenerateContentStream = async (req: Request, res: Response): 
       return;
     }
 
-    const ai = getAI();
+    const personalCredentials = parsePersonalCredentials(req);
+    const ai = getAI(personalCredentials);
     const normalizedContents = normalizeContents(contents);
+    if (personalCredentials) {
+      console.log(`[generate-content-stream] -> model: ${model} | 🔑 PERSONAL key (project=${personalCredentials.project_id})`);
+    }
 
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
