@@ -458,9 +458,8 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
 
 
       const generateOneImage = async () => {
-        const response = await httpClient.post('/ai/generate', {
+        const response = await apiClient.generateContent({
           model: getModelName('image'),
-          prompt: finalPrompt,
           contents: {
             parts: [
               { inlineData: { data: inputBase64, mimeType: activeInputFile.type } },
@@ -476,7 +475,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           },
         });
 
-        const data = response.data?.data;
+        const data = response;
         // Check CDN URL format
         if (data?.candidates?.[0]?.content?.parts?.[0]?.fileData?.fileUri) {
           return data.candidates[0].content.parts[0].fileData.fileUri;
