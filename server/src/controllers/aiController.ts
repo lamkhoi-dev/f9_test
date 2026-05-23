@@ -55,17 +55,26 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
     return;
   }
 
-  // Model mapping
-  let modelName = req.body.model || 'gemini-2.5-flash';
-  const legacyModels = [
-    'google_image_gen_banana', 'google_image_gen_banana_pro',
-    'imagen-3.0-generate-001', 'imagen-3.0-generate-002',
-    'image-generation@006', 'imagegeneration@006',
-    'gemini-2.0-flash-preview-image-generation',
-    'gemini-2.0-flash-exp', 'gemini-2.0-flash',
-  ];
-  if (legacyModels.includes(modelName)) {
-    modelName = 'gemini-2.5-flash';
+  // Model name normalization: translate old/deprecated model names to current ones.
+  // IMPORTANT: 'imagen-3.0-generate-001' is the CORRECT production model — do NOT remap it!
+  let modelName = req.body.model || 'imagen-3.0-generate-001';
+  const legacyModelRemap: Record<string, string> = {
+    'google_image_gen_banana': 'imagen-3.0-generate-001',
+    'google_image_gen_banana_pro': 'imagen-3.0-generate-001',
+    'imagen-3.0-generate-002': 'imagen-3.0-generate-001',
+    'image-generation@006': 'imagen-3.0-generate-001',
+    'imagegeneration@006': 'imagen-3.0-generate-001',
+    'gemini-2.0-flash-preview-image-generation': 'imagen-3.0-generate-001',
+    'gemini-2.0-flash-exp': 'gemini-2.5-flash',
+    'gemini-2.0-flash': 'gemini-2.5-flash',
+    // New model aliases from ModeContext
+    'gemini-3-pro-image-preview': 'imagen-3.0-generate-001',
+    'gemini-3.1-flash-image-preview': 'imagen-3.0-generate-001',
+    'gemini-2.5-flash-image': 'imagen-3.0-generate-001',
+  };
+  if (legacyModelRemap[modelName]) {
+    console.log(`🔄 Model remap: ${modelName} → ${legacyModelRemap[modelName]}`);
+    modelName = legacyModelRemap[modelName];
   }
   
   const resolution = config?.imageConfig?.imageSize || '1k';
