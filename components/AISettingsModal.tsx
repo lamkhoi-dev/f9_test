@@ -20,6 +20,7 @@ const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClose }) =>
     usePersonalKey: false,
     credentials: '',
   });
+  const [validationError, setValidationError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -39,6 +40,24 @@ const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClose }) =>
   }, [isOpen]);
 
   const handleSave = () => {
+    setValidationError(null);
+    if (settings.usePersonalKey) {
+      if (!settings.credentials.trim()) {
+        setValidationError('Vui lòng nhập Service Account JSON hoặc tải file JSON.');
+        return;
+      }
+      try {
+        const parsed = JSON.parse(settings.credentials);
+        const missing = ['type', 'project_id', 'client_email', 'private_key'].filter(f => !parsed[f]);
+        if (missing.length > 0 || parsed.type !== 'service_account') {
+          setValidationError(`JSON không hợp lệ — thiếu trường: ${missing.join(', ') || 'type phải là "service_account"'}. Vui lòng dùng file Service Account JSON từ Google Cloud Console.`);
+          return;
+        }
+      } catch (e) {
+        setValidationError('Nội dung không phải JSON hợp lệ. Vui lòng dán đúng file Service Account JSON.');
+        return;
+      }
+    }
     localStorage.setItem('f9_user_api_config', JSON.stringify(settings));
     onClose();
     window.dispatchEvent(new Event('f9_settings_updated'));
@@ -122,10 +141,16 @@ const AISettingsModal: React.FC<AISettingsModalProps> = ({ isOpen, onClose }) =>
               
               <textarea 
                 value={settings.credentials}
-                onChange={(e) => setSettings({ ...settings, credentials: e.target.value })}
+                onChange={(e) => { setSettings({ ...settings, credentials: e.target.value }); setValidationError(null); }}
                 placeholder='Dán nội dung file JSON của Service Account vào đây... (Bắt đầu bằng {"type": "service_account"...})'
-                className="w-full h-48 bg-slate-900/50 border border-slate-700 rounded-xl px-4 py-3 text-[13px] font-mono text-slate-300 focus:outline-none focus:ring-2 focus:ring-orange-500/50 focus:border-orange-500 transition-all resize-none"
+                className={`w-full h-48 bg-slate-900/50 border rounded-xl px-4 py-3 text-[13px] font-mono text-slate-300 focus:outline-none focus:ring-2 transition-all resize-none ${validationError ? 'border-red-500 focus:ring-red-500/50' : 'border-slate-700 focus:ring-orange-500/50 focus:border-orange-500'}`}
               />
+              {validationError && (
+                <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
+                  <span className="text-red-400 text-lg mt-0.5">⚠️</span>
+                  <p className="text-[12px] text-red-400 leading-relaxed">{validationError}</p>
+                </div>
+              )}
             </div>
             
             <div className="p-4 bg-orange-500/10 border border-orange-500/20 rounded-xl">

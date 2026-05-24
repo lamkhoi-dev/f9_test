@@ -55,22 +55,25 @@ function getAI(personalCredentials?: any): GoogleGenAI {
 
 /**
  * Parse and validate personal credentials from x-user-credentials header (base64-encoded JSON).
- * Returns credentials object if valid service account JSON, null otherwise.
+ * - Header absent → null (use system credentials)
+ * - Header present + valid service account → { ok: true, credentials }
+ * - Header present + invalid → { ok: false, error } (caller should return 400)
  */
-function parsePersonalCredentials(req: Request): any | null {
+function parsePersonalCredentials(req: Request): { ok: true; credentials: any } | { ok: false; error: string } | null {
   const header = req.headers['x-user-credentials'] as string | undefined;
-  if (!header) return null;
+  if (!header) return null; // No personal key — use system credentials
+
   try {
     const decoded = Buffer.from(header, 'base64').toString('utf-8');
     const parsed = JSON.parse(decoded);
-    // Must be a valid service account with required fields
     if (parsed.type === 'service_account' && parsed.project_id && parsed.client_email && parsed.private_key) {
-      return parsed;
+      return { ok: true, credentials: parsed };
     }
+    const missing = ['type', 'project_id', 'client_email', 'private_key'].filter(f => !parsed[f]);
+    return { ok: false, error: `Service Account JSON không hợp lệ — thiếu trường: ${missing.join(', ') || 'type phải là "service_account"'}` };
   } catch (e) {
-    // Invalid header — ignore, use system credentials
+    return { ok: false, error: 'Credentials không phải JSON hợp lệ. Vui lòng tải đúng file Service Account JSON từ Google Cloud Console.' };
   }
-  return null;
 }
 
 /**
@@ -100,7 +103,12 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       return;
     }
 
-    const personalCredentials = parsePersonalCredentials(req);
+    const parsed = parsePersonalCredentials(req);
+    if (parsed !== null && !parsed.ok) {
+      res.status(401).json({ error: (parsed as { ok: false; error: string }).error });
+      return;
+    }
+    const personalCredentials = parsed ? (parsed as { ok: true; credentials: any }).credentials : null;
     const ai = getAI(personalCredentials);
     const normalizedContents = normalizeContents(contents);
 
@@ -157,7 +165,12 @@ export const legacyGenerateContentStream = async (req: Request, res: Response): 
       return;
     }
 
-    const personalCredentials = parsePersonalCredentials(req);
+    const parsedStream = parsePersonalCredentials(req);
+    if (parsedStream !== null && !parsedStream.ok) {
+      res.status(401).json({ error: (parsedStream as { ok: false; error: string }).error });
+      return;
+    }
+    const personalCredentials = parsedStream ? (parsedStream as { ok: true; credentials: any }).credentials : null;
     const ai = getAI(personalCredentials);
     const normalizedContents = normalizeContents(contents);
     if (personalCredentials) {
