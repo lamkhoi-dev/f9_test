@@ -11,6 +11,7 @@ import { Request, Response } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import path from 'path';
+import VertexDirectService from '../services/VertexDirectService';
 
 // Bootstrap GCP credentials from env (same logic as original server.js)
 if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
@@ -118,6 +119,53 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       console.log(`[generate-content] -> model: ${model} | imageConfig:`, JSON.stringify(config.imageConfig));
     } else {
       console.log(`[generate-content] -> model: ${model} | NO imageConfig (system credentials)`);
+    }
+
+    const wantsImage = config?.responseModalities?.includes('IMAGE') ||
+      model.includes('image-preview') || model.includes('gemini-3');
+    const isGemini3Image = !personalCredentials && wantsImage &&
+      (model.includes('gemini-3') || model.includes('image-preview'));
+
+    if (isGemini3Image) {
+      // Try Gemini 3 SDK first. If project doesn't have access → fallback to Imagen 3 REST.
+      try {
+        const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
+        res.json({
+          text: response.text ?? null,
+          candidates: response.candidates?.map((c: any) => ({ content: c.content, finishReason: c.finishReason })) ?? [],
+        });
+        return;
+      } catch (sdkErr: any) {
+        const isNotFound = sdkErr.message?.includes('not found') || sdkErr.message?.includes('does not have access') || sdkErr.status === 404 || sdkErr.status === 403;
+        if (!isNotFound) throw sdkErr; // Rethrow unexpected errors
+        console.warn(`⚠️ ${model} not available in project, falling back to Imagen 3 REST...`);
+      }
+
+      // Fallback: Imagen 3 REST via VertexDirectService
+      const textPart = normalizedContents?.[0]?.parts?.find((p: any) => p.text);
+      const imagePart = normalizedContents?.[0]?.parts?.find((p: any) => p.inlineData);
+      const prompt = textPart?.text || 'Photorealistic architectural image';
+      let vertexResult: any;
+      if (imagePart?.inlineData) {
+        vertexResult = await VertexDirectService.editImage({
+          prompt,
+          aspectRatio: config?.imageConfig?.aspectRatio || '1:1',
+          imageBase64: imagePart.inlineData.data,
+          imageMimeType: imagePart.inlineData.mimeType || 'image/jpeg',
+          numberOfImages: 1,
+          useControlMode: true,
+          controlType: 'CONTROL_TYPE_SCRIBBLE',
+        });
+      } else {
+        vertexResult = await VertexDirectService.generateImage({
+          prompt,
+          aspectRatio: config?.imageConfig?.aspectRatio || '1:1',
+          model: 'imagen-3.0-generate-001',
+          numberOfImages: 1,
+        });
+      }
+      res.json(vertexResult);
+      return;
     }
 
     const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
