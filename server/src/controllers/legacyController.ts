@@ -127,7 +127,7 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       (model.includes('gemini-3') || model.includes('image-preview'));
 
     if (isGemini3Image) {
-      // Try Gemini 3 SDK first. If project doesn't have access → fallback to Imagen 3 REST.
+      // Try Gemini 3 SDK. If project doesn't have access → return actionable error with setup guide.
       try {
         const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
         res.json({
@@ -136,36 +136,30 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
         });
         return;
       } catch (sdkErr: any) {
-        const isNotFound = sdkErr.message?.includes('not found') || sdkErr.message?.includes('does not have access') || sdkErr.status === 404 || sdkErr.status === 403;
-        if (!isNotFound) throw sdkErr; // Rethrow unexpected errors
-        console.warn(`⚠️ ${model} not available in project, falling back to Imagen 3 REST...`);
-      }
+        const errMsg = sdkErr.message || '';
+        const isNotFound = errMsg.includes('not found') || errMsg.includes('does not have access') || sdkErr.status === 404 || sdkErr.status === 403;
+        if (!isNotFound) throw sdkErr;
 
-      // Fallback: Imagen 3 REST via VertexDirectService
-      const textPart = normalizedContents?.[0]?.parts?.find((p: any) => p.text);
-      const imagePart = normalizedContents?.[0]?.parts?.find((p: any) => p.inlineData);
-      const prompt = textPart?.text || 'Photorealistic architectural image';
-      let vertexResult: any;
-      if (imagePart?.inlineData) {
-        vertexResult = await VertexDirectService.editImage({
-          prompt,
-          aspectRatio: config?.imageConfig?.aspectRatio || '1:1',
-          imageBase64: imagePart.inlineData.data,
-          imageMimeType: imagePart.inlineData.mimeType || 'image/jpeg',
-          numberOfImages: 1,
-          useControlMode: true,
-          controlType: 'CONTROL_TYPE_SCRIBBLE',
+        // Model not enabled in this GCP project — guide user to enable it
+        const modelDisplayName = model.includes('3-pro') ? 'Banana Pro (gemini-3-pro-image-preview)' : 'Banana 2 (gemini-3.1-flash-image-preview)';
+        const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'your-project';
+        const modelGardenUrl = `https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/${model}?project=${projectId}`;
+
+        console.error(`❌ ${model} not enabled in project ${projectId}. User must enable it in Model Garden.`);
+        res.status(403).json({
+          error: `Model ${modelDisplayName} chưa được kích hoạt trong GCP project "${projectId}".`,
+          code: 'MODEL_NOT_ENABLED',
+          model,
+          setupUrl: modelGardenUrl,
+          instructions: [
+            `1. Truy cập Google Cloud Console → Vertex AI → Model Garden`,
+            `2. Tìm kiếm "${model}"`,
+            `3. Nhấn "Enable" hoặc "Request Access"`,
+            `4. Quay lại và thử lại`,
+          ],
         });
-      } else {
-        vertexResult = await VertexDirectService.generateImage({
-          prompt,
-          aspectRatio: config?.imageConfig?.aspectRatio || '1:1',
-          model: 'imagen-3.0-generate-001',
-          numberOfImages: 1,
-        });
+        return;
       }
-      res.json(vertexResult);
-      return;
     }
 
     const response = await ai.models.generateContent({ model, contents: normalizedContents, config });

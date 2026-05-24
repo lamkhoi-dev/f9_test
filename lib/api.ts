@@ -52,8 +52,28 @@ export const apiClient = {
 
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({ error: res.statusText }));
+
+      // Special case: model not enabled in GCP — show setup modal via global event
+      if (errorData.code === 'MODEL_NOT_ENABLED') {
+        const err = new Error(errorData.error || 'Model chưa được kích hoạt');
+        (err as any).code = 'MODEL_NOT_ENABLED';
+        (err as any).setupUrl = errorData.setupUrl;
+        (err as any).instructions = errorData.instructions;
+        (err as any).status = 403;
+
+        // Dispatch global event to show ModelNotEnabledModal from any page
+        window.dispatchEvent(new CustomEvent('model_not_enabled', {
+          detail: {
+            modelName: errorData.model || 'unknown',
+            setupUrl: errorData.setupUrl,
+            instructions: errorData.instructions || [],
+          }
+        }));
+
+        throw err;
+      }
+
       let errorMessage = errorData.error || `API Error: ${res.status}`;
-      
       try {
         if (typeof errorMessage === 'string') {
           const jsonMatch = errorMessage.match(/(\{.*\})/s);
