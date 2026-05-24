@@ -12,6 +12,7 @@ interface ModelNotEnabledInfo {
   modelName: string;
   setupUrl: string;
   instructions: string[];
+  links?: { billing?: string; vertexApi?: string; modelGarden?: string };
 }
 
 const GlobalModals: React.FC = () => {
@@ -31,6 +32,7 @@ const GlobalModals: React.FC = () => {
       modelName={modelNotEnabled.modelName}
       setupUrl={modelNotEnabled.setupUrl}
       instructions={modelNotEnabled.instructions}
+      links={modelNotEnabled.links}
       onClose={() => setModelNotEnabled(null)}
     />
   ) : null;

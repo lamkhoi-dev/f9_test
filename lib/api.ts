@@ -67,6 +67,7 @@ export const apiClient = {
             modelName: errorData.model || 'unknown',
             setupUrl: errorData.setupUrl,
             instructions: errorData.instructions || [],
+            links: errorData.links || {},
           }
         }));
 

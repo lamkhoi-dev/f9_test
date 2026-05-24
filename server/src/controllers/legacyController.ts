@@ -35,21 +35,24 @@ if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
   process.env.GOOGLE_APPLICATION_CREDENTIALS = path.join(__dirname, '../../vertex-key.json');
 }
 
-function getAI(personalCredentials?: any): GoogleGenAI {
+function getAI(personalCredentials?: any, model?: string): GoogleGenAI {
+  // Gemini 3 Preview image models REQUIRE 'global' endpoint (not us-central1)
+  // Source: https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions
+  const isGemini3PreviewModel = model && (model.includes('gemini-3') || model.includes('image-preview'));
+  const location = isGemini3PreviewModel ? 'global' : (process.env.GOOGLE_CLOUD_LOCATION || 'us-central1');
+
   if (personalCredentials) {
-    // Personal key mode: use user's own GCP service account
     return new GoogleGenAI({
       vertexai: true,
       project: personalCredentials.project_id,
-      location: personalCredentials.location || process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
+      location,
       googleAuthOptions: { credentials: personalCredentials },
     } as any);
   }
-  // System mode: use Railway server-side Vertex AI credentials
   return new GoogleGenAI({
     vertexai: {
       project: process.env.GOOGLE_CLOUD_PROJECT || 'project-fdbf43b8-e8ee-4b6a-90a',
-      location: process.env.GOOGLE_CLOUD_LOCATION || 'us-central1',
+      location,
     },
   } as any);
 }
@@ -123,13 +126,17 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
 
     const wantsImage = config?.responseModalities?.includes('IMAGE') ||
       model.includes('image-preview') || model.includes('gemini-3');
-    const isGemini3Image = !personalCredentials && wantsImage &&
+    const isGemini3Image = wantsImage &&  // applies to both system AND personal key
       (model.includes('gemini-3') || model.includes('image-preview'));
 
+    // Re-init AI with correct 'global' location for Gemini 3 models
+    const aiForImage = isGemini3Image ? getAI(personalCredentials, model) : ai;
+
     if (isGemini3Image) {
-      // Try Gemini 3 SDK. If project doesn't have access → return actionable error with setup guide.
+      // Try Gemini 3 SDK with 'global' endpoint (required for Preview models).
+      // If project doesn't have access → return actionable error with setup guide.
       try {
-        const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
+        const response = await aiForImage.models.generateContent({ model, contents: normalizedContents, config });
         res.json({
           text: response.text ?? null,
           candidates: response.candidates?.map((c: any) => ({ content: c.content, finishReason: c.finishReason })) ?? [],
@@ -140,23 +147,27 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
         const isNotFound = errMsg.includes('not found') || errMsg.includes('does not have access') || sdkErr.status === 404 || sdkErr.status === 403;
         if (!isNotFound) throw sdkErr;
 
-        // Model not enabled in this GCP project — guide user to enable it
+        // Model not enabled in this GCP project — guide user with detailed steps
         const modelDisplayName = model.includes('3-pro') ? 'Banana Pro (gemini-3-pro-image-preview)' : 'Banana 2 (gemini-3.1-flash-image-preview)';
-        const projectId = process.env.GOOGLE_CLOUD_PROJECT || 'your-project';
+        const projectId = personalCredentials?.project_id || process.env.GOOGLE_CLOUD_PROJECT || 'your-project';
         const modelGardenUrl = `https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/${model}?project=${projectId}`;
+        const billingUrl = `https://console.cloud.google.com/billing?project=${projectId}`;
+        const apisUrl = `https://console.cloud.google.com/apis/library/aiplatform.googleapis.com?project=${projectId}`;
 
-        console.error(`❌ ${model} not enabled in project ${projectId}. User must enable it in Model Garden.`);
+        console.error(`❌ ${model} not found for project ${projectId} at 'global' endpoint.`);
         res.status(403).json({
           error: `Model ${modelDisplayName} chưa được kích hoạt trong GCP project "${projectId}".`,
           code: 'MODEL_NOT_ENABLED',
           model,
           setupUrl: modelGardenUrl,
           instructions: [
-            `1. Truy cập Google Cloud Console → Vertex AI → Model Garden`,
-            `2. Tìm kiếm "${model}"`,
-            `3. Nhấn "Enable" hoặc "Request Access"`,
-            `4. Quay lại và thử lại`,
+            `Bật billing cho project "${projectId}" (bắt buộc, kể cả model miễn phí)`,
+            `Bật Vertex AI API: gcloud services enable aiplatform.googleapis.com --project=${projectId}`,
+            `Vào Model Garden → tìm "${model}" → nhấn "Enable"`,
+            `Cấp IAM role "Vertex AI User" cho Service Account của bạn`,
+            `Chờ ~2 phút, reload và thử lại`,
           ],
+          links: { billing: billingUrl, vertexApi: apisUrl, modelGarden: modelGardenUrl },
         });
         return;
       }
