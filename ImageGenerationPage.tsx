@@ -2468,6 +2468,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                          >
                             {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestBeautifulAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
                             {t('imageGenerationPage.actionButtons.suggestBeautifulAngle')}
+                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
                          </button>
                          <button 
                              onClick={() => handleSuggestAnglesList('zoom')}
@@ -2476,6 +2477,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                          >
                             {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestZoomAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <MagnifyingGlassPlusIcon className="w-3 h-3"/>}
                             {t('imageGenerationPage.actionButtons.suggestZoomAngle')}
+                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
                          </button>
                      </div>
                      {/* Additional button row */}
@@ -2486,6 +2488,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                      >
                         {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <MagnifyingGlassPlusIcon className="w-3 h-3"/>}
                         {t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle')}
+                        <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
                      </button>
                 </div>
 
@@ -3296,8 +3299,9 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                     )}
                                                 </div>
                                                 <input type="file" ref={referenceFileInputRef} onChange={handleReferenceImageUpload} className="hidden" accept="image/*" />
-                                                <button onClick={() => referenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors">
+                                                <button onClick={() => referenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
                                                     {t('imageGenerationPage.sidebar.referenceUploadBtn')}
+                                                    <span className="text-[10px] bg-orange-500/80 px-1.5 py-0.5 rounded-full font-bold">+5 cr</span>
                                                 </button>
                                             </div>
 
@@ -3325,8 +3329,9 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                                     )}
                                                 </div>
                                                 <input type="file" ref={filterReferenceFileInputRef} onChange={handleFilterReferenceImageUpload} className="hidden" accept="image/*" />
-                                                <button onClick={() => filterReferenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors">
+                                                <button onClick={() => filterReferenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
                                                     {t('imageGenerationPage.sidebar.referenceFilterBtn')}
+                                                    <span className="text-[10px] bg-orange-500/80 px-1.5 py-0.5 rounded-full font-bold">+5 cr</span>
                                                 </button>
                                             </div>
                                         </div>
