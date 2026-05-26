@@ -298,7 +298,7 @@ const AngleSuggestionList: React.FC<{ suggestions: string | null; onSelect: (sug
 
 const ImageToVideoUI: React.FC = () => {
     const { t, locale } = useLanguage();
-    const { isPro, getModelName, proResolution } = useMode();
+    const { isPro, getModelName, proResolution, mode } = useMode();
     const [videoScriptImages, setVideoScriptImages] = useState<{ id: number; url: string; file: File }[]>([]);
     const nextId = useRef(0);
     const videoScriptInputRef = useRef<HTMLInputElement>(null);
@@ -978,18 +978,20 @@ Instructions:
                 <button 
                     onClick={handleMergeCharacter}
                     disabled={isMerging || !characterImage || selectedContextImageIds.length === 0 || !characterPoseDescription}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg text-lg transition-colors shadow-md mt-4 disabled:bg-gray-600 disabled:cursor-not-allowed"
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg text-lg transition-colors shadow-md mt-4 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                    {isMerging ? 'Đang tạo nhân vật...' : 'Ghép nhân vật vào ảnh (Adding characters to photos)'}
+                    {isMerging ? 'Đang tạo nhân vật...' : 'Ghép nhân vật vào ảnh'}
+                    {!isMerging && <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold">-{CREDIT_COSTS[proResolution]} cr</span>}
                 </button>
                 
                 <div className="space-y-4">
                     <button 
                         onClick={handleAnalyzeImages}
-                        className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                        className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" 
                         disabled={videoScriptImages.length === 0 || isAnalyzingScript}
                     >
                         {isAnalyzingScript ? t('imageGenerationPage.toVideo.analyzingScript') : t('imageGenerationPage.toVideo.analyzeBtn')}
+                        {!isAnalyzingScript && <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold">-{CREDIT_COSTS[proResolution]} cr</span>}
                     </button>
                 </div>
 
@@ -1014,12 +1016,24 @@ Instructions:
                     </div>
                 </div>
 
+                {/* Credit cost breakdown */}
+                <div className="mb-2 mt-4 text-xs text-gray-400 text-center space-y-0.5">
+                    <div className="flex justify-between">
+                        <span>Model: {UI_MODE_LABELS[mode]}</span>
+                        <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
+                    </div>
+                    <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
+                        <span className="font-semibold text-white">Chi phí mỗi thao tác</span>
+                        <span className="font-bold text-orange-400">{CREDIT_COSTS[proResolution]} credits</span>
+                    </div>
+                </div>
                 <button 
                     onClick={handleCreateMotionPrompts}
                     disabled={!storyScript || isGeneratingMotionPrompts}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg transition-colors mt-auto disabled:bg-gray-500 disabled:cursor-not-allowed"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg transition-colors mt-auto disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                     {isGeneratingMotionPrompts ? t('imageGenerationPage.toVideo.generatingMotionPrompts') : t('imageGenerationPage.toVideo.createMotionPromptBtn')}
+                    {!isGeneratingMotionPrompts && <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold">-{CREDIT_COSTS[proResolution]} cr</span>}
                 </button>
             </aside>
 
@@ -1077,14 +1091,14 @@ Instructions:
                                                         </button>
                                                         <button
                                                             onClick={() => handleGenerateVideo(originalIndex)}
-                                                            title="Tạo Video từ Prompt này"
+                                                            title={`Tạo Video — ${CREDIT_COSTS[proResolution]} cr`}
                                                             disabled={prompt.isGeneratingVideo}
-                                                            className={`p-2 h-8 w-full flex items-center justify-center rounded-md transition-colors ${prompt.isGeneratingVideo ? 'bg-orange-800 text-gray-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-500'}`}
+                                                            className={`p-2 h-8 w-full flex items-center justify-center gap-1 rounded-md transition-colors ${prompt.isGeneratingVideo ? 'bg-orange-800 text-gray-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-500'}`}
                                                         >
                                                             {prompt.isGeneratingVideo ? (
                                                                 <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
                                                             ) : (
-                                                                <VideoCameraIcon className="w-4 h-4" />
+                                                                <><VideoCameraIcon className="w-4 h-4" /><span className="text-[9px] font-bold">-{CREDIT_COSTS[proResolution]}cr</span></>
                                                             )}
                                                         </button>
                                                     </div>
