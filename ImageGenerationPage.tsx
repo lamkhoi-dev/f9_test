@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { apiClient, getImageSizeConfig, getImageSize } from './lib/api';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode, CREDIT_COSTS } from './contexts/ModeContext';
+import { useMode, CREDIT_COSTS, UI_MODE_LABELS } from './contexts/ModeContext';
 import { usePricing } from './contexts/PricingContext';
 import { useSnow } from './contexts/SnowContext';
 import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
@@ -935,7 +935,7 @@ Instructions:
                                 disabled={isGeneratingCharacter || !characterPrompt}
                                 className="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
                             >
-                                {isGeneratingCharacter ? 'Đang tạo...' : 'Tự tạo nhân vật'}
+                                {isGeneratingCharacter ? 'Đang tạo...' : (CREDIT_COSTS[proResolution] ?? 0) > 0 ? `Tự tạo nhân vật — ${CREDIT_COSTS[proResolution]} cr` : 'Tự tạo nhân vật'}
                             </button>
                         </div>
                     </div>
@@ -2548,12 +2548,35 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                     )}
                 </div>
 
+                {/* Credit cost breakdown */}
+                {totalPrice > 0 && !isLoading && (
+                    <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
+                        <div className="flex justify-between">
+                            <span>Model: {UI_MODE_LABELS[mode]}</span>
+                            <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span>Tạo ảnh (1 x {basePrice} credits)</span>
+                            <span className="text-orange-300 font-semibold">{basePrice} cr</span>
+                        </div>
+                        {aiSuggestionCount > 0 && (
+                            <div className="flex justify-between">
+                                <span>AI Gợi ý ({aiSuggestionCount} x {AI_SUGGESTION_COST} credits)</span>
+                                <span className="text-yellow-300 font-semibold">{aiSuggestionCount * AI_SUGGESTION_COST} cr</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
+                            <span className="font-semibold text-white">Tổng cộng</span>
+                            <span className="font-bold text-orange-400">{totalPrice} credits</span>
+                        </div>
+                    </div>
+                )}
                 <button 
                     onClick={handleGenerate}
                     disabled={!activeInputFile || isLoading}
                     className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 rounded-lg text-lg transition-colors shadow-lg disabled:bg-gray-600 disabled:cursor-not-allowed"
                 >
-                    {isLoading ? 'Đang tạo góc mới...' : 'Tạo góc mới'}
+                    {isLoading ? 'Đang tạo góc mới...' : totalPrice > 0 ? `Tạo góc mới — ${totalPrice} credits` : 'Tạo góc mới'}
                 </button>
             </aside>
 
@@ -2699,12 +2722,25 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                     </div>
                 </div>
 
+                {/* Credit cost breakdown */}
+                {basePrice > 0 && !sketchupIsLoading && (
+                    <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
+                        <div className="flex justify-between">
+                            <span>Model: {UI_MODE_LABELS[mode]}</span>
+                            <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
+                        </div>
+                        <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
+                            <span className="font-semibold text-white">Chi phí</span>
+                            <span className="font-bold text-orange-400">{basePrice} credits</span>
+                        </div>
+                    </div>
+                )}
                 <button 
                     onClick={handleGenerateSketchupDrawing}
                     disabled={!sketchupImage || sketchupIsLoading}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg text-lg transition-colors shadow-lg mt-auto disabled:bg-gray-600"
                 >
-                    {sketchupIsLoading ? 'Đang tạo bản vẽ...' : 'Tạo bản vẽ 2D'}
+                    {sketchupIsLoading ? 'Đang tạo bản vẽ...' : basePrice > 0 ? `Tạo bản vẽ 2D — ${basePrice} credits` : 'Tạo bản vẽ 2D'}
                 </button>
              </aside>
 
@@ -3666,6 +3702,10 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
                                 {/* Credit cost breakdown */}
                                 {totalPrice > 0 && !isLoading && (
                                     <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
+                                        <div className="flex justify-between">
+                                            <span>Model: {UI_MODE_LABELS[mode]}</span>
+                                            <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
+                                        </div>
                                         <div className="flex justify-between">
                                             <span>Tạo ảnh ({numberOfImages} x {basePrice} credits)</span>
                                             <span className="text-orange-300 font-semibold">{basePrice * numberOfImages} cr</span>
