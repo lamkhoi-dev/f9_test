@@ -1691,6 +1691,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
 
             const fullText = response.text || '';
             setAngleSuggestionsList(fullText);
+            setAiSuggestionCount(prev => prev + 1); // +5 credit for angle suggestion
         } catch (e) {
             console.error("Error suggesting angles list:", e);
             setAngleSuggestionsList(t("imageGenerationPage.prompts.suggestAngleError"));
@@ -1987,6 +1988,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
             handleClearFilterReferenceImage();
             resetCreativeFilters();
             analyzeReferenceImage(file);
+            setAiSuggestionCount(prev => prev + 1); // +5 credit for reference image
         }
     };
 
@@ -2010,6 +2012,7 @@ CAMERA SHOT TYPES TO BE DISTRIBUTED ACROSS THE 15 PROMPTS:
             } else {
                 analyzeImageForExteriorFilters(file);
             }
+            setAiSuggestionCount(prev => prev + 1); // +5 credit for filter reference image
         }
     };
 
