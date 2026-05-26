@@ -29,38 +29,6 @@ class VertexDirectService {
     });
   }
 
-  /**
-   * Get service account credentials from environment variables.
-   * Used as fallback when DB keys are API key type (can't generate Bearer tokens).
-   */
-  private async getEnvServiceAccountConfig(): Promise<{ credentials: any; projectId: string; location: string; keyId: number } | null> {
-    const projectId = process.env.GOOGLE_CLOUD_PROJECT;
-    if (!projectId) return null;
-
-    let credentials = null;
-    const b64Creds = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-    const credsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-    if (b64Creds) {
-      try {
-        const decoded = Buffer.from(b64Creds, 'base64').toString('utf-8');
-        credentials = JSON.parse(decoded);
-      } catch (e) {}
-    } else if (credsPath) {
-      try {
-        const fs = require('fs');
-        const path = require('path');
-        const absolutePath = path.isAbsolute(credsPath) ? credsPath : path.join(process.cwd(), credsPath);
-        if (fs.existsSync(absolutePath)) {
-          credentials = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
-        }
-      } catch (e) {}
-    }
-
-    if (!credentials || typeof credentials !== 'object') return null;
-    console.log(`🔑 Using env service account for REST API (project=${projectId})`);
-    return { credentials, projectId, location: 'us-central1', keyId: 0 };
-  }
 
   /**
    * Get a valid access token from service account credentials
@@ -92,11 +60,9 @@ class VertexDirectService {
       KeyService.validateServiceAccount(config.credentials);
     } else {
       // REST API needs service account credentials (object) for Bearer token.
-      // If credentials is a string (API key), it can't generate Bearer tokens.
-      // Fall back to env var service account credentials.
+      // If DB key is API key type (string), it can't generate Bearer tokens.
       if (config && typeof config.credentials === 'string') {
-        console.log(`⚠️ DB key is API key type — falling back to env service account for REST API`);
-        config = await this.getEnvServiceAccountConfig();
+        throw new Error('REST API cần Service Account JSON (không hỗ trợ API Key dạng chuỗi). Admin cần thêm key loại Service Account trong Admin Panel.');
       }
     }
     
@@ -211,8 +177,7 @@ class VertexDirectService {
       KeyService.validateServiceAccount(config.credentials);
     } else {
       if (config && typeof config.credentials === 'string') {
-        console.log(`⚠️ DB key id=${config.keyId} is API key type — falling back to env service account`);
-        config = await this.getEnvServiceAccountConfig();
+        throw new Error('REST API cần Service Account JSON (không hỗ trợ API Key dạng chuỗi). Admin cần thêm key loại Service Account trong Admin Panel.');
       }
     }
     

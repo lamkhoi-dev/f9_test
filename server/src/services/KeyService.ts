@@ -1,6 +1,4 @@
 import { GoogleGenAI } from '@google/genai';
-import fs from 'fs';
-import path from 'path';
 import VertexKey from '../models/VertexKey';
 
 // In-memory blacklist: keyId → timestamp when blacklisted
@@ -49,40 +47,9 @@ class KeyService {
     const available = keys.filter(k => !isBlacklisted(k.id) && k.id !== 9);
 
     if (available.length === 0) {
-
-      // All DB keys are blacklisted or none exist → fallback to env
-      const project = process.env.GOOGLE_CLOUD_PROJECT;
-      if (!project) return null;
-
-      const initConfig: any = {
-        vertexai: true,
-        project,
-        location: 'us-central1',
-        httpOptions: { timeout: 20 * 60 * 1000 },
-      };
-
-      const b64Creds = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-      const credsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-      if (b64Creds) {
-        try {
-          const decoded = Buffer.from(b64Creds, 'base64').toString('utf-8');
-          initConfig.googleAuthOptions = { credentials: JSON.parse(decoded) };
-        } catch (e) {}
-      } else if (credsPath) {
-        try {
-          const absolutePath = path.isAbsolute(credsPath) ? credsPath : path.join(process.cwd(), credsPath);
-          if (fs.existsSync(absolutePath)) {
-            const raw = fs.readFileSync(absolutePath, 'utf8');
-            initConfig.googleAuthOptions = { credentials: JSON.parse(raw) };
-            console.log(`🔑 Using Admin Key from file: ${credsPath}`);
-          }
-        } catch (e: any) {
-          console.warn(`⚠️ Failed to read admin key file: ${e.message}`);
-        }
-      }
-
-      return { ai: new GoogleGenAI(initConfig), keyId: 0 };
+      // No active DB keys — do NOT fallback to ENV
+      console.warn('⚠️ No active API keys in database. Admin must add keys via Admin Panel.');
+      return null;
     }
 
     const key = available[0];
@@ -211,28 +178,9 @@ class KeyService {
     const available = keys.filter(k => !isBlacklisted(k.id) && k.id !== 9);
 
     if (available.length === 0) {
-      const project = process.env.GOOGLE_CLOUD_PROJECT;
-      if (!project) return null;
-
-      let credentials = null;
-      const b64Creds = process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON;
-      const credsPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-      if (b64Creds) {
-        try {
-          const decoded = Buffer.from(b64Creds, 'base64').toString('utf-8');
-          credentials = JSON.parse(decoded);
-        } catch (e) {}
-      } else if (credsPath) {
-        try {
-          const absolutePath = path.isAbsolute(credsPath) ? credsPath : path.join(process.cwd(), credsPath);
-          if (fs.existsSync(absolutePath)) {
-            credentials = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
-          }
-        } catch (e) {}
-      }
-
-      return { credentials, projectId: project, location: 'us-central1', keyId: 0 };
+      // No active DB keys — do NOT fallback to ENV
+      console.warn('⚠️ No active API keys in database for REST config.');
+      return null;
     }
 
     const key = available[0];
