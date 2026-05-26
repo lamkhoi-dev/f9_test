@@ -31,10 +31,22 @@ function getPersonalAI(personalCredentials: any, model?: string): GoogleGenAI {
  * Get GoogleGenAI instance from DB keys (Admin-managed).
  * Returns null if no active keys in database → caller should return 503.
  */
-async function getSystemAI(model?: string): Promise<{ ai: GoogleGenAI; keyId: number } | null> {
+async function getSystemAI(model?: string): Promise<{ ai: GoogleGenAI; keyId: number; projectId: string } | null> {
   const result = await KeyService.getVertexAI();
   if (!result) return null;
   return result;
+}
+
+/**
+ * Get a system AI instance with the correct location for a specific model.
+ * Gemini 3 preview models require 'global' endpoint.
+ */
+async function getSystemAIForModel(model: string): Promise<GoogleGenAI> {
+  const isGemini3Preview = model.includes('gemini-3') || model.includes('image-preview');
+  const location = isGemini3Preview ? 'global' : 'us-central1';
+  const result = await KeyService.getVertexAIWithLocation(location);
+  if (!result) throw new Error('No active system key available');
+  return result.ai;
 }
 
 /**
@@ -97,6 +109,7 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
 
     let ai: GoogleGenAI;
     let keyId = 0;
+    let systemProjectId = '';
 
     if (personalCredentials) {
       ai = getPersonalAI(personalCredentials, model);
@@ -112,7 +125,8 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       }
       ai = systemResult.ai;
       keyId = systemResult.keyId;
-      console.log(`[generate-content] -> model: ${model} | 🗄️ DB key #${keyId}`);
+      systemProjectId = systemResult.projectId || '';
+      console.log(`[generate-content] -> model: ${model} | 🗄️ DB key #${keyId} (project=${systemProjectId})`);
     }
 
     const wantsImage = config?.responseModalities?.includes('IMAGE') ||
@@ -121,8 +135,14 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       (model.includes('gemini-3') || model.includes('image-preview'));
 
     if (isGemini3Image) {
-      // Gemini 3 Preview: may need 'global' endpoint. Re-init for personal keys.
-      const aiForImage = personalCredentials ? getPersonalAI(personalCredentials, model) : ai;
+      // Gemini 3 Preview requires 'global' endpoint. Re-init with correct location.
+      let aiForImage: GoogleGenAI;
+      if (personalCredentials) {
+        aiForImage = getPersonalAI(personalCredentials, model);
+      } else {
+        // System key: re-create with location='global' for Gemini 3 models
+        aiForImage = await getSystemAIForModel(model);
+      }
       try {
         const response = await aiForImage.models.generateContent({ model, contents: normalizedContents, config });
         if (keyId) await KeyService.incrementUsage(keyId);
@@ -144,7 +164,7 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
 
         // Model not enabled — guide user
         const modelDisplayName = model.includes('3-pro') ? 'Banana Pro (gemini-3-pro-image-preview)' : 'Banana 2 (gemini-3.1-flash-image-preview)';
-        const projectId = personalCredentials?.project_id || 'your-project';
+        const projectId = personalCredentials?.project_id || systemProjectId || 'unknown-project';
         const modelGardenUrl = `https://console.cloud.google.com/vertex-ai/publishers/google/model-garden/${model}?project=${projectId}`;
         const billingUrl = `https://console.cloud.google.com/billing?project=${projectId}`;
         const apisUrl = `https://console.cloud.google.com/apis/library/aiplatform.googleapis.com?project=${projectId}`;

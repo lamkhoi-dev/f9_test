@@ -38,7 +38,7 @@ class KeyService {
    * - Falls back to env credentials if no keys in DB.
    * - Load-balances by lowest dailyUsed.
    */
-  static async getVertexAI(): Promise<{ ai: any; keyId: number } | null> {
+  static async getVertexAI(): Promise<{ ai: any; keyId: number; projectId: string } | null> {
     const keys = await VertexKey.findAll({
       where: { status: 'active' },
       order: [['dailyUsed', 'ASC']],
@@ -53,9 +53,10 @@ class KeyService {
     }
 
     const key = available[0];
+    const resolvedProjectId = key.projectId || (key.keyType === 'service_account' && key.credentials?.project_id) || process.env.GOOGLE_CLOUD_PROJECT || 'unknown-project';
     const initConfig: any = {
       vertexai: true,
-      project: key.projectId || process.env.GOOGLE_CLOUD_PROJECT,
+      project: resolvedProjectId,
       location: (key as any).location || 'us-central1',  // per-key location, default us-central1
       httpOptions: { timeout: 20 * 60 * 1000 },
     };
@@ -66,7 +67,37 @@ class KeyService {
       initConfig.apiKey = key.credentials;
     }
 
-    return { ai: new GoogleGenAI(initConfig), keyId: key.id };
+    return { ai: new GoogleGenAI(initConfig), keyId: key.id, projectId: resolvedProjectId };
+  }
+
+  /**
+   * Get AI instance with a specific location override (e.g., 'global' for Gemini 3 models).
+   */
+  static async getVertexAIWithLocation(location: string): Promise<{ ai: any; keyId: number; projectId: string } | null> {
+    const keys = await VertexKey.findAll({
+      where: { status: 'active' },
+      order: [['dailyUsed', 'ASC']],
+    });
+
+    const available = keys.filter(k => !isBlacklisted(k.id) && k.id !== 9);
+    if (available.length === 0) return null;
+
+    const key = available[0];
+    const resolvedProjectId = key.projectId || (key.keyType === 'service_account' && key.credentials?.project_id) || process.env.GOOGLE_CLOUD_PROJECT || 'unknown-project';
+    const initConfig: any = {
+      vertexai: true,
+      project: resolvedProjectId,
+      location,
+      httpOptions: { timeout: 20 * 60 * 1000 },
+    };
+
+    if (key.keyType === 'service_account') {
+      initConfig.googleAuthOptions = { credentials: key.credentials };
+    } else {
+      initConfig.apiKey = key.credentials;
+    }
+
+    return { ai: new GoogleGenAI(initConfig), keyId: key.id, projectId: resolvedProjectId };
   }
 
   static validateServiceAccount(credentials: any): void {
@@ -184,9 +215,10 @@ class KeyService {
     }
 
     const key = available[0];
+    const resolvedProjectId = key.projectId || (key.keyType === 'service_account' && key.credentials?.project_id) || process.env.GOOGLE_CLOUD_PROJECT || '';
     return { 
       credentials: key.credentials, 
-      projectId: key.projectId || process.env.GOOGLE_CLOUD_PROJECT || '', 
+      projectId: resolvedProjectId, 
       location: (key as any).location || 'us-central1',
       keyId: key.id 
     };
