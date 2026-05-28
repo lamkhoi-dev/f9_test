@@ -2570,26 +2570,24 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                          </button>
                      </div>
                      {/* Additional button row */}
-                     <div className="grid grid-cols-2 gap-2 mt-2">
-                         <button 
-                             onClick={() => handleSuggestAnglesList('interior')}
-                             disabled={!activeInputFile || isSuggestingAnglesList}
-                             className="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-xs py-2 px-3 rounded border border-cyan-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-center leading-tight"
-                         >
-                            {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <MagnifyingGlassPlusIcon className="w-3 h-3"/>}
-                            {t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') || "Gợi ý góc chụp nội thất đẹp"}
-                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
-                         </button>
-                         <button 
-                             onClick={() => handleSuggestAnglesList('storyboard')}
-                             disabled={!activeInputFile || isSuggestingAnglesList}
-                             className="bg-fuchsia-600/20 hover:bg-fuchsia-600/40 text-fuchsia-300 text-xs py-2 px-3 rounded border border-fuchsia-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-center leading-tight"
-                         >
-                            {isSuggestingAnglesList && suggestionListTitle === (t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp") ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
-                            {t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp"}
-                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
-                         </button>
-                     </div>
+                     <button 
+                         onClick={() => handleSuggestAnglesList('interior')}
+                         disabled={!activeInputFile || isSuggestingAnglesList}
+                         className="w-full bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-xs py-2 px-3 rounded border border-cyan-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
+                     >
+                        {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <MagnifyingGlassPlusIcon className="w-3 h-3"/>}
+                        {t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') || "Gợi ý góc chụp nội thất đẹp"}
+                        <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
+                     </button>
+                     <button 
+                         onClick={() => handleSuggestAnglesList('storyboard')}
+                         disabled={!activeInputFile || isSuggestingAnglesList}
+                         className="w-full bg-fuchsia-600/20 hover:bg-fuchsia-600/40 text-fuchsia-300 text-xs py-2 px-3 rounded border border-fuchsia-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
+                     >
+                        {isSuggestingAnglesList && suggestionListTitle === (t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp") ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
+                        {t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp"}
+                        <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
+                     </button>
                 </div>
 
                 {/* Restored Section 3: Available Angle Templates - MOVED ABOVE DESCRIPTION */}
