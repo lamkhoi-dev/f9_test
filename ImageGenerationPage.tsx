@@ -1089,18 +1089,6 @@ Instructions:
                                                         >
                                                             {copiedPromptIndex === originalIndex ? t('imageGenerationPage.toVideo.copiedPromptBtn') : t('imageGenerationPage.toVideo.copyPromptBtn')}
                                                         </button>
-                                                        <button
-                                                            onClick={() => handleGenerateVideo(originalIndex)}
-                                                            title={`Tạo Video — ${CREDIT_COSTS[proResolution]} cr`}
-                                                            disabled={prompt.isGeneratingVideo}
-                                                            className={`p-2 h-8 w-full flex items-center justify-center gap-1 rounded-md transition-colors ${prompt.isGeneratingVideo ? 'bg-orange-800 text-gray-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-500'}`}
-                                                        >
-                                                            {prompt.isGeneratingVideo ? (
-                                                                <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
-                                                            ) : (
-                                                                <><VideoCameraIcon className="w-4 h-4" /><span className="text-[9px] font-bold">-{CREDIT_COSTS[proResolution]}cr</span></>
-                                                            )}
-                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
