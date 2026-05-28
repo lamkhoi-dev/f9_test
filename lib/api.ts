@@ -102,7 +102,7 @@ export const apiClient = {
    * Deduct credit instantly for AI suggestions
    */
   deductInstantCredit: async (amount: number, reason: string): Promise<boolean> => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('f9_token');
     if (!token) throw new Error('Unauthorized');
 
     const res = await fetch(`${API_BASE_URL}/api/purchase/deduct-instant`, {
