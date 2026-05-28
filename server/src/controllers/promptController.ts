@@ -228,3 +228,36 @@ export const purchasePersonalKey = async (req: Request, res: Response): Promise<
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const deductInstantCredit = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const UsageService = (await import('../services/UsageService')).default;
+
+    const userId = (req as any).user?.id;
+    if (!userId) {
+      res.status(401).json({ success: false, message: 'Unauthorized' });
+      return;
+    }
+
+    const { amount, reason } = req.body;
+    if (!amount || amount <= 0) {
+      res.status(400).json({ success: false, message: 'Invalid amount' });
+      return;
+    }
+
+    const success = await UsageService.deductInstantCredit(userId, amount, reason || 'AI Suggestion');
+    if (!success) {
+      res.status(400).json({ success: false, message: 'Giao dịch thất bại (có thể do số dư không đủ)' });
+      return;
+    }
+
+    res.json({ success: true, message: `Đã trừ ${amount} credits` });
+  } catch (error: any) {
+    console.error('[deductInstantCredit] Error:', error.message);
+    if (error.message.includes('Insufficient credits')) {
+      res.status(400).json({ success: false, message: 'Số dư không đủ để thực hiện tính năng này' });
+    } else {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
+};

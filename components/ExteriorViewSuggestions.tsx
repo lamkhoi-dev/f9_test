@@ -145,6 +145,7 @@ const VIEW_GROUPS = [
 
 const ExteriorViewSuggestions: React.FC<ExteriorViewSuggestionsProps> = ({ onBack }) => {
   const { locale } = useLanguage();
+  const { proResolution } = useMode();
   const [activeTab, setActiveTab] = useState<'result' | 'history'>('result');
   const [inputImage, setInputImage] = useState<{ url: string; file: File } | null>(null);
   const [characterImages, setCharacterImages] = useState<CharacterImage[]>([]);

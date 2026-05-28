@@ -97,6 +97,30 @@ export const apiClient = {
 
     return res.json();
   },
+
+  /**
+   * Deduct credit instantly for AI suggestions
+   */
+  deductInstantCredit: async (amount: number, reason: string): Promise<boolean> => {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('Unauthorized');
+
+    const res = await fetch(`${API_BASE_URL}/api/purchase/deduct-instant`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ amount, reason }),
+    });
+
+    const data = await res.json();
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || 'Failed to deduct credits');
+    }
+
+    return true;
+  },
 };
 
 /**

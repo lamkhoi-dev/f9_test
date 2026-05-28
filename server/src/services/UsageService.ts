@@ -200,6 +200,46 @@ class UsageService {
       // In production, we might want to retry this later.
     }
   }
+
+  /**
+   * Deduct fixed credit immediately (e.g., for AI suggestions).
+   * Verifies balance and deducts in a single atomic transaction.
+   */
+  static async deductInstantCredit(userId: string, amount: number, reason: string): Promise<boolean> {
+    return await sequelize.transaction(async (t: Transaction) => {
+      const user = await User.findByPk(userId, { 
+        lock: Transaction.LOCK.UPDATE, 
+        transaction: t 
+      });
+
+      if (!user) return false;
+
+      // Admin bypass
+      if (user.role === 'admin') {
+        await UsageLog.create({
+          userId, model: 'ai_suggestion', resolution: 'none',
+          cost: 0, type: 'free', status: 'success',
+          inputData: reason, imageCount: 1, freeUsed: 0
+        }, { transaction: t });
+        return true;
+      }
+
+      if (user.balance < amount) {
+        throw new Error(`Insufficient credits (Requires ${amount}, has ${user.balance})`);
+      }
+
+      user.balance -= amount;
+      await user.save({ transaction: t });
+
+      await UsageLog.create({
+        userId, model: 'ai_suggestion', resolution: 'none',
+        cost: amount, type: 'paid', status: 'success',
+        inputData: reason, imageCount: 1, freeUsed: 0
+      }, { transaction: t });
+
+      return true;
+    });
+  }
 }
 
 export default UsageService;

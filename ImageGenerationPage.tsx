@@ -1158,7 +1158,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const { getPrice } = usePricing();
     const { isSnowing, toggleSnow } = useSnow();
     const [activeAction, setActiveAction] = useState('exterior');
-    const { isFreePlan } = useAuth();
+    const { isFreePlan, user, isAdmin, refreshUser } = useAuth();
     const [showUpgradeModal, setShowUpgradeModal] = useState(false);
     const [upgradeMessage, setUpgradeMessage] = useState('');
     const [activeTab, setActiveTab] = useState('results');
@@ -1248,8 +1248,6 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const [sketchupResult, setSketchupResult] = useState<string | null>(null);
     const [sketchupHistory, setSketchupHistory] = useState<{ input: string; output: string }[]>([]);
     const [numberOfImages, setNumberOfImages] = useState(1);
-    const [aiSuggestionCount, setAiSuggestionCount] = useState(0);
-    
     const ITEMS_PER_PAGE = 10;
     const AI_SUGGESTION_COST = 5; // credits per AI suggestion use
 
@@ -1258,7 +1256,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     // DB lookup is unreliable because model keys in DB ('image-generation') don't match getPriceKey format ('pro-1k')
     const currentPriceKey = useMemo(() => getPriceKey(mode, proResolution), [getPriceKey, mode, proResolution]);
     const basePrice = CREDIT_COSTS[proResolution] ?? getPrice(currentPriceKey, 'realistic') ?? getPrice(currentPriceKey) ?? 0;
-    const totalPrice = basePrice * (isFreePlan ? 1 : numberOfImages) + aiSuggestionCount * AI_SUGGESTION_COST;
+    const totalPrice = basePrice * (isFreePlan ? 1 : numberOfImages);
 
     const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE);
     const paginatedHistory = useMemo(() => {
@@ -1478,6 +1476,15 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
 
     const handleSuggestAnglesList = async (type: 'beautiful' | 'zoom' | 'interior' | 'storyboard') => {
         if (!activeInputFile || isSuggestingAnglesList) return;
+
+        if (!user) {
+            alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+            return;
+        }
+        if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+            alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
+            return;
+        }
 
         // If Pro, force key check        }
 
@@ -1780,7 +1787,9 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
             const fullText = response.text || '';
             setAngleSuggestionsList(fullText);
-            setAiSuggestionCount(prev => prev + 1); // +5 credit for angle suggestion
+            
+            await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Angle (${type})`);
+            refreshUser();
         } catch (e) {
             console.error("Error suggesting angles list:", e);
             setAngleSuggestionsList(t("imageGenerationPage.prompts.suggestAngleError"));
@@ -1790,6 +1799,14 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
     };
 
     const handleAiSuggestEnvironment = async () => {
+        if (!user) {
+            alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+            return;
+        }
+        if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+            alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
+            return;
+        }
         setIsSuggesting(true);
         try {
             
@@ -1817,7 +1834,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             
             if (Array.isArray(result) && result.length > 0) {
                 setEnvironmentalCharacteristics(result.slice(0, 10));
-                setAiSuggestionCount(prev => prev + 1); // accrue 5-credit cost
+                await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Environment`);
+                refreshUser();
             } else {
                 console.warn("AI did not return a valid array of suggestions.");
             }
@@ -1832,6 +1850,15 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
     const handleAiSuggestMaterials = async () => {
         const fileToAnalyze = originalInputImage?.file || activeInputFile;
         if (!fileToAnalyze) return;
+
+        if (!user) {
+            alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+            return;
+        }
+        if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+            alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
+            return;
+        }
 
         setIsSuggestingMaterials(true);
         try {
@@ -1863,7 +1890,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             
             if (Array.isArray(result) && result.length > 0) {
                 setAppliedMaterials(result);
-                setAiSuggestionCount(prev => prev + 1); // accrue 5-credit cost
+                await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Materials`);
+                refreshUser();
             } else {
                 console.warn("AI did not return a valid array of material suggestions.");
             }
@@ -1962,6 +1990,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             setWeatherCondition(result.weatherCondition || '');
             setToneAndMood(result.toneAndMood || '');
             setCameraAngle(result.cameraAngle || '');
+            await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Exterior Filter`);
+            refreshUser();
         } catch (e) {
             console.error("Error analyzing image for filters:", e);
         } finally {
@@ -2007,6 +2037,9 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             if (result.timeAndClimateDescription) setTimeAndClimateDescription(result.timeAndClimateDescription);
             if (result.cameraAngleAndComposition) setCameraAngleAndComposition(result.cameraAngleAndComposition);
 
+            await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Interior Filter`);
+            refreshUser();
+
         } catch (e) {
             console.error("Error analyzing image for interior filters:", e);
         } finally {
@@ -2043,6 +2076,9 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 const resultJson = JSON.parse(response.text);
                 setStyleAnalysis(resultJson);
 
+                await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Reference Style (Interior)`);
+                refreshUser();
+
             } catch (e) {
                 console.error("Error analyzing reference image for interior mode:", e);
             } finally {
@@ -2058,6 +2094,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     contents: { parts: [{ inlineData: { data: base64Data, mimeType: file.type } }, { text: analysisPrompt }] }
                 });
                 setStyleDescription(response.text);
+                await apiClient.deductInstantCredit(AI_SUGGESTION_COST, `AI Suggestion: Reference Style (Exterior)`);
+                refreshUser();
             } catch (e) {
                 console.error("Error analyzing reference image:", e);
             } finally {
@@ -2068,16 +2106,25 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
     };
 
 
-    const handleReferenceImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleReferenceImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            if (!user) {
+                alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+                if (referenceFileInputRef.current) referenceFileInputRef.current.value = "";
+                return;
+            }
+            if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+                alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
+                if (referenceFileInputRef.current) referenceFileInputRef.current.value = "";
+                return;
+            }
             if (referenceImage) URL.revokeObjectURL(referenceImage.url);
             const url = URL.createObjectURL(file);
             setReferenceImage({ url, file });
             handleClearFilterReferenceImage();
             resetCreativeFilters();
             analyzeReferenceImage(file);
-            setAiSuggestionCount(prev => prev + 1); // +5 credit for reference image
         }
     };
 
@@ -2089,9 +2136,19 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         if (referenceFileInputRef.current) referenceFileInputRef.current.value = "";
     };
     
-    const handleFilterReferenceImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFilterReferenceImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            if (!user) {
+                alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+                if (filterReferenceFileInputRef.current) filterReferenceFileInputRef.current.value = "";
+                return;
+            }
+            if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+                alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
+                if (filterReferenceFileInputRef.current) filterReferenceFileInputRef.current.value = "";
+                return;
+            }
             if (filterReferenceImage) URL.revokeObjectURL(filterReferenceImage.url);
             const url = URL.createObjectURL(file);
             setFilterReferenceImage({ url, file });
@@ -2101,7 +2158,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             } else {
                 analyzeImageForExteriorFilters(file);
             }
-            setAiSuggestionCount(prev => prev + 1); // +5 credit for filter reference image
         }
     };
 
@@ -2113,6 +2169,16 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
     const handleGenerate = async () => {
         if (!activeInputFile) return;
+
+        if (!user) {
+            alert(locale === 'vi' ? "Vui lòng đăng nhập để sử dụng tính năng AI." : "Please login to use AI features.");
+            return;
+        }
+
+        if (!isAdmin && user.balance < totalPrice) {
+            alert(locale === 'vi' ? `Không đủ credit. Tính năng này cần ${totalPrice} credits.` : `Not enough credits. This feature requires ${totalPrice} credits.`);
+            return;
+        }
 
         if (isPro) {
         }
@@ -2270,7 +2336,11 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     }
                 });
                 setCurrentPage(1);
-                setAiSuggestionCount(0); // reset after successful generation
+                
+                if (totalPrice > 0) {
+                    await apiClient.deductInstantCredit(totalPrice, `Image Generation: ${activeAction}`);
+                    refreshUser();
+                }
             } else {
                  console.error("Rendering failed: No image generated.");
             }
@@ -2657,12 +2727,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                             <span>Tạo ảnh (1 x {basePrice} credits)</span>
                             <span className="text-orange-300 font-semibold">{basePrice} cr</span>
                         </div>
-                        {aiSuggestionCount > 0 && (
-                            <div className="flex justify-between">
-                                <span>AI Gợi ý ({aiSuggestionCount} x {AI_SUGGESTION_COST} credits)</span>
-                                <span className="text-yellow-300 font-semibold">{aiSuggestionCount * AI_SUGGESTION_COST} cr</span>
-                            </div>
-                        )}
                         <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
                             <span className="font-semibold text-white">Tổng cộng</span>
                             <span className="font-bold text-orange-400">{totalPrice} credits</span>
@@ -3808,12 +3872,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                             <span>Tạo ảnh ({numberOfImages} x {basePrice} credits)</span>
                                             <span className="text-orange-300 font-semibold">{basePrice * numberOfImages} cr</span>
                                         </div>
-                                        {aiSuggestionCount > 0 && (
-                                            <div className="flex justify-between">
-                                                <span>AI Gợi ý ({aiSuggestionCount} x {AI_SUGGESTION_COST} credits)</span>
-                                                <span className="text-yellow-300 font-semibold">{aiSuggestionCount * AI_SUGGESTION_COST} cr</span>
-                                            </div>
-                                        )}
                                         <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
                                             <span className="font-semibold text-white">Tổng cộng</span>
                                             <span className="font-bold text-orange-400">{totalPrice} credits</span>

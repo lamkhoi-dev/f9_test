@@ -13,6 +13,7 @@ interface CreateAnnotationsProps {
 
 const CreateAnnotations: React.FC<CreateAnnotationsProps> = ({ onBack }) => {
   const { locale } = useLanguage();
+  const { proResolution } = useMode();
   const [inputImage, setInputImage] = useState<{ url: string; file: File } | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState('');
   const [prompt, setPrompt] = useState('');

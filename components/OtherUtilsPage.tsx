@@ -148,7 +148,7 @@ const OtherUtilsPage: React.FC = () => {
       tag: "TIỆN ÍCH",
       tagColor: "bg-gray-200 text-gray-800",
       bgGradient: "bg-gradient-to-br from-emerald-900 to-slate-900",
-      imageUrl: "https://kientrucauchau.vn/wp-content/uploads/2022/01/mau-sac-hai-hoa-mang-den-Background-dep.jpg"
+      imageUrl: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80"
     },
     {
       title: locale === 'vi' ? "Đồng bộ Nhân vật" : "Character Consistency",
@@ -170,7 +170,7 @@ const OtherUtilsPage: React.FC = () => {
       icon: <MapIcon />,
       tag: "CÔNG CỤ AI",
       bgGradient: "bg-gradient-to-br from-orange-900 to-slate-900",
-      imageUrl: "https://kientrucauchau.vn/wp-content/uploads/2022/01/mau-sac-hai-hoa-mang-den-Background-dep.jpg"
+      imageUrl: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80"
     },
     {
       id: "virtual-360",
@@ -212,7 +212,7 @@ const OtherUtilsPage: React.FC = () => {
       icon: <RectangleGroupIcon />,
       tag: "CÔNG CỤ AI",
       bgGradient: "bg-gradient-to-br from-blue-700 to-slate-900",
-      imageUrl: "https://kientrucauchau.vn/wp-content/uploads/2022/01/mau-sac-hai-hoa-mang-den-Background-dep.jpg"
+      imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80"
     },
     {
       id: 'change-tonemood',
