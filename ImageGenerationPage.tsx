@@ -1490,7 +1490,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
                     ? t('imageGenerationPage.actionButtons.suggestZoomAngle')
                     : type === 'interior'
                         ? t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle')
-                        : t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp"
+                        : (locale === 'vi' ? 'Gợi ý góc chụp storyboard đẹp' : 'Suggest storyboard angle')
         );
 
         try {
@@ -2584,8 +2584,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                          disabled={!activeInputFile || isSuggestingAnglesList}
                          className="w-full bg-fuchsia-600/20 hover:bg-fuchsia-600/40 text-fuchsia-300 text-xs py-2 px-3 rounded border border-fuchsia-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 mt-2"
                      >
-                        {isSuggestingAnglesList && suggestionListTitle === (t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp") ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
-                        {t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp"}
+                        {isSuggestingAnglesList && suggestionListTitle === (locale === 'vi' ? 'Gợi ý góc chụp storyboard đẹp' : 'Suggest storyboard angle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
+                        {locale === 'vi' ? 'Gợi ý góc chụp storyboard đẹp' : 'Suggest storyboard angle'}
                         <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
                      </button>
                 </div>
