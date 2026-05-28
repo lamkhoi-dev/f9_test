@@ -57,8 +57,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const creditCost = CREDIT_COSTS[proResolution] ?? 10;
   const { isSnowing, toggleSnow } = useSnow();
   const { isKeySet, showKeyModal } = useApiKey();
-  const { user } = useAuth();
+  const { user, isAdmin, refreshUser } = useAuth();
   const isFreePlan = user?.plan === 'free';
+  const AI_SUGGEST_COST = 5;
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<PromptItem | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -382,6 +383,14 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         alert(t("aiAssistant.error", "Vui lòng tải ảnh lên trước!"));
         return;
     }
+    if (!user) {
+        alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+        return;
+    }
+    if (!isAdmin && user.balance < AI_SUGGEST_COST) {
+        alert(`Không đủ credit. Tính năng này cần ${AI_SUGGEST_COST} credits.`);
+        return;
+    }
     
     setIsSuggestingMaterials(true);
     try {
@@ -404,7 +413,6 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         const textResp = response.candidates?.[0]?.content?.parts?.[0]?.text;
         if (textResp) {
             try {
-                // Parse the array of strings and combine them
                 const materialsArr = JSON.parse(textResp);
                 if (Array.isArray(materialsArr)) {
                     setMaterials(materialsArr.join(", "));
@@ -413,6 +421,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
                 console.error("Failed to parse JSON", e);
                 setMaterials(textResp);
             }
+            // Deduct instantly after successful suggestion
+            await apiClient.deductInstantCredit(AI_SUGGEST_COST, 'AI Suggestion: Prompt Library Materials');
+            refreshUser();
         }
     } catch (e) {
         console.error("Error suggesting materials", e);
@@ -423,6 +434,15 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
 
   const handleGenerate = async () => {
     if (!activeInputFile || !selectedItem?.defaultPrompt) return;
+
+    if (!user) {
+        alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
+        return;
+    }
+    if (!isAdmin && user.balance < creditCost) {
+        alert(`Không đủ credit. Tính năng này cần ${creditCost} credits.`);
+        return;
+    }
 
 
     setIsLoading(true);
@@ -495,6 +515,9 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       if (successfulImages.length > 0) {
         setGeneratedImages(successfulImages);
         setHistory(prev => [{ input: displayInputImage!, outputs: successfulImages }, ...prev]);
+        // Deduct instantly after successful generation
+        await apiClient.deductInstantCredit(creditCost, `Prompt Library Generation: ${selectedItem?.title}`);
+        refreshUser();
       } else {
         console.error("Rendering failed: No image generated.");
       }
