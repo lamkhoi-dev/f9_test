@@ -1,9 +1,8 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { apiClient, getImageSizeConfig, getImageSize } from './lib/api';
+import { GoogleGenAI, Modality, Type } from '@google/genai';
 import { useLanguage } from './hooks/useLanguage';
-import { useMode, CREDIT_COSTS, UI_MODE_LABELS } from './contexts/ModeContext';
-import { usePricing } from './contexts/PricingContext';
+import { useMode } from './contexts/ModeContext';
 import { useSnow } from './contexts/SnowContext';
 import { ChevronLeftIcon } from './components/icons/ChevronLeftIcon';
 import LanguageSwitcher from './components/LanguageSwitcher';
@@ -34,8 +33,6 @@ import FilterDropdown from './components/FilterDropdown';
 import OtherUtilsPage from './components/OtherUtilsPage';
 // Added: Import persistence utilities
 import { saveHistory, HistoryRecord } from './lib/db';
-import { useAuth } from './contexts/AuthContext';
-import UpgradeModal from './components/UpgradeModal';
 
 
 interface ImageGenerationPageProps {
@@ -49,25 +46,6 @@ interface HistoryItem {
     reference?: string;
     outputs: string[];
 }
-
-const ImageWithDimensions: React.FC<{ src: string; alt?: string; className?: string }> = ({ src, alt, className }) => {
-    const [dim, setDim] = useState<{w: number, h: number} | null>(null);
-    return (
-        <>
-            <img 
-                src={src} 
-                alt={alt} 
-                className={className} 
-                onLoad={(e) => setDim({ w: e.currentTarget.naturalWidth, h: e.currentTarget.naturalHeight })} 
-            />
-            {dim && (
-                <div className="absolute top-2 right-2 bg-black/70 backdrop-blur-md text-orange-400 text-xs font-mono font-bold px-2 py-1 rounded shadow-lg border border-orange-500/30 z-20 pointer-events-none tracking-widest">
-                    {dim.w} × {dim.h}
-                </div>
-            )}
-        </>
-    );
-};
 
 // Helper function to convert data URL to File object
 const dataURLtoFile = (dataurl: string, filename: string): File => {
@@ -298,7 +276,7 @@ const AngleSuggestionList: React.FC<{ suggestions: string | null; onSelect: (sug
 
 const ImageToVideoUI: React.FC = () => {
     const { t, locale } = useLanguage();
-    const { isPro, getModelName, proResolution, mode } = useMode();
+    const { isPro, getModelName, proResolution } = useMode();
     const [videoScriptImages, setVideoScriptImages] = useState<{ id: number; url: string; file: File }[]>([]);
     const nextId = useRef(0);
     const videoScriptInputRef = useRef<HTMLInputElement>(null);
@@ -348,6 +326,7 @@ const ImageToVideoUI: React.FC = () => {
         setStoryScript('');
     
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
             const imageParts = await Promise.all(
                 videoScriptImages.map(async (image) => {
@@ -368,22 +347,22 @@ const ImageToVideoUI: React.FC = () => {
             const allParts = [...imageParts, textPart];
 
             const schema = {
-                type: 'OBJECT',
+                type: Type.OBJECT,
                 properties: {
                     script: { 
-                        type: 'STRING',
+                        type: Type.STRING,
                         description: "The video script content based on the ordered images."
                     },
                     imageOrder: {
-                        type: 'ARRAY',
+                        type: Type.ARRAY,
                         description: "An array of integers representing the new sorted order of images, starting from index 0.",
-                        items: { type: 'INTEGER' }
+                        items: { type: Type.INTEGER }
                     }
                 },
                 required: ['script', 'imageOrder']
             };
     
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('text'), 
                 contents: { parts: allParts },
                 config: {
@@ -425,13 +404,17 @@ const ImageToVideoUI: React.FC = () => {
     const handleCreateMotionPrompts = async () => {
         if (!storyScript || videoScriptImages.length === 0 || isGeneratingMotionPrompts) return;
 
-        // Force check API key if Pro mode        }
+        // Force check API key if Pro mode
+        if (isPro && !(window as any).aistudio?.hasSelectedApiKey()) {
+             try { await (window as any).aistudio?.openSelectKey(); } catch { /* ignore */ }
+        }
     
         setIsGeneratingMotionPrompts(true);
         setMotionPrompts([]);
         setVideoResultsPage(1);
     
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             // Build multimodal input: Interleave labels and images so AI knows which is which
             const contentParts: any[] = [];
@@ -467,14 +450,14 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
             contentParts.push({ text: systemPrompt });
     
             const schema = {
-                type: 'ARRAY',
+                type: Type.ARRAY,
                 items: {
-                    type: 'OBJECT',
+                    type: Type.OBJECT,
                     properties: {
-                        image_index: { type: 'INTEGER' },
-                        image_title: { type: 'STRING' },
-                        script_position: { type: 'STRING' },
-                        video_prompt: { type: 'STRING' },
+                        image_index: { type: Type.INTEGER },
+                        image_title: { type: Type.STRING },
+                        script_position: { type: Type.STRING },
+                        video_prompt: { type: Type.STRING },
                     },
                     required: ['image_title', 'script_position', 'video_prompt'],
                 },
@@ -486,7 +469,7 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
 
             const isImageModel = modelName.includes('image');
 
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: modelName, 
                 contents: { parts: contentParts },
                 config: isImageModel ? {
@@ -518,6 +501,9 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
     };
 
     const handleGenerateVideo = async (index: number) => {
+        if (!(window as any).aistudio?.hasSelectedApiKey()) {
+            await (window as any).aistudio?.openSelectKey();
+        }
 
         setMotionPrompts(prev => prev.map((p, i) => i === index ? { ...p, isGeneratingVideo: true, videoError: undefined, videoUri: undefined } : p));
 
@@ -538,13 +524,34 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
             const targetAspectRatio = width >= height ? '16:9' : '9:16';
 
             const promptItem = motionPrompts[index];
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const base64Data = await blobToBase64(imageItem.file);
 
-            // TODO: Video generation is not yet migrated to the backend proxy.
-            // This feature requires a dedicated /api/generate-videos endpoint.
-            throw new Error('Video generation is not yet available through the backend proxy. This feature will be enabled in a future update.');
+            let operation = await ai.models.generateVideos({
+                model: getModelName('video'), 
+                prompt: promptItem.video_prompt,
+                image: {
+                    imageBytes: base64Data,
+                    mimeType: imageItem.file.type,
+                },
+                config: {
+                    numberOfVideos: 1,
+                    resolution: '720p', 
+                    aspectRatio: targetAspectRatio 
+                }
+            });
 
-            /* Dead code — video proxy not yet implemented
+            console.log(`Started video generation for image ${index} with aspect ratio ${targetAspectRatio}`);
+
+            while (!operation.done) {
+                await new Promise(resolve => setTimeout(resolve, 10000)); 
+                operation = await ai.operations.getVideosOperation({ operation: operation });
+                
+                if (operation.error) {
+                    throw new Error((operation.error.message as string) || "Unknown error during video generation");
+                }
+            }
+
             const videoUri = operation.response?.generatedVideos?.[0]?.video?.uri;
             
             if (videoUri) {
@@ -559,7 +566,6 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
             } else {
                 throw new Error("No video URI returned.");
             }
-            */
 
         } catch (error: any) {
             console.error("Error generating video:", error);
@@ -567,6 +573,11 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
             
             if (errorMessage.includes("Requested entity was not found") || errorMessage.includes("404")) {
                 errorMessage = "Lỗi: Không tìm thấy mô hình Veo (404). Vui lòng đảm bảo bạn đã chọn API Key từ dự án có tính phí (Paid Project).";
+                try {
+                    await (window as any).aistudio?.openSelectKey();
+                } catch (e) {
+                    console.error("Failed to open select key dialog:", e);
+                }
             } else if (errorMessage.includes("400")) {
                  errorMessage = "Lỗi yêu cầu (400). Vui lòng kiểm tra lại ảnh đầu vào hoặc prompt.";
             }
@@ -670,22 +681,38 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
         if (!characterPrompt) return;
 
         if (isPro) {
+            if ((window as any).aistudio) {
+                try {
+                    const hasKey = await (window as any).aistudio.hasSelectedApiKey();
+                    if (!hasKey) {
+                        const success = await (window as any).aistudio.openSelectKey();
+                        if (!success) return; 
+                    }
+                } catch(e) {
+                    console.error("Failed to check/select API Key", e);
+                }
+            }
         }
 
         setIsGeneratingCharacter(true);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             let prompt = characterPrompt;
             if (isPro) {
-                prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : proResolution === '1k' ? " Output resolution 1K." : " Output resolution 2K, high quality.";
+                prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : " Output resolution 2K, high quality.";
             }
 
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('image'),
                 contents: { parts: [{ text: prompt }] },
                 config: { 
-                    responseModalities: ['IMAGE'],
-                    ...getImageSizeConfig(isPro, proResolution)
+                    responseModalities: [Modality.IMAGE],
+                    ...(isPro ? { 
+                        imageConfig: { 
+                            imageSize: proResolution === '4k' ? '4K' : '2K' 
+                        } 
+                    } : {})
                 },
             });
 
@@ -706,6 +733,9 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
             let errorMsg = "Failed to generate character.";
             if (error.message?.includes("permission denied") || error.message?.includes("403") || error.message?.includes("404") || error.message?.includes("Requested entity was not found")) {
                 errorMsg = "Lỗi quyền truy cập: Vui lòng chọn API Key từ dự án có tính phí (Paid Project) để sử dụng mô hình tạo ảnh cao cấp.";
+                try {
+                    await (window as any).aistudio?.openSelectKey();
+                } catch (e) { console.error(e); }
             }
             alert(errorMsg);
         } finally {
@@ -729,8 +759,13 @@ Output format: Trả về một JSON Array, mỗi phần tử là một object:
             return;
         }
 
+        if (isPro && !(window as any).aistudio?.hasSelectedApiKey()) {
+             try { await (window as any).aistudio?.openSelectKey(); } catch { /* ignore */ }
+        }
+
         setIsMerging(true);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const characterBase64 = await blobToBase64(characterImage.file);
 
             for (const contextId of selectedContextImageIds) {
@@ -748,7 +783,7 @@ Instructions:
 4. **Output:** A single, high-quality, photorealistic image.`;
 
                 if (isPro) {
-                    mergePrompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : proResolution === '1k' ? " Output resolution 1K." : " Output resolution 2K, high quality.";
+                    mergePrompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : " Output resolution 2K, high quality.";
                 }
 
                 const parts = [
@@ -757,12 +792,16 @@ Instructions:
                     { text: mergePrompt }
                 ];
 
-                const response = await apiClient.generateContent({
+                const response = await ai.models.generateContent({
                     model: getModelName('image'),
                     contents: { parts },
                     config: { 
-                        responseModalities: ['IMAGE'],
-                        ...getImageSizeConfig(isPro, proResolution)
+                        responseModalities: [Modality.IMAGE],
+                        ...(isPro ? { 
+                            imageConfig: { 
+                                imageSize: proResolution === '4k' ? '4K' : '2K' 
+                            } 
+                        } : {})
                     },
                 });
 
@@ -935,7 +974,7 @@ Instructions:
                                 disabled={isGeneratingCharacter || !characterPrompt}
                                 className="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 rounded-lg text-sm transition-colors disabled:opacity-50"
                             >
-                                {isGeneratingCharacter ? 'Đang tạo...' : (CREDIT_COSTS[proResolution] ?? 0) > 0 ? `Tự tạo nhân vật — ${CREDIT_COSTS[proResolution]} cr` : 'Tự tạo nhân vật'}
+                                {isGeneratingCharacter ? 'Đang tạo...' : 'Tự tạo nhân vật'}
                             </button>
                         </div>
                     </div>
@@ -978,20 +1017,18 @@ Instructions:
                 <button 
                     onClick={handleMergeCharacter}
                     disabled={isMerging || !characterImage || selectedContextImageIds.length === 0 || !characterPoseDescription}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg text-lg transition-colors shadow-md mt-4 disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg text-lg transition-colors shadow-md mt-4 disabled:bg-gray-600 disabled:cursor-not-allowed"
                 >
-                    {isMerging ? 'Đang tạo nhân vật...' : 'Ghép nhân vật vào ảnh'}
-                    {!isMerging && <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold">-{CREDIT_COSTS[proResolution]} cr</span>}
+                    {isMerging ? 'Đang tạo nhân vật...' : 'Ghép nhân vật vào ảnh (Adding characters to photos)'}
                 </button>
                 
                 <div className="space-y-4">
                     <button 
                         onClick={handleAnalyzeImages}
-                        className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2" 
+                        className="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
                         disabled={videoScriptImages.length === 0 || isAnalyzingScript}
                     >
                         {isAnalyzingScript ? t('imageGenerationPage.toVideo.analyzingScript') : t('imageGenerationPage.toVideo.analyzeBtn')}
-                        {!isAnalyzingScript && <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold">-{CREDIT_COSTS[proResolution]} cr</span>}
                     </button>
                 </div>
 
@@ -1016,24 +1053,12 @@ Instructions:
                     </div>
                 </div>
 
-                {/* Credit cost breakdown */}
-                <div className="mb-2 mt-4 text-xs text-gray-400 text-center space-y-0.5">
-                    <div className="flex justify-between">
-                        <span>Model: {UI_MODE_LABELS[mode]}</span>
-                        <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
-                    </div>
-                    <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
-                        <span className="font-semibold text-white">Chi phí mỗi thao tác</span>
-                        <span className="font-bold text-orange-400">{CREDIT_COSTS[proResolution]} credits</span>
-                    </div>
-                </div>
                 <button 
                     onClick={handleCreateMotionPrompts}
                     disabled={!storyScript || isGeneratingMotionPrompts}
-                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg transition-colors mt-auto disabled:bg-gray-500 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg transition-colors mt-auto disabled:bg-gray-500 disabled:cursor-not-allowed"
                 >
                     {isGeneratingMotionPrompts ? t('imageGenerationPage.toVideo.generatingMotionPrompts') : t('imageGenerationPage.toVideo.createMotionPromptBtn')}
-                    {!isGeneratingMotionPrompts && <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold">-{CREDIT_COSTS[proResolution]} cr</span>}
                 </button>
             </aside>
 
@@ -1088,6 +1113,18 @@ Instructions:
                                                             className={`px-3 py-1 text-xs rounded-md transition-colors h-8 flex items-center justify-center ${copiedPromptIndex === originalIndex ? 'bg-green-600 text-white' : 'bg-slate-600 hover:bg-slate-500 text-gray-200'}`}
                                                         >
                                                             {copiedPromptIndex === originalIndex ? t('imageGenerationPage.toVideo.copiedPromptBtn') : t('imageGenerationPage.toVideo.copyPromptBtn')}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleGenerateVideo(originalIndex)}
+                                                            title="Tạo Video từ Prompt này"
+                                                            disabled={prompt.isGeneratingVideo}
+                                                            className={`p-2 h-8 w-full flex items-center justify-center rounded-md transition-colors ${prompt.isGeneratingVideo ? 'bg-orange-800 text-gray-400 cursor-not-allowed' : 'bg-orange-600 text-white hover:bg-orange-500'}`}
+                                                        >
+                                                            {prompt.isGeneratingVideo ? (
+                                                                <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+                                                            ) : (
+                                                                <VideoCameraIcon className="w-4 h-4" />
+                                                            )}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -1154,13 +1191,9 @@ Instructions:
 
 const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, restoreData }) => {
     const { t, locale } = useLanguage();
-    const { getModelName, isPro, mode, toggleMode, proResolution, getPriceKey } = useMode();
-    const { getPrice } = usePricing();
+    const { getModelName, isPro, mode, toggleMode, proResolution } = useMode();
     const { isSnowing, toggleSnow } = useSnow();
     const [activeAction, setActiveAction] = useState('exterior');
-    const { isFreePlan } = useAuth();
-    const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-    const [upgradeMessage, setUpgradeMessage] = useState('');
     const [activeTab, setActiveTab] = useState('results');
     const [imageType, setImageType] = useState('default');
 
@@ -1191,6 +1224,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const [interiorDesignStyle, setInteriorDesignStyle] = useState('');
     const [mainColorTone, setMainColorTone] = useState('');
     const [cameraAngleAndComposition, setCameraAngleAndComposition] = useState('');
+    const [characterAndMovement, setCharacterAndMovement] = useState('');
     const [materialDescription, setMaterialDescription] = useState('');
     const [contextLocationViewDescription, setContextLocationViewDescription] = useState('');
     const [lightingSystemDescription, setLightingSystemDescription] = useState('');
@@ -1248,17 +1282,8 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const [sketchupResult, setSketchupResult] = useState<string | null>(null);
     const [sketchupHistory, setSketchupHistory] = useState<{ input: string; output: string }[]>([]);
     const [numberOfImages, setNumberOfImages] = useState(1);
-    const [aiSuggestionCount, setAiSuggestionCount] = useState(0);
     
     const ITEMS_PER_PAGE = 10;
-    const AI_SUGGESTION_COST = 5; // credits per AI suggestion use
-
-    // Compute current pricing for the generate button
-    // Use CREDIT_COSTS as source of truth (1k=10, 2k=20, 4k=40)
-    // DB lookup is unreliable because model keys in DB ('image-generation') don't match getPriceKey format ('pro-1k')
-    const currentPriceKey = useMemo(() => getPriceKey(mode, proResolution), [getPriceKey, mode, proResolution]);
-    const basePrice = CREDIT_COSTS[proResolution] ?? getPrice(currentPriceKey, 'realistic') ?? getPrice(currentPriceKey) ?? 0;
-    const totalPrice = basePrice * (isFreePlan ? 1 : numberOfImages) + aiSuggestionCount * AI_SUGGESTION_COST;
 
     const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE);
     const paginatedHistory = useMemo(() => {
@@ -1303,6 +1328,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
                 if (c.interiorDesignStyle) setInteriorDesignStyle(c.interiorDesignStyle);
                 if (c.mainColorTone) setMainColorTone(c.mainColorTone);
                 if (c.cameraAngleAndComposition) setCameraAngleAndComposition(c.cameraAngleAndComposition);
+                if (c.characterAndMovement) setCharacterAndMovement(c.characterAndMovement);
                 if (c.materialDescription) setMaterialDescription(c.materialDescription);
                 if (c.contextLocationViewDescription) setContextLocationViewDescription(c.contextLocationViewDescription);
                 if (c.lightingSystemDescription) setLightingSystemDescription(c.lightingSystemDescription);
@@ -1332,6 +1358,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const interiorDesignStyles = t('imageGenerationPage.sidebar.interiorDesignStyles') || [];
     const mainColorTones = t('imageGenerationPage.sidebar.mainColorTones') || [];
     const cameraAngleAndCompositionSuggestions = t('imageGenerationPage.sidebar.cameraAngleAndCompositionSuggestions') || [];
+    const characterAndMovementSuggestions = t('imageGenerationPage.sidebar.characterAndMovementSuggestions') || [];
     const renderQualityStyles = t('imageGenerationPage.sidebar.renderQualityStyles') || [];
 
     const templateOptions = useMemo(() => (t('imageGenerationPage.sidebar.templateDescriptionOptions') || []), [t]);
@@ -1446,6 +1473,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
             if (lightingSystemDescription) prompt += `\n\n${lightingSystemDescription}`;
             if (lightToneDescription) prompt += `\n\n${lightToneDescription}`;
             if (timeAndClimateDescription) prompt += `\n\n${timeAndClimateDescription}`;
+            if (characterAndMovement) prompt += `\n\n${t('imageGenerationPage.sidebar.characterAndMovementLabel')}: ${characterAndMovement}`;
             if (cameraAngleAndComposition) prompt += `\n\n${t('imageGenerationPage.prompts.camera_angle_composition_clause', { angle: cameraAngleAndComposition })}`;
             if (renderQualityStyle) prompt += `\n\nRender style: ${renderQualityStyle}.`;
     
@@ -1457,7 +1485,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
         distantContext, season, timeOfDay, weatherCondition, toneAndMood, cameraAngle, t, activeAction, 
         roomType, interiorDesignStyle, mainColorTone, materialDescription, contextLocationViewDescription, 
         lightingSystemDescription, lightToneDescription, timeAndClimateDescription, cameraAngleAndComposition, 
-        renderQualityStyle, outputImageType, outputImageTypes
+        characterAndMovement, renderQualityStyle, outputImageType, outputImageTypes
     ]);
 
     useEffect(() => {
@@ -1479,7 +1507,10 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
     const handleSuggestAnglesList = async (type: 'beautiful' | 'zoom' | 'interior' | 'storyboard') => {
         if (!activeInputFile || isSuggestingAnglesList) return;
 
-        // If Pro, force key check        }
+        // If Pro, force key check
+        if (isPro && !(window as any).aistudio?.hasSelectedApiKey()) {
+            await (window as any).aistudio?.openSelectKey();
+        }
 
         setIsSuggestingAnglesList(true);
         setAngleSuggestionsList(null);
@@ -1490,10 +1521,11 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
                     ? t('imageGenerationPage.actionButtons.suggestZoomAngle')
                     : type === 'interior'
                         ? t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle')
-                        : t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp"
+                        : t('imageGenerationPage.actionButtons.suggestStoryboardAngle')
         );
 
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const inputBase64 = await blobToBase64(activeInputFile);
             
            let prompt = '';
@@ -1613,7 +1645,7 @@ Do NOT add any details that do not exist in the original image.
 Do NOT describe any details that may cause confusion; absolute accuracy with the original image is mandatory.
 Output format: A numbered list from 1 to 25.`;
                 }
-            } else if (type === 'interior') { // 'interior'
+            } else if (type === 'interior') {
                 if (isVietnamese) {
                     prompt = `Phân tích kỹ hình ảnh không gian được tải lên.
 NHIỆM VỤ CỦA BẠN:
@@ -1768,8 +1800,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 }
             }
 
-            const response = await apiClient.generateContent({
-                model: getModelName('text'),
+            const responseStream = await ai.models.generateContentStream({
+                model: getModelName('text'), // Dynamic model
                 contents: {
                     parts: [
                         { inlineData: { data: inputBase64, mimeType: activeInputFile.type } },
@@ -1778,9 +1810,14 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 },
             });
 
-            const fullText = response.text || '';
-            setAngleSuggestionsList(fullText);
-            setAiSuggestionCount(prev => prev + 1); // +5 credit for angle suggestion
+            let fullText = '';
+            for await (const chunk of responseStream) {
+                const chunkText = chunk.text;
+                if (chunkText) {
+                    fullText += chunkText;
+                    setAngleSuggestionsList(fullText);
+                }
+            }
         } catch (e) {
             console.error("Error suggesting angles list:", e);
             setAngleSuggestionsList(t("imageGenerationPage.prompts.suggestAngleError"));
@@ -1790,21 +1827,26 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
     };
 
     const handleAiSuggestEnvironment = async () => {
+        if (!constructionType || !designStyle || !locationContext) {
+            return;
+        }
+
         setIsSuggesting(true);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             const prompt = t('imageGenerationPage.prompts.aiEnvironmentSuggestionPrompt', {
-                constructionType: constructionType || 'công trình kiến trúc',
-                designStyle: designStyle || 'thiết kế hiện đại',
-                locationContext: locationContext || 'khu vực đô thị',
+                constructionType: constructionType,
+                designStyle: designStyle,
+                locationContext: locationContext,
             });
 
             const schema = {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
             };
 
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('text'), // Dynamic model
                 contents: [{ parts: [{ text: prompt }] }],
                 config: {
@@ -1817,7 +1859,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             
             if (Array.isArray(result) && result.length > 0) {
                 setEnvironmentalCharacteristics(result.slice(0, 10));
-                setAiSuggestionCount(prev => prev + 1); // accrue 5-credit cost
             } else {
                 console.warn("AI did not return a valid array of suggestions.");
             }
@@ -1835,17 +1876,18 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
         setIsSuggestingMaterials(true);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const inputBase64 = await blobToBase64(fileToAnalyze);
             
             // Use translation key to ensure the response language matches the app language
             const prompt = t('imageGenerationPage.prompts.aiMaterialSuggestionPrompt');
 
             const schema = {
-                type: 'ARRAY',
-                items: { type: 'STRING' },
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
             };
 
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('text'), // Dynamic model
                 contents: { 
                     parts: [
@@ -1862,8 +1904,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             const result = JSON.parse(response.text);
             
             if (Array.isArray(result) && result.length > 0) {
-                setAppliedMaterials(result);
-                setAiSuggestionCount(prev => prev + 1); // accrue 5-credit cost
+                setAppliedMaterials(result); 
             } else {
                 console.warn("AI did not return a valid array of material suggestions.");
             }
@@ -1927,25 +1968,26 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         setIsAnalyzing(true);
         setAnalysisType('filter');
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const base64Data = await blobToBase64(file);
             const prompt = t('imageGenerationPage.prompts.filterAnalysisPrompt');
             const filterSchema = {
-                type: 'OBJECT',
+                type: Type.OBJECT,
                 properties: {
-                    constructionType: { type: 'STRING' },
-                    designStyle: { type: 'STRING' },
-                    locationContext: { type: 'STRING' },
-                    appliedMaterials: { type: 'ARRAY', items: { type: 'STRING' } },
-                    environmentalCharacteristics: { type: 'ARRAY', items: { type: 'STRING' } },
-                    distantContext: { type: 'STRING' },
-                    season: { type: 'STRING' },
-                    timeOfDay: { type: 'STRING' },
-                    weatherCondition: { type: 'STRING' },
-                    toneAndMood: { type: 'STRING' },
-                    cameraAngle: { type: 'STRING' }
+                    constructionType: { type: Type.STRING },
+                    designStyle: { type: Type.STRING },
+                    locationContext: { type: Type.STRING },
+                    appliedMaterials: { type: Type.ARRAY, items: { type: Type.STRING } },
+                    environmentalCharacteristics: { type: Type.ARRAY, items: { type: Type.STRING } },
+                    distantContext: { type: Type.STRING },
+                    season: { type: Type.STRING },
+                    timeOfDay: { type: Type.STRING },
+                    weatherCondition: { type: Type.STRING },
+                    toneAndMood: { type: Type.STRING },
+                    cameraAngle: { type: Type.STRING }
                 },
             };
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('text'), // Dynamic model
                 contents: { parts: [{ inlineData: { data: base64Data, mimeType: file.type } }, { text: prompt }] },
                 config: { responseMimeType: "application/json", responseSchema: filterSchema }
@@ -1974,23 +2016,24 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         setIsAnalyzing(true);
         setAnalysisType('filter');
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const base64Data = await blobToBase64(file);
             const prompt = t('imageGenerationPage.prompts.interiorFilterAnalysisPrompt');
             const interiorFilterSchema = {
-                type: 'OBJECT',
+                type: Type.OBJECT,
                 properties: {
-                    roomType: { type: 'STRING' },
-                    interiorDesignStyle: { type: 'STRING' },
-                    contextLocationViewDescription: { type: 'STRING' },
-                    mainColorTone: { type: 'STRING' },
-                    materialDescription: { type: 'STRING' },
-                    lightingSystemDescription: { type: 'STRING' },
-                    lightToneDescription: { type: 'STRING' },
-                    timeAndClimateDescription: { type: 'STRING' },
-                    cameraAngleAndComposition: { type: 'STRING' },
+                    roomType: { type: Type.STRING },
+                    interiorDesignStyle: { type: Type.STRING },
+                    contextLocationViewDescription: { type: Type.STRING },
+                    mainColorTone: { type: Type.STRING },
+                    materialDescription: { type: Type.STRING },
+                    lightingSystemDescription: { type: Type.STRING },
+                    lightToneDescription: { type: Type.STRING },
+                    timeAndClimateDescription: { type: Type.STRING },
+                    cameraAngleAndComposition: { type: Type.STRING },
                 },
             };
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('text'), // Dynamic model
                 contents: { parts: [{ inlineData: { data: base64Data, mimeType: file.type } }, { text: prompt }] },
                 config: { responseMimeType: "application/json", responseSchema: interiorFilterSchema }
@@ -2020,21 +2063,22 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         setAnalysisType('style');
         if (activeAction === 'interior') {
             try {
+                const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
                 const base64Data = await blobToBase64(file);
                 const analysisPrompt = t('imageGenerationPage.prompts.styleAnalysisPrompt');
                 
                 const styleSchema = {
-                  type: 'OBJECT',
+                  type: Type.OBJECT,
                   properties: {
-                    visualStyle: { type: 'STRING', description: 'A brief description of the overall visual style (e.g., modern, minimalist, rustic).' },
-                    lighting: { type: 'STRING', description: 'Description of the lighting characteristics (e.g., bright natural light, warm artificial light, dramatic shadows).' },
-                    materials: { type: 'ARRAY', description: 'List of dominant materials observed in the image (e.g., light wood, concrete, brushed metal).', items: { type: 'STRING' } },
-                    colorTone: { type: 'STRING', description: 'The overall color palette and tone of the image (e.g., warm and earthy, cool and monochromatic, vibrant and colorful).' }
+                    visualStyle: { type: Type.STRING, description: 'A brief description of the overall visual style (e.g., modern, minimalist, rustic).' },
+                    lighting: { type: Type.STRING, description: 'Description of the lighting characteristics (e.g., bright natural light, warm artificial light, dramatic shadows).' },
+                    materials: { type: Type.ARRAY, description: 'List of dominant materials observed in the image (e.g., light wood, concrete, brushed metal).', items: { type: Type.STRING } },
+                    colorTone: { type: Type.STRING, description: 'The overall color palette and tone of the image (e.g., warm and earthy, cool and monochromatic, vibrant and colorful).' }
                   },
                   required: ['visualStyle', 'lighting', 'materials', 'colorTone']
                 };
 
-                const response = await apiClient.generateContent({
+                const response = await ai.models.generateContent({
                     model: getModelName('text'), // Dynamic model
                     contents: { parts: [{ inlineData: { data: base64Data, mimeType: file.type } }, { text: analysisPrompt }] },
                     config: { responseMimeType: "application/json", responseSchema: styleSchema }
@@ -2051,9 +2095,10 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             }
         } else {
             try {
+                const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
                 const base64Data = await blobToBase64(file);
                 const analysisPrompt = t('imageGenerationPage.prompts.analysisPrompt');
-                const response = await apiClient.generateContent({
+                const response = await ai.models.generateContent({
                     model: getModelName('text'), // Dynamic model
                     contents: { parts: [{ inlineData: { data: base64Data, mimeType: file.type } }, { text: analysisPrompt }] }
                 });
@@ -2077,7 +2122,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             handleClearFilterReferenceImage();
             resetCreativeFilters();
             analyzeReferenceImage(file);
-            setAiSuggestionCount(prev => prev + 1); // +5 credit for reference image
         }
     };
 
@@ -2101,7 +2145,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             } else {
                 analyzeImageForExteriorFilters(file);
             }
-            setAiSuggestionCount(prev => prev + 1); // +5 credit for filter reference image
         }
     };
 
@@ -2115,6 +2158,17 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         if (!activeInputFile) return;
 
         if (isPro) {
+            if ((window as any).aistudio) {
+                try {
+                    const hasKey = await (window as any).aistudio.hasSelectedApiKey();
+                    if (!hasKey) {
+                        const success = await (window as any).aistudio.openSelectKey();
+                        if (!success) return; 
+                    }
+                } catch(e) {
+                    console.error("Failed to check/select API Key", e);
+                }
+            }
         }
 
         if (activeAction === 'newAngle') {
@@ -2122,14 +2176,15 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             setGeneratedImages([]);
             setActiveTab('results');
             try {
+                const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
                 const inputBase64 = await blobToBase64(activeInputFile);
                 let prompt = newAngleDescription.trim() || "Generate a new, different camera angle of the building in this image. Maintain the same architectural style and environment. The result should be a photorealistic image.";
                 
                 if (isPro) {
-                    prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : proResolution === '1k' ? " Output resolution 1K." : " Output resolution 2K, high quality.";
+                    prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : " Output resolution 2K, high quality.";
                 }
 
-                const response = await apiClient.generateContent({
+                const response = await ai.models.generateContent({
                     model: getModelName('image'), // Dynamic model
                     contents: {
                         parts: [
@@ -2138,17 +2193,17 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                         ]
                     },
                     config: { 
-                        responseModalities: ['IMAGE'],
+                        responseModalities: [Modality.IMAGE],
                         imageConfig: {
                               ...(selectedAspectRatio !== "auto"
         ? { aspectRatio: selectedAspectRatio }
         : {}),
-                            ...getImageSize(isPro, proResolution)
+                            ...(isPro ? { imageSize: proResolution === '4k' ? '4K' : '2K' } : {})
                         }
                     },
                 });
 
-                const imageParts = response.candidates?.[0]?.content?.parts?.filter(part => part.inlineData);
+                const imageParts = response.candidates?.[0]?.content?.parts.filter(part => part.inlineData);
                 if (imageParts && imageParts.length > 0) {
                     const resultImages = imageParts.map(part => `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
                     const finalImages = [resultImages[0]];
@@ -2174,6 +2229,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         setActiveTab('results');
     
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const inputBase64 = await blobToBase64(activeInputFile);
             
             let prompt = '';
@@ -2194,28 +2250,28 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             }
 
             if (isPro) {
-                prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : proResolution === '1k' ? " Output resolution 1K." : " Output resolution 2K, high quality.";
+                prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : " Output resolution 2K, high quality.";
             }
 
             commonParts.push({ inlineData: { data: inputBase64, mimeType: activeInputFile.type } });
             commonParts.push({ text: prompt });
             
             const generateOneImage = async (): Promise<string | null> => {
-                const response = await apiClient.generateContent({
+                const response = await ai.models.generateContent({
                     model: getModelName('image'), // Dynamic model
                     contents: { parts: commonParts },
                     config: { 
-                        responseModalities: ['IMAGE'],
+                        responseModalities: [Modality.IMAGE],
                         imageConfig: {
                                ...(selectedAspectRatio !== "auto"
         ? { aspectRatio: selectedAspectRatio }
         : {}),
-                            ...getImageSize(isPro, proResolution)
+                            ...(isPro ? { imageSize: proResolution === '4k' ? '4K' : '2K' } : {})
                         }
                     },
                 });
         
-                const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
+                const imagePart = response.candidates?.[0]?.content?.parts.find(part => part.inlineData);
                 if (imagePart && imagePart.inlineData) {
                     return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
                 }
@@ -2270,7 +2326,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     }
                 });
                 setCurrentPage(1);
-                setAiSuggestionCount(0); // reset after successful generation
             } else {
                  console.error("Rendering failed: No image generated.");
             }
@@ -2286,6 +2341,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
         setIsOptimizing(true);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             
             let response;
             const targetLanguage = locale === 'vi' ? 'tiếng Việt' : 'tiếng Anh';
@@ -2299,7 +2355,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     promptText += `\n\nNgười dùng cũng có yêu cầu thêm: "${description}". Hãy kết hợp yêu cầu này vào prompt.`;
                 }
                 
-                response = await apiClient.generateContent({
+                response = await ai.models.generateContent({
                     model: getModelName('text'), // Dynamic model
                     contents: {
                         parts: [
@@ -2310,7 +2366,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 });
             } else {
                 const optimizationRequest = `Vui lòng tối ưu hóa prompt render kiến trúc sau đây cho một mô hình tạo ảnh thực tế. Giữ nguyên ý định ban đầu. Chỉ trả về prompt đã được tối ưu hóa bằng ${targetLanguage} (dưới 150 từ), không có bất kỳ văn bản giới thiệu nào.\n\nBẮT BUỘC: Đoạn prompt trả về PHẢI bắt đầu bằng cụm từ chính xác là "${prefix}, ".\n\nPrompt cần tối ưu: "${description}"`;
-                response = await apiClient.generateContent({
+                response = await ai.models.generateContent({
                     model: getModelName('text'), // Dynamic model
                     contents: optimizationRequest,
                 });
@@ -2328,15 +2384,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         }
     };
 
-    // FREE plan: only allow exterior + interior tabs
-    const FREE_ALLOWED_TABS = ['exterior', 'interior'];
-
     const handleActionChange = (action: string) => {
-        if (isFreePlan && !FREE_ALLOWED_TABS.includes(action)) {
-            setUpgradeMessage('Tính năng này chỉ dành cho tài khoản PRO. Nâng cấp để sử dụng toàn bộ công cụ!');
-            setShowUpgradeModal(true);
-            return;
-        }
         setActiveAction(action);
         if (referenceImage) {
             setStyleAnalysis(null);
@@ -2350,6 +2398,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
         setIsAnalyzingSketchup(true);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const analysisPrompt = `Bạn là một trợ lý kiến trúc AI chuyên nghiệp. Nhiệm vụ của bạn là phân tích hình ảnh 3D được cung cấp và tạo ra một prompt văn bản chi tiết để tạo một bản vẽ kỹ thuật 2D.
 
             Người dùng đã chỉ định các yêu cầu sau cho bản vẽ:
@@ -2367,7 +2416,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
     
             const inputBase64 = await blobToBase64(sketchupImage.file);
     
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('text'), // Dynamic model
                 contents: {
                     parts: [
@@ -2390,20 +2439,25 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
     const handleGenerateSketchupDrawing = async () => {
         if (!sketchupImage) return;
+        
+        if (isPro && !(window as any).aistudio?.hasSelectedApiKey()) {
+            await (window as any).aistudio?.openSelectKey();
+        }
     
         setSketchupIsLoading(true);
         setSketchupResult(null);
         setSketchupActiveTab('results');
     
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
             let prompt = `Từ hình ảnh 3D này, hãy tạo một bản vẽ kỹ thuật 2D chuyên nghiệp. Loại bản vẽ là: ${drawingType}. Phong cách nét vẽ là: ${lineStyle}. Mức độ chi tiết là: ${detailLevel}. Yêu cầu bổ sung: ${additionalRequest || 'không có'}. Kết quả phải là một bản vẽ sạch sẽ, rõ ràng, tuân thủ nghiêm ngặt các yêu cầu trên.`;
             
-            if (isPro) prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : proResolution === '1k' ? " Output resolution 1K." : " Output resolution 2K, high quality.";
+            if (isPro) prompt += proResolution === '4k' ? " Output resolution 4K, highly detailed." : " Output resolution 2K, high quality.";
 
             const inputBase64 = await blobToBase64(sketchupImage.file);
     
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: getModelName('image'), // Dynamic model
                 contents: {
                     parts: [
@@ -2412,15 +2466,15 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     ]
                 },
                 config: { 
-                    responseModalities: ['IMAGE'],
+                    responseModalities: [Modality.IMAGE],
                     imageConfig: {
                         aspectRatio: '1:1', // Technical drawings usually 1:1 or 4:3
-                        ...getImageSize(isPro, proResolution)
+                        ...(isPro ? { imageSize: proResolution === '4k' ? '4K' : '2K' } : {})
                     }
                 },
             });
     
-            const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
+            const imagePart = response.candidates?.[0]?.content?.parts.find(part => part.inlineData);
     
             if (imagePart && imagePart.inlineData) {
                 const resultImage = `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
@@ -2441,8 +2495,9 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         setIsTransforming(true);
         setTransformError(null);
         try {
+            const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
             const inputBase64 = await blobToBase64(file);
-            const response = await apiClient.generateContent({
+            const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash-image',
                 contents: {
                     parts: [
@@ -2450,10 +2505,10 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                         { text: prompt }
                     ]
                 },
-                config: { responseModalities: ['IMAGE'] }
+                config: { responseModalities: [Modality.IMAGE] }
             });
 
-            const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
+            const imagePart = response.candidates?.[0]?.content?.parts.find(part => part.inlineData);
             if (imagePart && imagePart.inlineData) {
                 const resultBase64 = imagePart.inlineData.data;
                 const mimeType = imagePart.inlineData.mimeType;
@@ -2557,7 +2612,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                          >
                             {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestBeautifulAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
                             {t('imageGenerationPage.actionButtons.suggestBeautifulAngle')}
-                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
                          </button>
                          <button 
                              onClick={() => handleSuggestAnglesList('zoom')}
@@ -2566,28 +2620,25 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                          >
                             {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestZoomAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <MagnifyingGlassPlusIcon className="w-3 h-3"/>}
                             {t('imageGenerationPage.actionButtons.suggestZoomAngle')}
-                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
                          </button>
                      </div>
                      {/* Additional button row */}
-                     <div className="grid grid-cols-2 gap-2 mt-2">
+                     <div className="flex flex-col gap-2 mt-2">
                          <button 
                              onClick={() => handleSuggestAnglesList('interior')}
                              disabled={!activeInputFile || isSuggestingAnglesList}
-                             className="bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-xs py-2 px-3 rounded border border-cyan-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-center leading-tight"
+                             className="w-full bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 text-xs py-2 px-3 rounded border border-cyan-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                          >
                             {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <MagnifyingGlassPlusIcon className="w-3 h-3"/>}
-                            {t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle') || "Gợi ý góc chụp nội thất đẹp"}
-                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
+                            {t('imageGenerationPage.actionButtons.suggestBeautifulInteriorAngle')}
                          </button>
                          <button 
                              onClick={() => handleSuggestAnglesList('storyboard')}
                              disabled={!activeInputFile || isSuggestingAnglesList}
-                             className="bg-fuchsia-600/20 hover:bg-fuchsia-600/40 text-fuchsia-300 text-xs py-2 px-3 rounded border border-fuchsia-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50 text-center leading-tight"
+                             className="w-full bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 text-xs py-2 px-3 rounded border border-emerald-500/30 flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
                          >
-                            {isSuggestingAnglesList && suggestionListTitle === (t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp") ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
-                            {t('imageGenerationPage.actionButtons.suggestStoryboardAngle') || "Gợi ý góc chụp storyboard đẹp"}
-                            <span className="text-[9px] bg-orange-500/80 px-1 py-0.5 rounded-full font-bold text-white">+5 cr</span>
+                            {isSuggestingAnglesList && suggestionListTitle === t('imageGenerationPage.actionButtons.suggestStoryboardAngle') ? <div className="animate-spin w-3 h-3 border-2 border-current rounded-full border-t-transparent"></div> : <SparklesIcon className="w-3 h-3"/>}
+                            {t('imageGenerationPage.actionButtons.suggestStoryboardAngle')}
                          </button>
                      </div>
                 </div>
@@ -2648,35 +2699,12 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     )}
                 </div>
 
-                {/* Credit cost breakdown */}
-                {totalPrice > 0 && !isLoading && (
-                    <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
-                        <div className="flex justify-between">
-                            <span>Model: {UI_MODE_LABELS[mode]}</span>
-                            <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span>Tạo ảnh (1 x {basePrice} credits)</span>
-                            <span className="text-orange-300 font-semibold">{basePrice} cr</span>
-                        </div>
-                        {aiSuggestionCount > 0 && (
-                            <div className="flex justify-between">
-                                <span>AI Gợi ý ({aiSuggestionCount} x {AI_SUGGESTION_COST} credits)</span>
-                                <span className="text-yellow-300 font-semibold">{aiSuggestionCount * AI_SUGGESTION_COST} cr</span>
-                            </div>
-                        )}
-                        <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
-                            <span className="font-semibold text-white">Tổng cộng</span>
-                            <span className="font-bold text-orange-400">{totalPrice} credits</span>
-                        </div>
-                    </div>
-                )}
                 <button 
                     onClick={handleGenerate}
                     disabled={!activeInputFile || isLoading}
                     className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3.5 rounded-lg text-lg transition-colors shadow-lg disabled:bg-gray-600 disabled:cursor-not-allowed"
                 >
-                    {isLoading ? 'Đang tạo góc mới...' : totalPrice > 0 ? `Tạo góc mới — ${totalPrice} credits` : 'Tạo góc mới'}
+                    {isLoading ? 'Đang tạo góc mới...' : 'Tạo góc mới'}
                 </button>
             </aside>
 
@@ -2707,7 +2735,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                 </div>
                             ) : generatedImages.length > 0 ? (
                                 <div className="relative group w-full h-full flex items-center justify-center">
-                                    <ImageWithDimensions src={generatedImages[0]} alt="Result" className="max-w-full max-h-full object-contain" />
+                                    <img src={generatedImages[0]} alt="Result" className="max-w-full max-h-full object-contain" />
                                     <div className="absolute bottom-4 left-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button onClick={() => setZoomedImage(generatedImages[0])} className="bg-gray-700 p-2 rounded-full text-white hover:bg-gray-600"><MagnifyingGlassPlusIcon className="w-5 h-5"/></button>
                                         <a href={generatedImages[0]} download="new-angle.png" className="bg-blue-600 p-2 rounded-full text-white hover:bg-blue-500"><ArrowDownTrayIcon className="w-5 h-5"/></a>
@@ -2822,25 +2850,12 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                     </div>
                 </div>
 
-                {/* Credit cost breakdown */}
-                {basePrice > 0 && !sketchupIsLoading && (
-                    <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
-                        <div className="flex justify-between">
-                            <span>Model: {UI_MODE_LABELS[mode]}</span>
-                            <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
-                        </div>
-                        <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
-                            <span className="font-semibold text-white">Chi phí</span>
-                            <span className="font-bold text-orange-400">{basePrice} credits</span>
-                        </div>
-                    </div>
-                )}
                 <button 
                     onClick={handleGenerateSketchupDrawing}
                     disabled={!sketchupImage || sketchupIsLoading}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-lg text-lg transition-colors shadow-lg mt-auto disabled:bg-gray-600"
                 >
-                    {sketchupIsLoading ? 'Đang tạo bản vẽ...' : basePrice > 0 ? `Tạo bản vẽ 2D — ${basePrice} credits` : 'Tạo bản vẽ 2D'}
+                    {sketchupIsLoading ? 'Đang tạo bản vẽ...' : 'Tạo bản vẽ 2D'}
                 </button>
              </aside>
 
@@ -3286,15 +3301,11 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                 ))}
                             </div>
                             <div className="grid grid-cols-3 lg:grid-cols-6 gap-2">
-                                {subActionButtons.map(btn => {
-                                    const isLocked = isFreePlan && !FREE_ALLOWED_TABS.includes(btn.id);
-                                    return (
-                                        <button key={btn.id} onClick={() => handleActionChange(btn.id)} className={`relative px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeAction === btn.id ? 'bg-orange-500 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'} ${isLocked ? 'opacity-60' : ''}`}>
-                                            {t(btn.key)}
-                                            {isLocked && <span className="absolute -top-1 -right-1 text-[8px] bg-amber-500 text-white px-1 rounded-full font-bold">PRO</span>}
-                                        </button>
-                                    );
-                                })}
+                                {subActionButtons.map(btn => (
+                                     <button key={btn.id} onClick={() => handleActionChange(btn.id)} className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${activeAction === btn.id ? 'bg-orange-500 text-white' : 'bg-gray-700 hover:bg-gray-600 text-gray-300'}`}>
+                                        {t(btn.key)}
+                                    </button>
+                                ))}
                             </div>
                         </div>
 
@@ -3435,9 +3446,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                                     )}
                                                 </div>
                                                 <input type="file" ref={referenceFileInputRef} onChange={handleReferenceImageUpload} className="hidden" accept="image/*" />
-                                                <button onClick={() => referenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                                <button onClick={() => referenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors">
                                                     {t('imageGenerationPage.sidebar.referenceUploadBtn')}
-                                                    <span className="text-[10px] bg-orange-500/80 px-1.5 py-0.5 rounded-full font-bold">+5 cr</span>
                                                 </button>
                                             </div>
 
@@ -3465,9 +3475,8 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                                     )}
                                                 </div>
                                                 <input type="file" ref={filterReferenceFileInputRef} onChange={handleFilterReferenceImageUpload} className="hidden" accept="image/*" />
-                                                <button onClick={() => filterReferenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                                <button onClick={() => filterReferenceFileInputRef.current?.click()} className="w-full bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 rounded-lg transition-colors">
                                                     {t('imageGenerationPage.sidebar.referenceFilterBtn')}
-                                                    <span className="text-[10px] bg-orange-500/80 px-1.5 py-0.5 rounded-full font-bold">+5 cr</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -3521,7 +3530,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                                         value={locationContext} 
                                                         onChange={setLocationContext} 
                                                         placeholder={t('imageGenerationPage.sidebar.locationContextPlaceholder')} 
-                                                        suggestions={isFreePlan ? [] : (Array.isArray(locationContexts) ? locationContexts : [])} 
+                                                        suggestions={Array.isArray(locationContexts) ? locationContexts : []} 
                                                     />
                                                 </div>
                                                 <div className="space-y-2">
@@ -3542,18 +3551,17 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                                                 value={appliedMaterials}
                                                                 onChange={setAppliedMaterials}
                                                                 placeholder={t('imageGenerationPage.sidebar.appliedMaterialsPlaceholder')}
-                                                                suggestions={isFreePlan ? [] : (Array.isArray(appliedMaterialsList) ? appliedMaterialsList : [])}
+                                                                suggestions={Array.isArray(appliedMaterialsList) ? appliedMaterialsList : []}
                                                             />
                                                         </div>
                                                         <button
                                                             type="button"
                                                             onClick={handleAiSuggestMaterials}
-                                                            disabled={isFreePlan || isSuggestingMaterials || !originalInputImage}
+                                                            disabled={isSuggestingMaterials || !originalInputImage}
                                                             className="flex-shrink-0 bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold px-3 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed min-h-[44px]"
                                                         >
                                                             <SparklesIcon className="w-4 h-4" />
                                                             <span>{isSuggestingMaterials ? t('imageGenerationPage.sidebar.aiSuggesting') : t('imageGenerationPage.sidebar.aiSuggestionBtn')}</span>
-                                                            {!isSuggestingMaterials && <span className="text-yellow-400 text-xs font-bold">+5 cr</span>}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -3572,25 +3580,23 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                                                 value={environmentalCharacteristics}
                                                                 onChange={setEnvironmentalCharacteristics}
                                                                 placeholder={t('imageGenerationPage.sidebar.environmentalCharacteristicsPlaceholder')}
-                                                                suggestions={isFreePlan ? [] : (Array.isArray(environmentalCharacteristicsList) ? environmentalCharacteristicsList : [])}
+                                                                suggestions={Array.isArray(environmentalCharacteristicsList) ? environmentalCharacteristicsList : []}
                                                             />
                                                         </div>
                                                          <button
                                                             type="button"
                                                             onClick={handleAiSuggestEnvironment}
-                                                            disabled={isFreePlan || isSuggesting}
-                                                            title={!constructionType || !designStyle || !locationContext ? 'Cần chọn Loại công trình, Phong cách & Vị trí trước' : 'AI gợi ý đặc điểm môi trường'}
+                                                            disabled={isSuggesting || !constructionType || !designStyle || !locationContext}
                                                             className="flex-shrink-0 bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold px-3 rounded-lg text-sm flex items-center gap-2 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed min-h-[44px]"
                                                         >
                                                             <SparklesIcon className="w-4 h-4" />
                                                             <span>{isSuggesting ? t('imageGenerationPage.sidebar.aiSuggesting') : t('imageGenerationPage.sidebar.aiSuggestionBtn')}</span>
-                                                            {!isSuggesting && <span className="text-yellow-400 text-xs font-bold">+5 cr</span>}
                                                         </button>
                                                     </div>
                                                 </div>
                                                  <div className="space-y-2">
                                                     <label htmlFor="distant-context" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.distantContextLabel')}</label>
-                                                    <SmartFilterInput id="distant-context" value={distantContext} onChange={setDistantContext} placeholder={t('imageGenerationPage.sidebar.distantContextPlaceholder')} suggestions={isFreePlan ? [] : (Array.isArray(distantContexts) ? distantContexts : [])} />
+                                                    <SmartFilterInput id="distant-context" value={distantContext} onChange={setDistantContext} placeholder={t('imageGenerationPage.sidebar.distantContextPlaceholder')} suggestions={Array.isArray(distantContexts) ? distantContexts : []} />
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label htmlFor="season" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.seasonLabel')}</label>
@@ -3695,9 +3701,19 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                                 </div>
                                                 <MaterialFilter onDescriptionChange={setMaterialDescription} activeInputFile={activeInputFile} />
                                                 <ContextLocationViewFilter onDescriptionChange={setContextLocationViewDescription} />
-                                                <LightingFilter onDescriptionChange={setLightingSystemDescription} activeInputFile={activeInputFile} isFreePlan={isFreePlan} />
+                                                <LightingFilter onDescriptionChange={setLightingSystemDescription} activeInputFile={activeInputFile} />
                                                 <LightToneFilter onDescriptionChange={setLightToneDescription} />
                                                 <TimeAndClimateFilter onDescriptionChange={setTimeAndClimateDescription} />
+                                                <div className="space-y-2">
+                                                    <label htmlFor="character-and-movement" className="text-sm font-semibold text-white">{t('imageGenerationPage.sidebar.characterAndMovementLabel')}</label>
+                                                    <SmartFilterInput
+                                                        id="character-and-movement"
+                                                        value={characterAndMovement}
+                                                        onChange={setCharacterAndMovement}
+                                                        placeholder={t('imageGenerationPage.sidebar.characterAndMovementPlaceholder')}
+                                                        suggestions={Array.isArray(characterAndMovementSuggestions) ? characterAndMovementSuggestions : []}
+                                                    />
+                                                </div>
                                                 <CustomSelect label={t('imageGenerationPage.sidebar.renderQualityStyleLabel')} options={Array.isArray(renderQualityStyles) ? renderQualityStyles : []} value={renderQualityStyle} onChange={setRenderQualityStyle} placeholder={t('imageGenerationPage.sidebar.renderQualityStylePlaceholder')} />
                                             </div>
                                         )}
@@ -3709,39 +3725,24 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                             <label htmlFor="description" className="font-bold text-white">4. {t('imageGenerationPage.sidebar.descriptionLabel')}</label>
                                             <span className="text-red-500 text-xs font-semibold">{t('imageGenerationPage.sidebar.readCarefullyLabel')}</span>
                                         </div>
-                                        {isFreePlan ? (
-                                            <div className="w-full bg-slate-800 border border-slate-700 rounded-lg p-4 flex flex-col items-center justify-center gap-3 min-h-[100px]">
-                                                <SparklesIcon className="w-6 h-6 text-orange-400" />
-                                                <p className="text-sm text-gray-300 text-center font-medium">Hãy Nâng cấp PRO để sử dụng đầy đủ tính năng</p>
-                                                <button
-                                                    onClick={() => { setUpgradeMessage('Nâng cấp PRO để sử dụng tính năng Mô tả Prompt và Tạo Prompt từ Ảnh!'); setShowUpgradeModal(true); }}
-                                                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-1.5 px-4 rounded-lg text-sm transition-colors"
-                                                >
-                                                    Nâng cấp PRO
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <textarea
-                                                    id="description"
-                                                    value={description}
-                                                    onChange={(e) => {
-                                                        setDescription(e.target.value);
-                                                        setSelectedTemplate('');
-                                                    }}
-                                                    rows={8}
-                                                    className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
-                                                    placeholder={t('imageGenerationPage.sidebar.descriptionPlaceholder')}
-                                                ></textarea>
-                                                <button
-                                                    onClick={handleOptimizePrompt}
-                                                    disabled={isOptimizing || (!description && !originalInputImage)}
-                                                    className="w-full bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:bg-gray-700 disabled:cursor-not-allowed"
-                                                >
-                                                    {isOptimizing ? t('imageGenerationPage.sidebar.optimizingPrompt') : t('imageGenerationPage.sidebar.optimizePromptBtn')}
-                                                </button>
-                                            </>
-                                        )}
+                                        <textarea
+                                            id="description"
+                                            value={description}
+                                            onChange={(e) => {
+                                                setDescription(e.target.value);
+                                                setSelectedTemplate('');
+                                            }}
+                                            rows={8}
+                                            className="w-full bg-slate-800 border border-slate-700 text-white rounded-lg p-2.5 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+                                            placeholder={t('imageGenerationPage.sidebar.descriptionPlaceholder')}
+                                        ></textarea>
+                                         <button
+                                            onClick={handleOptimizePrompt}
+                                            disabled={isOptimizing || (!description && !originalInputImage)}
+                                            className="w-full bg-[#3b312a] hover:bg-[#4c3f36] text-[#e0c59a] font-bold py-2 rounded-lg text-sm flex items-center justify-center gap-2 transition-colors disabled:bg-gray-700 disabled:cursor-not-allowed"
+                                        >
+                                            {isOptimizing ? t('imageGenerationPage.sidebar.optimizingPrompt') : t('imageGenerationPage.sidebar.optimizePromptBtn')}
+                                        </button>
                                     </div>
 
                                     {activeAction === 'exterior' && (
@@ -3770,65 +3771,33 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                     </div>
 
                                     <div className="space-y-2">
-                                        <div className="flex items-center gap-2">
-                                            <label className="font-bold text-white">{t('imageGenerationPage.sidebar.numberOfResultsLabel')}</label>
-                                            {isFreePlan && <span className="text-xs bg-orange-500 text-white font-bold px-2 py-0.5 rounded-full">PRO</span>}
-                                        </div>
+                                        <label className="font-bold text-white">{t('imageGenerationPage.sidebar.numberOfResultsLabel')}</label>
                                         <div className="flex items-center justify-between bg-slate-800 rounded-lg">
                                             <button 
                                                 onClick={() => setNumberOfImages(n => Math.max(1, n - 1))}
-                                                disabled={isFreePlan || numberOfImages <= 1}
+                                                disabled={numberOfImages <= 1}
                                                 className="px-5 py-2 text-2xl font-bold text-white rounded-md hover:bg-slate-700 disabled:opacity-50"
                                                 aria-label="Decrease image count"
                                             >
                                                 -
                                             </button>
-                                            <span className="text-xl font-bold text-white" aria-live="polite">{isFreePlan ? 1 : numberOfImages}</span>
+                                            <span className="text-xl font-bold text-white" aria-live="polite">{numberOfImages}</span>
                                             <button 
                                                 onClick={() => setNumberOfImages(n => Math.min(4, n + 1))}
-                                                disabled={isFreePlan || numberOfImages >= 4}
+                                                disabled={numberOfImages >= 4}
                                                 className="px-5 py-2 text-2xl font-bold text-white rounded-md hover:bg-slate-700 disabled:opacity-50"
                                                 aria-label="Increase image count"
                                             >
                                                 +
                                             </button>
                                         </div>
-                                        {isFreePlan && <p className="text-xs text-gray-500 text-center">Nâng cấp PRO để tạo tối đa 4 ảnh/lần</p>}
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex-shrink-0 p-4 bg-[#202633] border-t border-gray-700 z-10">
-                                {/* Credit cost breakdown */}
-                                {totalPrice > 0 && !isLoading && (
-                                    <div className="mb-2 text-xs text-gray-400 text-center space-y-0.5">
-                                        <div className="flex justify-between">
-                                            <span>Model: {UI_MODE_LABELS[mode]}</span>
-                                            <span className="text-cyan-300 font-semibold">{proResolution.toUpperCase()}</span>
-                                        </div>
-                                        <div className="flex justify-between">
-                                            <span>Tạo ảnh ({numberOfImages} x {basePrice} credits)</span>
-                                            <span className="text-orange-300 font-semibold">{basePrice * numberOfImages} cr</span>
-                                        </div>
-                                        {aiSuggestionCount > 0 && (
-                                            <div className="flex justify-between">
-                                                <span>AI Gợi ý ({aiSuggestionCount} x {AI_SUGGESTION_COST} credits)</span>
-                                                <span className="text-yellow-300 font-semibold">{aiSuggestionCount * AI_SUGGESTION_COST} cr</span>
-                                            </div>
-                                        )}
-                                        <div className="flex justify-between border-t border-gray-600 pt-1 mt-1">
-                                            <span className="font-semibold text-white">Tổng cộng</span>
-                                            <span className="font-bold text-orange-400">{totalPrice} credits</span>
-                                        </div>
-                                    </div>
-                                )}
                                 <button onClick={handleGenerate} disabled={!activeInputFile || isLoading} className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg text-lg transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">
-                                    {isLoading
-                                        ? t('imageGenerationPage.sidebar.generating')
-                                        : totalPrice > 0
-                                            ? `${t('imageGenerationPage.sidebar.generateBtn')} — ${totalPrice} credits`
-                                            : t('imageGenerationPage.sidebar.generateBtn')
-                                    }
+                                    {isLoading ? t('imageGenerationPage.sidebar.generating') : t('imageGenerationPage.sidebar.generateBtn')}
                                 </button>
                             </div>
                         </aside>
@@ -3853,7 +3822,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                                             <div className={`h-full grid ${generatedImages.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-4 overflow-y-auto custom-scrollbar p-2`}>
                                                 {generatedImages.map((img, idx) => (
                                                     <div key={idx} className="relative group bg-black/20 rounded-lg overflow-hidden flex items-center justify-center border border-gray-700">
-                                                        <ImageWithDimensions src={img} alt={`Result ${idx}`} className="max-w-full max-h-full object-contain" />
+                                                        <img src={img} alt={`Result ${idx}`} className="max-w-full max-h-full object-contain" />
                                                         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 backdrop-blur-md p-2 rounded-full">
                                                             <button onClick={() => setZoomedImage(img)} className="p-2 hover:bg-white/20 rounded-full text-white transition-colors" title={t('imageGenerationPage.actionButtons.zoom')}>
                                                                 <MagnifyingGlassPlusIcon className="w-5 h-5" />
@@ -3917,11 +3886,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             </div>
             <Footer />
         </div>
-        <UpgradeModal 
-            isOpen={showUpgradeModal} 
-            onClose={() => setShowUpgradeModal(false)}
-            message={upgradeMessage}
-        />
         </>
     );
 };
