@@ -1,3 +1,4 @@
+import { useMode, CREDIT_COSTS } from '../contexts/ModeContext';
 import React, { useState, useRef } from 'react';
 import { ChevronLeftIcon } from './icons/ChevronLeftIcon';
 import { PhotoIcon } from './icons/PhotoIcon';
@@ -114,9 +115,7 @@ const CreateAnnotations: React.FC<CreateAnnotationsProps> = ({ onBack }) => {
         <div className="mt-auto pt-4">
           <button 
             className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-4 rounded-lg transition-all shadow-lg uppercase tracking-widest text-sm flex items-center justify-center gap-2"
-          >
-            TẠO ẢNH NGAY
-          </button>
+          ><>TẠO ẢNH NGAY <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></></button>
         </div>
       </aside>
 

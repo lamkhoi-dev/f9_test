@@ -6,7 +6,7 @@ import { RectangleGroupIcon } from './icons/RectangleGroupIcon';
 import { TrashIcon } from './icons/TrashIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { apiClient, getImageSizeConfig } from '../lib/api';
-import { useMode } from '../contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from '../contexts/ModeContext';
 import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 
@@ -335,7 +335,7 @@ const MergeBuilding: React.FC<MergeBuildingProps> = ({ onBack }) => {
 
               <div className="mt-auto pt-4">
                 <button onClick={handleGenerate} disabled={isLoading || !inputImage || isCleaning} className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 rounded-lg transition-all shadow-lg uppercase tracking-wider text-sm disabled:bg-gray-700 flex items-center justify-center gap-2">
-                  {isLoading ? "ĐANG XỬ LÝ..." : "TẠO ẢNH NGAY"}
+                  {isLoading ? "ĐANG XỬ LÝ..." : (<>TẠO ẢNH NGAY <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></>)}
                 </button>
               </div>
             </>
@@ -401,7 +401,7 @@ const MergeBuilding: React.FC<MergeBuildingProps> = ({ onBack }) => {
                     disabled={isLoading || !inputImage || !userConstructionImage}
                     className="w-full bg-[#3b4455] hover:bg-orange-500 text-white font-bold py-4 rounded-lg transition-all shadow-lg uppercase tracking-widest text-xs disabled:opacity-50"
                 >
-                    {isLoading ? "ĐANG XỬ LÝ..." : "TẠO ẢNH NGAY"}
+                    {isLoading ? "ĐANG XỬ LÝ..." : (<>TẠO ẢNH NGAY <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></>)}
                 </button>
               </div>
             </>

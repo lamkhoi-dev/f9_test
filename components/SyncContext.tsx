@@ -8,7 +8,7 @@ import { SparklesIcon } from './icons/SparklesIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { useLanguage } from '../hooks/useLanguage';
-import { useMode } from '../contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig, getImageSize } from '../lib/api';
 import ImageEditor from './ImageEditor';
 import { XMarkIcon } from './icons/XMarkIcon';
@@ -514,7 +514,7 @@ Yêu cầu kỹ thuật quan trọng nhất:
                   {isSyncing ? (
                       <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div><span>ĐANG XỬ LÝ...</span></>
                   ) : (
-                      <><SparklesIcon className="w-4 h-4" /><span className="uppercase tracking-widest text-xs">Bắt đầu đồng bộ</span></>
+                      <><SparklesIcon className="w-4 h-4" /><span className="uppercase tracking-widest text-xs">Bắt đầu đồng bộ <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></span></>
                   )}
                 </button>
               </div>
@@ -648,7 +648,7 @@ Yêu cầu kỹ thuật quan trọng nhất:
                     {isSyncing ? (
                         <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div><span>ĐANG XỬ LÝ...</span></>
                     ) : (
-                        <><SparklesIcon className="w-4 h-4" /><span className="uppercase tracking-widest text-xs">Bắt đầu đồng bộ</span></>
+                        <><SparklesIcon className="w-4 h-4" /><span className="uppercase tracking-widest text-xs">Bắt đầu đồng bộ <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></span></>
                     )}
                   </button>
                 </div>

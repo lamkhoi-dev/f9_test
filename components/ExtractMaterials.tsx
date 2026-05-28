@@ -4,7 +4,7 @@ import { PhotoIcon } from './icons/PhotoIcon';
 import { TrashIcon } from './icons/TrashIcon';
 import { useLanguage } from '../hooks/useLanguage';
 import { SparklesIcon } from './icons/SparklesIcon';
-import { useMode } from '../contexts/ModeContext';
+import { useMode , CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig } from '../lib/api';
 import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
@@ -453,7 +453,7 @@ Loại Map cần tạo: ${mapDetailPrompt}`;
               onClick={handleGenerateMaps} disabled={isGenerating || !inputImage}
               className="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold py-3.5 rounded flex items-center justify-center gap-2 transition-all shadow-xl uppercase tracking-widest text-[11px] disabled:bg-gray-600"
             >
-              {isGenerating ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div><span>ĐANG TRÍCH XUẤT...</span></> : <><SparklesIcon className="w-4 h-4" /><span>BẮT ĐẦU LÀM TEXTURES</span></>}
+              {isGenerating ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div><span>ĐANG TRÍCH XUẤT...</span></> : <><SparklesIcon className="w-4 h-4" /><span>BẮT ĐẦU LÀM TEXTURES</span><span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></>}
             </button>
           </div>
         </aside>

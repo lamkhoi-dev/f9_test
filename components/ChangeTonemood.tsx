@@ -10,7 +10,7 @@ import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { ClockIcon } from './icons/ClockIcon';
 import CustomSelect from './CustomSelect';
-import { useMode } from '../contexts/ModeContext';
+import { useMode, CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig } from '../lib/api';
 import Pagination from './Pagination';
 
@@ -293,7 +293,7 @@ ${prompt ? `Yêu cầu thêm: ${prompt}` : ''}`;
               ) : (
                 <>
                   <SparklesIcon className="w-5 h-5" />
-                  <span>TẠO ẢNH NGAY</span>
+                  <span>TẠO ẢNH NGAY <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></span>
                 </>
               )}
             </button>

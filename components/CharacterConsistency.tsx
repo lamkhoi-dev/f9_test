@@ -6,7 +6,7 @@ import { XMarkIcon } from './icons/XMarkIcon';
 import { RectangleGroupIcon } from './icons/RectangleGroupIcon';
 import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
-import { useMode } from '../contexts/ModeContext';
+import { useMode , CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig } from '../lib/api';
 import Pagination from './Pagination';
 import ImageMaskEditor from './ImageMaskEditor';
@@ -492,7 +492,7 @@ KẾT QUẢ: Một bức ảnh siêu thực (photorealistic), chất lượng 8K
                 disabled={isGeneratingCharacter || !characterPrompt.trim() || characterImages.length >= 5}
                 className="w-full bg-[#364053] hover:bg-[#475266] text-white font-medium py-2 rounded-lg transition-colors text-xs disabled:opacity-50"
              >
-                {isGeneratingCharacter ? 'Đang tạo...' : 'Tự tạo nhân vật'}
+                {isGeneratingCharacter ? 'Đang tạo...' : (<>{(<>"Tự tạo nhân vật" <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></>)} <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></>)}
              </button>
           </div>
 

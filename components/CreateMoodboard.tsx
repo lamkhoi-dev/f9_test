@@ -8,7 +8,7 @@ import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { RectangleGroupIcon } from './icons/RectangleGroupIcon';
-import { useMode } from '../contexts/ModeContext';
+import { useMode , CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig, getImageSize } from '../lib/api';
 import Pagination from './Pagination';
 import FilterDropdown from './FilterDropdown';
@@ -775,9 +775,13 @@ Kết quả phải tự nhiên, cao cấp, thống nhất, không phá vỡ ki�
                             Đang xử lý...
                         </>
                     ) : (
-                        "GHÉP ẢNH MOODBOARD"
-                    )}
-                </button>
+<>
+"GHÉP ẢNH MOODBOARD"
+<span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span>
+</>
+)
+}
+          </button>
                 </div>
             </>
         ) : (
@@ -876,9 +880,13 @@ Kết quả phải tự nhiên, cao cấp, thống nhất, không phá vỡ ki�
                                 Đang xử lý...
                             </>
                         ) : (
-                            "TẠO ẢNH MOODBOARD"
-                        )}
-                    </button>
+<>
+"TẠO ẢNH MOODBOARD"
+<span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span>
+</>
+)
+}
+          </button>
                 </div>
             </>
         )}

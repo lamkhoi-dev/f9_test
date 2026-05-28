@@ -9,7 +9,7 @@ import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 import { MapIcon } from './icons/MapIcon';
 import { SparklesIcon } from './icons/SparklesIcon';
 import { useLanguage } from '../hooks/useLanguage';
-import { useMode } from '../contexts/ModeContext';
+import { useMode , CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig } from '../lib/api';
 
 interface Virtual360Props {
@@ -273,7 +273,7 @@ const Virtual360: React.FC<Virtual360Props> = ({ onBack }) => {
                     ĐANG TẠO...
                 </>
             ) : (
-                "TẠO ẢNH 360 NGAY"
+                (<>"TẠO ẢNH 360 NGAY" <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span></>)
             )}
           </button>
         </div>

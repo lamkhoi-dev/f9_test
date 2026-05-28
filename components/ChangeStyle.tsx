@@ -8,7 +8,7 @@ import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
 import { useLanguage } from '../hooks/useLanguage';
-import { useMode } from '../contexts/ModeContext';
+import { useMode , CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig } from '../lib/api';
 
 interface ChangeStyleProps {
@@ -332,6 +332,7 @@ Output: 1 ảnh cuối cùng đúng phong cách tham chiếu nhưng GIỮ HÌNH 
                 <>
                     <SparklesIcon className="w-5 h-5 group-hover:animate-pulse" />
                     Bắt đầu chuyển đổi
+                    <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span>
                 </>
             )}
           </button>

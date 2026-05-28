@@ -7,7 +7,7 @@ import { SparklesIcon } from './icons/SparklesIcon';
 import { ArrowDownTrayIcon } from './icons/ArrowDownTrayIcon';
 import { MagnifyingGlassPlusIcon } from './icons/MagnifyingGlassPlusIcon';
 import { XMarkIcon } from './icons/XMarkIcon';
-import { useMode } from '../contexts/ModeContext';
+import { useMode , CREDIT_COSTS } from '../contexts/ModeContext';
 import { apiClient, getImageSizeConfig } from '../lib/api';
 
 interface ImproveImageQualityProps {
@@ -214,6 +214,7 @@ Kết quả phải là một hình ảnh siêu thực, chất lượng cao, sắ
                 <>
                     <SparklesIcon className="w-4 h-4" />
                     BẮT ĐẦU CẢI THIỆN
+                    <span className="text-[10px] bg-yellow-500/80 px-1.5 py-0.5 rounded-full font-bold ml-2 text-white border border-white/20 shadow-sm">- {CREDIT_COSTS[proResolution] ?? 10} cr</span>
                 </>
             )}
           </button>
