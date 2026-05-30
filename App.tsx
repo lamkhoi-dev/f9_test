@@ -12,7 +12,7 @@ import RealisticModelPage from './RealisticModelPage';
 import ImageGenerationPage from './ImageGenerationPage';
 import AiAssistant from './components/AiAssistant';
 import CreditBadge from './components/CreditBadge';
-import WelcomeScreen from './components/WelcomeScreen';
+import LandingPage from './LandingPage';
 import History from './components/History';
 import LoginPage from './LoginPage';
 import SignupPage from './SignupPage';
@@ -78,7 +78,6 @@ const AppLayout: React.FC<{ children: React.ReactNode; onNavigate: (page: string
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isAdmin, isLoading } = useAuth();
-  const [hasStarted, setHasStarted] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -97,8 +96,9 @@ const AppContent: React.FC = () => {
     );
   }
 
-  if (!hasStarted && location.pathname === '/') {
-    return <WelcomeScreen onStart={() => setHasStarted(true)} />;
+  // Unauthenticated users at '/' see the Landing Page
+  if (!isAuthenticated && location.pathname === '/') {
+    return <LandingPage />;
   }
 
   return (

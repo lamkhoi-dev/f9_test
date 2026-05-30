@@ -37,3 +37,6 @@ server/dist/
 # Clone repo (temporary — remove after migration)
 F9-Rendering-AI/
 *.sql
+
+# Landing page (separate project)
+home-f9-rendering/
