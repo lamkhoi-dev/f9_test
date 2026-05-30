@@ -96,7 +96,6 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // No longer intercept '/' for landing — it lives at /landing
 
   return (
     <>
@@ -118,17 +117,21 @@ const AppContent: React.FC = () => {
           }
         />
 
-        {/* Home — with Banner + CardGrid */}
+        {/* Home — Landing for guests, Dashboard for logged-in users */}
         <Route
           path="/"
           element={
-            <AppLayout onNavigate={handleNavigate}>
-              <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
-                <Banner />
-                <CardGrid onNavigate={handleNavigate} />
-              </main>
-              <Footer />
-            </AppLayout>
+            !isAuthenticated ? (
+              <LandingPage />
+            ) : (
+              <AppLayout onNavigate={handleNavigate}>
+                <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+                  <Banner />
+                  <CardGrid onNavigate={handleNavigate} />
+                </main>
+                <Footer />
+              </AppLayout>
+            )
           }
         />
 
