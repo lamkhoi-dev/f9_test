@@ -5,6 +5,7 @@ import {
   Sparkles, 
   Compass, 
   Library, 
+  User,
   Zap, 
   Infinity as InfinityIcon, 
   Layers, 

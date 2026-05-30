@@ -96,10 +96,7 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Unauthenticated users at '/' see the Landing Page
-  if (!isAuthenticated && location.pathname === '/') {
-    return <LandingPage />;
-  }
+  // No longer intercept '/' for landing — it lives at /landing
 
   return (
     <>
@@ -107,6 +104,9 @@ const AppContent: React.FC = () => {
         {/* Public Auth Routes — no header */}
         <Route path="/login" element={<LoginPage onNavigate={handleNavigate} />} />
         <Route path="/signup" element={<SignupPage onNavigate={handleNavigate} />} />
+
+        {/* Landing Page — public marketing page */}
+        <Route path="/landing" element={<LandingPage />} />
 
         {/* Admin Route */}
         <Route
