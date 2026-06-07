@@ -21,6 +21,19 @@ interface GenerateContentResponse {
 }
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
+export const hasPersonalKeyConfigured = (): boolean => {
+  try {
+    const saved = localStorage.getItem('f9_user_api_config');
+    if (saved) {
+      const config = JSON.parse(saved);
+      return config.usePersonalKey && config.credentials && config.credentials.trim() !== '';
+    }
+  } catch (e) {
+    return false;
+  }
+  return false;
+};
+
 export const apiClient = {
   /**
    * Proxy for ai.models.generateContent()
@@ -102,6 +115,10 @@ export const apiClient = {
    * Deduct credit instantly for AI suggestions
    */
   deductInstantCredit: async (amount: number, reason: string): Promise<boolean> => {
+    if (hasPersonalKeyConfigured()) {
+      return true; // Skip deduction if using personal key
+    }
+
     const token = localStorage.getItem('f9_token');
     if (!token) throw new Error('Unauthorized');
 

@@ -6,6 +6,7 @@ import historyRoutes from './historyRoutes';
 import geminiRoutes from './geminiRoutes';
 import promptRoutes from './promptRoutes';
 import purchaseRoutes from './purchaseRoutes';
+import paymentRoutes from './paymentRoutes';
 import { getPricing } from '../controllers/adminController';
 import { legacyGenerateContent, legacyGenerateContentStream } from '../controllers/legacyController';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -40,6 +41,7 @@ router.use('/ai', aiRoutes);
 router.use('/gemini', geminiRoutes);
 router.use('/history', historyRoutes);
 router.use('/purchase', authMiddleware, purchaseRoutes);
+router.use('/payment', paymentRoutes);
 
 export default router;
 

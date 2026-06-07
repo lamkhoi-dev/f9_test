@@ -1,5 +1,7 @@
-import React, { useState, createContext, useContext } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
+import { CheckoutModal } from './components/CheckoutModal';
 import { 
   Home, 
   Sparkles, 
@@ -884,6 +886,42 @@ function PricingTable() {
 
 function CreditPackages() {
   const { lang, t } = useLanguage();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [dbPackages, setDbPackages] = useState<any[]>([]);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutPkg, setCheckoutPkg] = useState<any>(null);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_URL || ''}/api/payment/packages`)
+      .then((res) => res.json())
+      .then((resData) => {
+        if (resData.success) {
+          setDbPackages(resData.data);
+        }
+      })
+      .catch((err) => console.error('Error fetching db packages:', err));
+  }, []);
+
+  const handleSelectPkg = (pkgName: string) => {
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    const match = dbPackages.find((p) => p.name.toUpperCase() === pkgName.toUpperCase());
+    if (match) {
+      setCheckoutPkg(match);
+    } else {
+      const fallbackMap: Record<string, any> = {
+        STARTER: { name: 'STARTER', credits: 3000, price: 299000 },
+        PRO: { name: 'PRO', credits: 7000, price: 599000 },
+        ULTRA: { name: 'ULTRA', credits: 25000, price: 1999000 },
+      };
+      setCheckoutPkg(fallbackMap[pkgName.toUpperCase()]);
+    }
+    setIsCheckoutOpen(true);
+  };
+
   const packages = [
     {
       name: "STARTER",
@@ -1022,11 +1060,14 @@ function CreditPackages() {
               </div>
               <div className="text-gray-500 text-xs mb-8">{pkg.autoRenew}</div>
               
-              <button className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-colors uppercase tracking-wider ${
-                pkg.theme === 'orange' 
-                  ? 'bg-[#ff6f00] hover:bg-[#e66400]' 
-                  : 'bg-[#2a1b41] hover:bg-[#342252]'
-              }`}>
+              <button 
+                onClick={() => handleSelectPkg(pkg.name)}
+                className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-colors uppercase tracking-wider ${
+                  pkg.theme === 'orange' 
+                    ? 'bg-[#ff6f00] hover:bg-[#e66400]' 
+                    : 'bg-[#232d45] hover:bg-[#2a3652]'
+                }`}
+              >
                 {pkg.buttonText}
               </button>
             </div>
@@ -1040,16 +1081,25 @@ function CreditPackages() {
               ))}
             </div>
             
-            <button className={`w-full py-4 rounded-xl font-bold text-sm transition-colors mt-auto ${
-              pkg.theme === 'orange' 
-                ? 'bg-[#ff6f00] text-white hover:bg-[#e66400]' 
-                : 'bg-[#232d45] text-white hover:bg-[#2a3652]'
-            }`}>
+            <button 
+              onClick={() => handleSelectPkg(pkg.name)}
+              className={`w-full py-4 rounded-xl font-bold text-sm transition-colors mt-auto ${
+                pkg.theme === 'orange' 
+                  ? 'bg-[#ff6f00] text-white hover:bg-[#e66400]' 
+                  : 'bg-[#232d45] text-white hover:bg-[#2a3652]'
+              }`}
+            >
               {pkg.bottomPrice}
             </button>
           </div>
         ))}
       </div>
+
+      <CheckoutModal
+        isOpen={isCheckoutOpen}
+        onClose={() => setIsCheckoutOpen(false)}
+        selectedPackage={checkoutPkg}
+      />
     </section>
   );
 }

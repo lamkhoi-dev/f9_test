@@ -12,7 +12,7 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import Pagination from './components/Pagination';
 import OnlineStatus from './components/OnlineStatus';
 import UpgradeModal from './components/UpgradeModal';
-import { apiClient, getImageSize } from './lib/api';
+import { apiClient, getImageSize, hasPersonalKeyConfigured } from './lib/api';
 import httpClient from './lib/apiClient';
 
 interface PromptLibraryPageProps {
@@ -387,7 +387,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
         return;
     }
-    if (!isAdmin && user.balance < AI_SUGGEST_COST) {
+    if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < AI_SUGGEST_COST) {
         alert(`Không đủ credit. Tính năng này cần ${AI_SUGGEST_COST} credits.`);
         return;
     }
@@ -439,7 +439,7 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
         return;
     }
-    if (!isAdmin && user.balance < creditCost) {
+    if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < creditCost) {
         alert(`Không đủ credit. Tính năng này cần ${creditCost} credits.`);
         return;
     }

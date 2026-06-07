@@ -17,6 +17,7 @@ import { CpuChipIcon } from './icons/CpuChipIcon';
 import AISettingsModal from './AISettingsModal';
 import UpgradeModal from './UpgradeModal';
 import PurchasePersonalKey from './PurchasePersonalKey';
+import { CheckoutModal } from './CheckoutModal';
 
 const LockClosedIcon: React.FC<{ className?: string }> = ({ className }) => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={className}>
@@ -41,9 +42,21 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
   const [isPersonalAI, setIsPersonalAI] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showPurchaseKey, setShowPurchaseKey] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [checkoutPkg, setCheckoutPkg] = useState<any>(null);
   const modeDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
   const { logout } = useAuth();
+
+  useEffect(() => {
+    const handleOpenCheckout = (e: any) => {
+      setCheckoutPkg(e.detail?.package || null);
+      setIsCheckoutOpen(true);
+    };
+    window.dispatchEvent(new CustomEvent('f9_settings_updated'));
+    window.addEventListener('open_checkout_modal', handleOpenCheckout);
+    return () => window.removeEventListener('open_checkout_modal', handleOpenCheckout);
+  }, []);
 
   const checkPersonalAI = () => {
     if (!hasPersonalKey) { setIsPersonalAI(false); return; }
@@ -247,6 +260,20 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
 
             <LanguageSwitcher />
 
+            {/* Nạp Credit Button */}
+            {isAuthenticated && (
+              <button
+                onClick={() => {
+                  setCheckoutPkg(null);
+                  setIsCheckoutOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-slate-950 text-xs font-extrabold transition-all shadow-md hover:shadow-orange-500/20 transform hover:scale-105"
+              >
+                <span>⚡</span>
+                <span>Nạp Credit</span>
+              </button>
+            )}
+
             {/* User Profile Dropdown */}
             {isAuthenticated ? (
               <div 
@@ -281,6 +308,18 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
                         </span>
                       </div>
                       <div className="my-1 border-t border-slate-700/50"></div>
+
+                      <button
+                        onClick={() => {
+                          setCheckoutPkg(null);
+                          setIsCheckoutOpen(true);
+                          setIsUserDropdownOpen(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-xs font-semibold text-orange-400 hover:bg-orange-500/10 rounded-lg flex items-center gap-2 transition-colors"
+                      >
+                        <span>⚡</span>
+                        <span>Nạp Credit</span>
+                      </button>
 
                       <button
                         onClick={() => {
@@ -403,6 +442,11 @@ const Header: React.FC<HeaderProps> = ({ onNavigateHistory, onNavigate }) => {
     <PurchasePersonalKey
       isOpen={showPurchaseKey}
       onClose={() => setShowPurchaseKey(false)}
+    />
+    <CheckoutModal
+      isOpen={isCheckoutOpen}
+      onClose={() => setIsCheckoutOpen(false)}
+      selectedPackage={checkoutPkg}
     />
     </>
   );

@@ -9,10 +9,12 @@ const sequelize = process.env.DATABASE_URL
       dialect: 'postgres',
       logging: process.env.NODE_ENV === 'development' ? console.log : false,
       dialectOptions: {
-        ssl: process.env.NODE_ENV === 'production' ? {
-          require: true,
-          rejectUnauthorized: false,
-        } : false,
+        ssl: (process.env.DATABASE_URL.includes('localhost') || process.env.DATABASE_URL.includes('127.0.0.1'))
+          ? false
+          : {
+              require: true,
+              rejectUnauthorized: false,
+            },
       },
       pool: {
         max: 10,

@@ -33,7 +33,7 @@ interface AdminPageProps {
   onNavigate: (page: string) => void;
 }
 
-type AdminTab = 'users' | 'pricing' | 'keys' | 'stats' | 'prompts';
+type AdminTab = 'users' | 'pricing' | 'keys' | 'stats' | 'prompts' | 'packages' | 'orders';
 
 interface PromptCategory {
   id: string;
@@ -91,6 +91,24 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [pricing, setPricing] = useState<PricingItem[]>([]);
   const [configs, setConfigs] = useState<ConfigItem[]>([]);
   const [stats, setStats] = useState<any>(null);
+
+  // Payment states
+  const [paymentPackages, setPaymentPackages] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [showPackageModal, setShowPackageModal] = useState(false);
+  const [editingPackageId, setEditingPackageId] = useState<string | null>(null);
+  const [packageForm, setPackageForm] = useState({
+    name: '',
+    credits: 0,
+    price: 0,
+    originalPrice: 0,
+    discount: '',
+    durationMonths: 1,
+    popular: false,
+    theme: 'purple',
+    features: [] as string[]
+  });
+  const [featureInput, setFeatureInput] = useState('');
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
@@ -211,6 +229,88 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     }
   };
 
+  const fetchPaymentPackages = async () => {
+    setIsLoading(true);
+    try {
+      const res = await apiClient.get('/payment/packages');
+      if (res.data.success) {
+        setPaymentPackages(res.data.data);
+      }
+    } catch (e: any) {
+      toast.error('Lỗi khi tải danh sách gói nạp');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchOrders = async () => {
+    setIsLoading(true);
+    try {
+      const res = await apiClient.get('/payment/admin/orders');
+      if (res.data.success) {
+        setOrders(res.data.data);
+      }
+    } catch (e: any) {
+      toast.error('Lỗi khi tải danh sách đơn hàng');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSavePackage = async () => {
+    if (!packageForm.name.trim() || packageForm.credits <= 0 || packageForm.price <= 0) {
+      toast.warning('Vui lòng nhập đầy đủ thông tin bắt buộc!');
+      return;
+    }
+    try {
+      if (editingPackageId) {
+        await apiClient.put(`/payment/admin/packages/${editingPackageId}`, packageForm);
+        toast.success('Cập nhật gói nạp thành công!');
+      } else {
+        await apiClient.post('/payment/admin/packages', packageForm);
+        toast.success('Tạo gói nạp mới thành công!');
+      }
+      setShowPackageModal(false);
+      setEditingPackageId(null);
+      setPackageForm({
+        name: '',
+        credits: 0,
+        price: 0,
+        originalPrice: 0,
+        discount: '',
+        durationMonths: 1,
+        popular: false,
+        theme: 'purple',
+        features: []
+      });
+      fetchPaymentPackages();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi lưu gói nạp');
+    }
+  };
+
+  const handleDeletePackage = async (id: string) => {
+    if (!confirm('Bạn có chắc muốn xóa gói nạp này?')) return;
+    try {
+      await apiClient.delete(`/payment/admin/packages/${id}`);
+      toast.success('Xóa gói nạp thành công!');
+      fetchPaymentPackages();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi xóa gói nạp');
+    }
+  };
+
+  const handleApproveOrder = async (id: string) => {
+    if (!confirm('Bạn có chắc chắn muốn duyệt thủ công đơn hàng này không? User sẽ được cộng credit ngay lập tức.')) return;
+    try {
+      await apiClient.post(`/payment/admin/orders/${id}/approve`);
+      toast.success('Duyệt đơn hàng và cộng credit cho user thành công!');
+      fetchOrders();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Lỗi khi duyệt đơn hàng');
+    }
+  };
+
   const handleSavePrompt = async () => {
     if (!promptForm.categoryId) {
       toast.warning('Vui lòng chọn chuyên mục!');
@@ -303,6 +403,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     else if (activeTab === 'pricing') fetchPricing();
     else if (activeTab === 'stats') { fetchStats(); fetchConfigs(); }
     else if (activeTab === 'prompts') { fetchPromptCategories(); fetchAdminPrompts(); }
+    else if (activeTab === 'packages') fetchPaymentPackages();
+    else if (activeTab === 'orders') fetchOrders();
   }, [isAdmin, activeTab]);
 
   // --- Handlers ---
@@ -428,6 +530,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     { key: 'pricing', label: 'Bảng giá', icon: <CurrencyIcon className="w-4 h-4" /> },
     { key: 'keys', label: 'API Keys', icon: <KeyIcon className="w-4 h-4" /> },
     { key: 'prompts', label: 'Thư viện Prompt', icon: <BookOpenIcon className="w-4 h-4" /> },
+    { key: 'packages', label: 'Gói nạp Credit', icon: <CurrencyIcon className="w-4 h-4" /> },
+    { key: 'orders', label: 'Đơn hàng (SePay)', icon: <WalletIcon className="w-4 h-4" /> },
   ];
 
   const renderTabContent = () => {
@@ -948,6 +1052,374 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- PACKAGES TAB ---
+    if (activeTab === 'packages') {
+      return (
+        <div className="p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <CurrencyIcon className="w-5 h-5 text-orange-400" />
+                Quản lý gói nạp credit
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">Danh sách các gói credit hiển thị trên landing page và checkout</p>
+            </div>
+            <button
+              onClick={() => {
+                setPackageForm({
+                  name: '',
+                  credits: 0,
+                  price: 0,
+                  originalPrice: 0,
+                  discount: '',
+                  durationMonths: 1,
+                  popular: false,
+                  theme: 'purple',
+                  features: []
+                });
+                setEditingPackageId(null);
+                setShowPackageModal(true);
+              }}
+              className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold rounded-lg transition-colors"
+            >
+              <PlusIcon className="w-4 h-4" />
+              Thêm gói nạp
+            </button>
+          </div>
+
+          <div className="bg-[#111827] border border-gray-800 rounded-xl overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-800">
+                  <th className="px-6 py-4 text-left font-semibold text-gray-500 uppercase text-xs">Tên gói</th>
+                  <th className="px-6 py-4 text-left font-semibold text-gray-500 uppercase text-xs">Credits</th>
+                  <th className="px-6 py-4 text-left font-semibold text-gray-500 uppercase text-xs">Giá</th>
+                  <th className="px-6 py-4 text-left font-semibold text-gray-500 uppercase text-xs">Gốc / Giảm giá</th>
+                  <th className="px-6 py-4 text-left font-semibold text-gray-500 uppercase text-xs">Nổi bật</th>
+                  <th className="px-6 py-4 text-center font-semibold text-gray-500 uppercase text-xs">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800/50">
+                {paymentPackages.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                      Chưa có gói nạp nào. Hãy nhấn "Thêm gói nạp" để cấu hình.
+                    </td>
+                  </tr>
+                ) : (
+                  paymentPackages.map((pkg) => (
+                    <tr key={pkg.id} className="hover:bg-[#1e293b]/50">
+                      <td className="px-6 py-4 font-bold text-white uppercase">{pkg.name}</td>
+                      <td className="px-6 py-4 text-orange-400 font-bold">{pkg.credits?.toLocaleString()} Credits</td>
+                      <td className="px-6 py-4 text-green-400 font-bold">{pkg.price?.toLocaleString()} đ</td>
+                      <td className="px-6 py-4 text-gray-400">
+                        <span className="line-through">{pkg.originalPrice?.toLocaleString()} đ</span>
+                        {pkg.discount && <span className="ml-2 text-xs bg-red-500/10 text-red-500 px-1.5 py-0.5 rounded font-bold">{pkg.discount}</span>}
+                      </td>
+                      <td className="px-6 py-4">
+                        {pkg.popular ? (
+                          <span className="text-xs bg-orange-500/10 text-orange-400 border border-orange-500/30 px-2 py-0.5 rounded-full font-bold">Nổi bật</span>
+                        ) : (
+                          <span className="text-xs text-gray-500">—</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2">
+                          <button
+                            onClick={() => {
+                              setPackageForm({
+                                name: pkg.name,
+                                credits: pkg.credits,
+                                price: pkg.price,
+                                originalPrice: pkg.originalPrice,
+                                discount: pkg.discount || '',
+                                durationMonths: pkg.durationMonths || 1,
+                                popular: pkg.popular || false,
+                                theme: pkg.theme || 'purple',
+                                features: pkg.features || []
+                              });
+                              setEditingPackageId(pkg.id);
+                              setShowPackageModal(true);
+                            }}
+                            className="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 font-bold"
+                          >
+                            Sửa
+                          </button>
+                          <button
+                            onClick={() => handleDeletePackage(pkg.id)}
+                            className="text-xs bg-red-900/30 hover:bg-red-800/50 text-red-400 px-3 py-1.5 rounded-lg border border-red-800/50 font-bold"
+                          >
+                            Xóa
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Create/Update Package Modal */}
+          {showPackageModal && (
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-[#1e293b] border border-gray-700 rounded-3xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+                <h3 className="text-lg font-bold text-white mb-5">
+                  {editingPackageId ? 'Chỉnh sửa gói nạp' : 'Thêm gói nạp mới'}
+                </h3>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Tên gói (VD: STARTER, PRO, ULTRA)</label>
+                      <input
+                        type="text"
+                        value={packageForm.name}
+                        onChange={(e) => setPackageForm({ ...packageForm, name: e.target.value })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="PRO"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Số lượng credits</label>
+                      <input
+                        type="number"
+                        value={packageForm.credits}
+                        onChange={(e) => setPackageForm({ ...packageForm, credits: parseInt(e.target.value, 10) || 0 })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="7000"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Giá bán (đ)</label>
+                      <input
+                        type="number"
+                        value={packageForm.price}
+                        onChange={(e) => setPackageForm({ ...packageForm, price: parseFloat(e.target.value) || 0 })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Giá gốc (đ)</label>
+                      <input
+                        type="number"
+                        value={packageForm.originalPrice}
+                        onChange={(e) => setPackageForm({ ...packageForm, originalPrice: parseFloat(e.target.value) || 0 })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Nhãn giảm giá (VD: -14%)</label>
+                      <input
+                        type="text"
+                        value={packageForm.discount}
+                        onChange={(e) => setPackageForm({ ...packageForm, discount: e.target.value })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        placeholder="-14%"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Thời hạn (Tháng)</label>
+                      <input
+                        type="number"
+                        value={packageForm.durationMonths}
+                        onChange={(e) => setPackageForm({ ...packageForm, durationMonths: parseInt(e.target.value, 10) || 1 })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Giao diện (theme)</label>
+                      <select
+                        value={packageForm.theme}
+                        onChange={(e) => setPackageForm({ ...packageForm, theme: e.target.value })}
+                        className="w-full bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      >
+                        <option value="purple">Tối (Navy/Purple)</option>
+                        <option value="orange">Nổi bật (Orange)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="pkgPopular"
+                      checked={packageForm.popular}
+                      onChange={(e) => setPackageForm({ ...packageForm, popular: e.target.checked })}
+                      className="rounded text-orange-500 focus:ring-orange-500 bg-[#0f172a] border-gray-600"
+                    />
+                    <label htmlFor="pkgPopular" className="text-xs text-gray-300">Đánh dấu là gói phổ biến nhất (Popular)</label>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-gray-400 mb-1">Tính năng đi kèm</label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={featureInput}
+                        onChange={(e) => setFeatureInput(e.target.value)}
+                        placeholder="Nhập tính năng rồi ấn Thêm"
+                        className="flex-1 bg-[#0f172a] border border-gray-600 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (featureInput.trim()) {
+                            setPackageForm({
+                              ...packageForm,
+                              features: [...packageForm.features, featureInput.trim()]
+                            });
+                            setFeatureInput('');
+                          }
+                        }}
+                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-xs font-bold"
+                      >
+                        Thêm
+                      </button>
+                    </div>
+                    <ul className="space-y-1 bg-[#0f172a] p-3 rounded-lg border border-gray-700 max-h-32 overflow-y-auto">
+                      {packageForm.features.length === 0 ? (
+                        <span className="text-xs text-gray-500 italic">Chưa có tính năng nào</span>
+                      ) : (
+                        packageForm.features.map((feat, i) => (
+                          <li key={i} className="text-xs text-gray-300 flex items-center justify-between">
+                            <span>• {feat}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPackageForm({
+                                  ...packageForm,
+                                  features: packageForm.features.filter((_, idx) => idx !== i)
+                                });
+                              }}
+                              className="text-red-400 hover:text-red-500 text-[10px] font-bold"
+                            >
+                              Xóa
+                            </button>
+                          </li>
+                        ))
+                      )}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={() => setShowPackageModal(false)}
+                    className="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-bold text-sm"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    onClick={handleSavePackage}
+                    className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-sm"
+                  >
+                    {editingPackageId ? 'Cập nhật' : 'Tạo mới'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // --- ORDERS TAB ---
+    if (activeTab === 'orders') {
+      return (
+        <div className="p-6 lg:p-8">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                <WalletIcon className="w-5 h-5 text-orange-400" />
+                Lịch sử giao dịch & Đơn hàng
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">Quản lý và duyệt giao dịch nạp credit qua SePay / VietQR</p>
+            </div>
+            <button
+              onClick={fetchOrders}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-xs font-bold border border-gray-700"
+            >
+              Làm mới danh sách
+            </button>
+          </div>
+
+          <div className="bg-[#111827] border border-gray-800 rounded-xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-800">
+                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Mã đơn</th>
+                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Khách hàng</th>
+                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Gói nạp</th>
+                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Giá trị</th>
+                    <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                    <th className="px-4 py-3.5 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ngày tạo</th>
+                    <th className="px-4 py-3.5 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Thao tác</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-800/50">
+                  {orders.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-16 text-center text-gray-500">
+                        Chưa có đơn hàng nào được tạo trên hệ thống.
+                      </td>
+                    </tr>
+                  ) : (
+                    orders.map((order) => (
+                      <tr key={order.id} className="hover:bg-[#1e293b]/50">
+                        <td className="px-4 py-3.5 font-mono text-orange-400 font-bold">{order.orderCode}</td>
+                        <td className="px-4 py-3.5">
+                          <div className="font-semibold text-white">{order.user?.name || 'N/A'}</div>
+                          <div className="text-xs text-gray-500 font-mono">{order.user?.phone || 'N/A'}</div>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <span className="font-semibold text-white uppercase">{order.packageName}</span>
+                          <span className="text-xs text-gray-400 ml-1">({order.credits?.toLocaleString()} Credits)</span>
+                        </td>
+                        <td className="px-4 py-3.5 text-green-400 font-bold">{order.amount?.toLocaleString()} đ</td>
+                        <td className="px-4 py-3.5 text-center">
+                          <span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            order.status === 'completed'
+                              ? 'bg-green-500/10 text-green-400 border border-green-500/30'
+                              : order.status === 'pending'
+                              ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30'
+                              : 'bg-red-500/10 text-red-400 border border-red-500/30'
+                          }`}>
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3.5 text-xs text-gray-400 font-mono">
+                          {new Date(order.createdAt).toLocaleString('vi-VN')}
+                        </td>
+                        <td className="px-4 py-3.5 text-center">
+                          {order.status !== 'completed' ? (
+                            <button
+                              onClick={() => handleApproveOrder(order.id)}
+                              className="text-xs bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-lg font-bold"
+                            >
+                              Duyệt tay
+                            </button>
+                          ) : (
+                            <span className="text-xs text-emerald-400/70 font-semibold italic">Đã duyệt</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

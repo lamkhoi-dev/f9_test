@@ -11,6 +11,10 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://f9-rendering.vercel.app',
+  'https://deep3d.org',
+  'https://www.deep3d.org',
+  'https://f9render.com',
+  'https://www.f9render.com',
   process.env.CORS_ORIGIN,
 ].filter(Boolean) as string[];
 
@@ -45,6 +49,18 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Routes
 app.use('/api', routes);
+
+// Serve frontend static files in production
+if (process.env.NODE_ENV === 'production') {
+  const frontendPath = '/home/thinhvu1/f9render.com';
+  app.use(express.static(frontendPath));
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendPath, 'index.html'));
+  });
+}
 
 // Error handler (must be last)
 app.use(errorHandler);

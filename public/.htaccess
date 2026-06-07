@@ -1,0 +1,8 @@
+Options -MultiViews
+RewriteEngine On
+<IfModule LiteSpeed>
+CacheEnable off
+</IfModule>
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.html [QSA,L]

@@ -51,6 +51,72 @@ const start = async () => {
         }
         console.log('💰 Pricing seeded: 1K=10cr, 2K=20cr, 4K=30cr');
 
+        // Seed default coin packages
+        const PricingPackage = (await import('./models/PricingPackage')).default;
+        const packageCount = await PricingPackage.count();
+        if (packageCount === 0) {
+          await PricingPackage.bulkCreate([
+            {
+              name: 'STARTER',
+              credits: 3000,
+              originalPrice: 349000,
+              price: 299000,
+              discount: '-14%',
+              durationMonths: 1,
+              popular: false,
+              theme: 'purple',
+              features: [
+                'Tổng 3.000 Credits',
+                'Gói tiêu chuẩn',
+                'Hạn sử dụng: 1 Tháng',
+                'Truy cập tất cả công cụ AI',
+                'Render tốc độ tiêu chuẩn',
+                'Hỗ trợ ưu tiên 24/7',
+                'Tính năng truy cập sớm'
+              ],
+            },
+            {
+              name: 'PRO',
+              credits: 7000,
+              originalPrice: 700000,
+              price: 599000,
+              discount: '-14%',
+              durationMonths: 3,
+              popular: true,
+              theme: 'orange',
+              features: [
+                'Tổng 7.000 Credits',
+                'Hạn sử dụng: 3 Tháng',
+                'Tối ưu chi phí & hiệu năng',
+                'Truy cập tất cả công cụ AI',
+                'Render tốc độ cao',
+                'Hỗ trợ ưu tiên 24/7',
+                'Tính năng truy cập sớm'
+              ],
+            },
+            {
+              name: 'ULTRA',
+              credits: 25000,
+              originalPrice: 2500000,
+              price: 1999000,
+              discount: '-20%',
+              durationMonths: 6,
+              popular: false,
+              theme: 'purple',
+              features: [
+                'Tổng 25.000 Credits',
+                'Hạn sử dụng: 6 Tháng',
+                'Chi phí rẻ nhất/credit',
+                'Truy cập tất cả công cụ AI',
+                'Render tốc độ siêu tốc',
+                'Hỗ trợ ưu tiên 24/7',
+                'Tính năng truy cập sớm'
+              ],
+            },
+          ]);
+          console.log('📦 Default packages seeded: STARTER, PRO, ULTRA');
+        }
+
         // Seed default prompt library (3 categories + 24 prompts)
         const { seedPromptLibrary } = await import('./seedPrompts');
         await seedPromptLibrary();

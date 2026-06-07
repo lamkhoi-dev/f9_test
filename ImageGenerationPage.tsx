@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { apiClient, getImageSizeConfig, getImageSize } from './lib/api';
+import { apiClient, getImageSizeConfig, getImageSize, hasPersonalKeyConfigured } from './lib/api';
 import { useLanguage } from './hooks/useLanguage';
 import { useMode, CREDIT_COSTS, UI_MODE_LABELS } from './contexts/ModeContext';
 import { usePricing } from './contexts/PricingContext';
@@ -1481,7 +1481,7 @@ const ImageGenerationPage: React.FC<ImageGenerationPageProps> = ({ onNavigate, r
             alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
             return;
         }
-        if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+        if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < AI_SUGGESTION_COST) {
             alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
             return;
         }
@@ -1803,7 +1803,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
             return;
         }
-        if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+        if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < AI_SUGGESTION_COST) {
             alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
             return;
         }
@@ -1855,7 +1855,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             alert("Vui lòng đăng nhập để sử dụng tính năng AI.");
             return;
         }
-        if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+        if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < AI_SUGGESTION_COST) {
             alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
             return;
         }
@@ -2114,7 +2114,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 if (referenceFileInputRef.current) referenceFileInputRef.current.value = "";
                 return;
             }
-            if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+            if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < AI_SUGGESTION_COST) {
                 alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
                 if (referenceFileInputRef.current) referenceFileInputRef.current.value = "";
                 return;
@@ -2144,7 +2144,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 if (filterReferenceFileInputRef.current) filterReferenceFileInputRef.current.value = "";
                 return;
             }
-            if (!isAdmin && user.balance < AI_SUGGESTION_COST) {
+            if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < AI_SUGGESTION_COST) {
                 alert(`Không đủ credit. Tính năng này cần ${AI_SUGGESTION_COST} credits.`);
                 if (filterReferenceFileInputRef.current) filterReferenceFileInputRef.current.value = "";
                 return;
@@ -2175,7 +2175,7 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
             return;
         }
 
-        if (!isAdmin && user.balance < totalPrice) {
+        if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < totalPrice) {
             alert(locale === 'vi' ? `Không đủ credit. Tính năng này cần ${totalPrice} credits.` : `Not enough credits. This feature requires ${totalPrice} credits.`);
             return;
         }
@@ -2508,9 +2508,15 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
     };
 
     const transformImage = async (file: File, prompt: string) => {
+        if (!isAdmin && !hasPersonalKeyConfigured() && user.balance < basePrice) {
+            alert(locale === 'vi' ? `Không đủ credit. Tính năng này cần ${basePrice} credits.` : `Not enough credits. This feature requires ${basePrice} credits.`);
+            return;
+        }
+
         setIsTransforming(true);
         setTransformError(null);
         try {
+            await apiClient.deductInstantCredit(basePrice, `Image Preprocessing`);
             const inputBase64 = await blobToBase64(file);
             const response = await apiClient.generateContent({
                 model: 'gemini-2.5-flash-image',
