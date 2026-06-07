@@ -108,7 +108,53 @@ export const apiClient = {
       throw error;
     }
 
-    return res.json();
+    const data = await res.json();
+
+    // Process response data if it contains candidates with fileData
+    if (data && data.candidates && Array.isArray(data.candidates)) {
+      for (const candidate of data.candidates) {
+        const parts = candidate.content?.parts;
+        if (!parts || !Array.isArray(parts)) continue;
+
+        for (const part of parts) {
+          if (part.fileData && part.fileData.fileUri) {
+            try {
+              const fileUri = part.fileData.fileUri;
+              const absoluteUrl = fileUri.startsWith('http') 
+                ? fileUri 
+                : `${API_BASE_URL.replace(/\/$/, '')}/${fileUri.replace(/^\//, '')}`;
+
+              console.log(`🔗 Resolving fileUri in api.ts: ${absoluteUrl}`);
+              const imageRes = await fetch(absoluteUrl);
+              if (imageRes.ok) {
+                const blob = await imageRes.blob();
+                const reader = new FileReader();
+                const base64Data = await new Promise<string>((resolve, reject) => {
+                  reader.onloadend = () => {
+                    const base64 = (reader.result as string).split(',')[1];
+                    resolve(base64);
+                  };
+                  reader.onerror = reject;
+                  reader.readAsDataURL(blob);
+                });
+
+                const mimeType = part.fileData.mimeType || blob.type || 'image/png';
+                delete part.fileData;
+                part.inlineData = {
+                  mimeType,
+                  data: base64Data
+                };
+                console.log(`✅ Successfully resolved fileUri to base64 client-side`);
+              }
+            } catch (err) {
+              console.error('⚠️ Failed to resolve image URL to base64 in api.ts:', err);
+            }
+          }
+        }
+      }
+    }
+
+    return data;
   },
 
   /**

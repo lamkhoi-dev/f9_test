@@ -4,6 +4,7 @@ import UsageService from '../services/UsageService';
 import KeyService from '../services/KeyService';
 import GommoService from '../services/GommoService';
 import VertexDirectService from '../services/VertexDirectService';
+import { saveGeneratedImages } from '../utils/imageHelper';
 
 /**
  * Translate a Vietnamese architectural prompt to English before
@@ -376,7 +377,13 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
             console.log(`✅ Imagen result hosted on CDN: ${cdnUrl}`);
           }
         } catch (uploadErr: any) {
-          console.warn(`⚠️ CDN upload failed: ${uploadErr.message}. Falling back to Base64.`);
+          console.warn(`⚠️ CDN upload failed: ${uploadErr.message}. Falling back to local cache.`);
+          try {
+            result.candidates = saveGeneratedImages(result.candidates, req);
+            finalData = result;
+          } catch (localSaveErr: any) {
+            console.error(`❌ Local save fallback failed: ${localSaveErr.message}`);
+          }
         }
 
         if (usage.usageLogId) await UsageService.finalizeUsage(usage.usageLogId, finalData);
@@ -576,9 +583,9 @@ export const checkStatus = async (req: AuthRequest, res: Response) => {
     }
 
     if (check.status === 'SUCCESS' && check.url) {
-      // Job finished! Download and finalize
-      console.log(`✅ Async Job ${taskId} SUCCESS. Downloading...`);
-      const data = await GommoService.downloadAndFormat(check.url);
+      // Job finished! Return the URL directly to client
+      console.log(`✅ Async Job ${taskId} SUCCESS. Returning URL...`);
+      const data = GommoService.toVertexFormatUrl(check.url);
 
       if (usageLogId) {
         await UsageService.finalizeUsage(usageLogId as string, data);

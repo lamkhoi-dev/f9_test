@@ -508,15 +508,29 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         return null;
       };
 
-      const generationPromises = Array.from({ length: numberOfImages }, () => generateOneImage());
-      const results = await Promise.all(generationPromises);
-      const successfulImages = results.filter((img): img is string => img !== null);
+      const successfulImages: string[] = [];
+      for (let i = 0; i < numberOfImages; i++) {
+        if (i > 0) {
+          // Add 1.5s delay to satisfy Gemini API RPM quotas
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
+        try {
+          const img = await generateOneImage();
+          if (img) {
+            successfulImages.push(img);
+            // Update UI immediately with generated images so far
+            setGeneratedImages([...successfulImages]);
+          }
+        } catch (err) {
+          console.error(`Error generating image ${i + 1}:`, err);
+        }
+      }
 
       if (successfulImages.length > 0) {
-        setGeneratedImages(successfulImages);
         setHistory(prev => [{ input: displayInputImage!, outputs: successfulImages }, ...prev]);
-        // Deduct instantly after successful generation
-        await apiClient.deductInstantCredit(creditCost, `Prompt Library Generation: ${selectedItem?.title}`);
+        // Deduct instantly after successful generation proportional to successes
+        const actualCost = (creditCost / numberOfImages) * successfulImages.length;
+        await apiClient.deductInstantCredit(Math.round(actualCost), `Prompt Library Generation: ${selectedItem?.title} (${successfulImages.length}/${numberOfImages} thành công)`);
         refreshUser();
       } else {
         console.error("Rendering failed: No image generated.");

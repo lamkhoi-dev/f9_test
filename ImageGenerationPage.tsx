@@ -2288,13 +2288,26 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 return null;
             };
 
-            const generationPromises = Array.from({ length: numberOfImages }, () => generateOneImage());
-            const results = await Promise.all(generationPromises);
-            const successfulImages = results.filter((img): img is string => img !== null);
+            const successfulImages: string[] = [];
+            for (let i = 0; i < numberOfImages; i++) {
+                if (i > 0) {
+                    // Add 1.5s delay to satisfy Gemini API RPM quotas
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                }
+                try {
+                    const img = await generateOneImage();
+                    if (img) {
+                        successfulImages.push(img);
+                        // Update UI immediately with generated images so far
+                        setGeneratedImages([...successfulImages]);
+                    }
+                } catch (err) {
+                    console.error(`Error generating image ${i + 1}:`, err);
+                }
+            }
 
             if (successfulImages.length > 0) {
                 console.log(`✅ Rendering finished successfully with ${successfulImages.length} images.`);
-                setGeneratedImages(successfulImages);
                 setHistory(prev => [{ input: displayInputImage!, reference: referenceImage?.url, outputs: successfulImages }, ...prev]);
                 
                 // Added: Persist generation to IndexedDB history
@@ -2338,7 +2351,9 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
                 setCurrentPage(1);
                 
                 if (totalPrice > 0) {
-                    await apiClient.deductInstantCredit(totalPrice, `Image Generation: ${activeAction}`);
+                    // Deduct credit proportional to successfully generated images
+                    const actualCost = (totalPrice / numberOfImages) * successfulImages.length;
+                    await apiClient.deductInstantCredit(Math.round(actualCost), `Image Generation: ${activeAction} (${successfulImages.length}/${numberOfImages} thành công)`);
                     refreshUser();
                 }
             } else {

@@ -60,7 +60,60 @@ apiClient.interceptors.request.use((config) => {
 let isHandling401 = false;
 
 apiClient.interceptors.response.use(
-  (response) => response,
+  async (response) => {
+    // Process response data if it contains candidates with fileData
+    const data = response.data;
+    if (data && (data.candidates || (data.data && data.data.candidates))) {
+      const candidates = data.candidates || data.data.candidates;
+      if (Array.isArray(candidates)) {
+        for (const candidate of candidates) {
+          const parts = candidate.content?.parts;
+          if (!parts || !Array.isArray(parts)) continue;
+
+          for (const part of parts) {
+            if (part.fileData && part.fileData.fileUri) {
+              try {
+                const fileUri = part.fileData.fileUri;
+                
+                // Get the base API URL (e.g. remove /api at the end for static files if served from server root)
+                const baseServerUrl = baseURL.replace(/\/api$/, '');
+                
+                const absoluteUrl = fileUri.startsWith('http') 
+                  ? fileUri 
+                  : `${baseServerUrl.replace(/\/$/, '')}/${fileUri.replace(/^\//, '')}`;
+
+                console.log(`🔗 Resolving fileUri: ${absoluteUrl}`);
+                const imageRes = await fetch(absoluteUrl);
+                if (imageRes.ok) {
+                  const blob = await imageRes.blob();
+                  const reader = new FileReader();
+                  const base64Data = await new Promise<string>((resolve, reject) => {
+                    reader.onloadend = () => {
+                      const base64 = (reader.result as string).split(',')[1];
+                      resolve(base64);
+                    };
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                  });
+
+                  const mimeType = part.fileData.mimeType || blob.type || 'image/png';
+                  delete part.fileData;
+                  part.inlineData = {
+                    mimeType,
+                    data: base64Data
+                  };
+                  console.log(`✅ Successfully resolved fileUri to base64 client-side`);
+                }
+              } catch (err) {
+                console.error('⚠️ Failed to resolve image URL to base64 in apiClient:', err);
+              }
+            }
+          }
+        }
+      }
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
       const requestUrl = error.config?.url || '';

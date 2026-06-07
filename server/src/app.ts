@@ -15,6 +15,8 @@ const allowedOrigins = [
   'https://www.deep3d.org',
   'https://f9render.com',
   'https://www.f9render.com',
+  'http://f9render.com',
+  'http://www.f9render.com',
   process.env.CORS_ORIGIN,
 ].filter(Boolean) as string[];
 

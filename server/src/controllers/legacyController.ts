@@ -11,6 +11,7 @@
 import { Request, Response } from 'express';
 import { GoogleGenAI } from '@google/genai';
 import KeyService from '../services/KeyService';
+import { saveGeneratedImages } from '../utils/imageHelper';
 
 /**
  * Create GoogleGenAI instance for PERSONAL credentials (user's own Service Account).
@@ -146,9 +147,13 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
       try {
         const response = await aiForImage.models.generateContent({ model, contents: normalizedContents, config });
         if (keyId) await KeyService.incrementUsage(keyId);
+        
+        const rawCandidates = response.candidates?.map((c: any) => ({ content: c.content, finishReason: c.finishReason })) ?? [];
+        const savedCandidates = saveGeneratedImages(rawCandidates, req);
+
         res.json({
           text: response.text ?? null,
-          candidates: response.candidates?.map((c: any) => ({ content: c.content, finishReason: c.finishReason })) ?? [],
+          candidates: savedCandidates,
         });
         return;
       } catch (sdkErr: any) {
@@ -191,12 +196,15 @@ export const legacyGenerateContent = async (req: Request, res: Response): Promis
     const response = await ai.models.generateContent({ model, contents: normalizedContents, config });
     if (keyId) await KeyService.incrementUsage(keyId);
 
+    const rawCandidates = response.candidates?.map((candidate: any) => ({
+      content: candidate.content,
+      finishReason: candidate.finishReason,
+    })) ?? [];
+    const savedCandidates = saveGeneratedImages(rawCandidates, req);
+
     const result = {
       text: response.text ?? null,
-      candidates: response.candidates?.map((candidate: any) => ({
-        content: candidate.content,
-        finishReason: candidate.finishReason,
-      })) ?? [],
+      candidates: savedCandidates,
     };
 
     res.json(result);
