@@ -449,7 +449,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, s
                           ⚠️ {t('warningInfo')}
                         </div>
 
-                        {/* Simulate mock callback button */}
+                        {/* Simulate mock callback button (Temporarily hidden) */}
+                        {/*
                         <button
                           onClick={handleSimulatePayment}
                           disabled={simulating}
@@ -458,6 +459,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, s
                           {simulating && <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-slate-300"></div>}
                           <span>{t('mockButton')}</span>
                         </button>
+                        */}
                       </div>
                     </div>
                   )}
