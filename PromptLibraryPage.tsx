@@ -65,10 +65,10 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [upgradeMessage, setUpgradeMessage] = useState('');
 
-  // API-driven data states
+  // API-driven data states (single source of truth — no hardcoded fallback)
   const [apiCategories, setApiCategories] = useState<ApiCategory[]>([]);
   const [apiPrompts, setApiPrompts] = useState<ApiPrompt[]>([]);
-  const [useApiData, setUseApiData] = useState(false);
+  const [apiLoading, setApiLoading] = useState(true);
 
   // Generation states
   const [activeInputFile, setActiveInputFile] = useState<File | null>(null);
@@ -91,9 +91,10 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch categories and prompts from API, fallback to hardcoded
+  // Fetch categories and prompts from API (single source of truth)
   useEffect(() => {
     const fetchApiData = async () => {
+      setApiLoading(true);
       try {
         const [catRes, promptRes] = await Promise.all([
           httpClient.get('/prompts/categories'),
@@ -101,14 +102,14 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
         ]);
         const cats = catRes.data?.data || [];
         const proms = promptRes.data?.data || [];
-        if (cats.length > 0) {
-          setApiCategories(cats);
-          setApiPrompts(proms);
-          setUseApiData(true);
-        }
+        setApiCategories(cats);
+        setApiPrompts(proms);
       } catch (err) {
-        console.log('[PromptLibrary] API not available, using hardcoded data');
-        setUseApiData(false);
+        console.error('[PromptLibrary] Failed to load data from API:', err);
+        setApiCategories([]);
+        setApiPrompts([]);
+      } finally {
+        setApiLoading(false);
       }
     };
     fetchApiData();
@@ -195,25 +196,14 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
     }
   ];
 
-  const libraryCards = [
-    {
-      title: t("promptLibraryPage.categories.townHouse.title", "Nhà Phố"),
-      description: t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích."),
-      imageUrl: "https://www.inax.com.vn/wp-content/uploads/2025/04/thiet-ke-nha-pho-1.jpg"
-    },
-    {
-      title: t("promptLibraryPage.categories.villa.title", "Biệt Thự"),
-      description: t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển."),
-      imageUrl: "https://worldlandscapearchitect.com/wp-content/uploads/2022/12/OBG-Garden_Storyboard-Cover.jpg"
-    },
-    {
-      title: t("promptLibraryPage.categories.interior.title", "Nội Thất"),
-      description: t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ."),
-      imageUrl: "https://thing.vn/wp-content/uploads/2023/12/thiet-ke-chieu-sang-kien-truc-10.webp"
-    }
-  ];
+  // ──────────────────────────────────────────────────────────
+  // NOTE: All prompt/category data comes exclusively from the
+  // database via API. Hardcoded arrays have been removed to
+  // prevent deleted items from re-appearing on the page.
+  // ──────────────────────────────────────────────────────────
 
-  const nhaPhoItems: PromptItem[] = [
+  // ──── Placeholder to satisfy TS (was nhaPhoItems start) ───
+  const _removedHardcodedItems: PromptItem[] = [
     {
       title: t("promptLibraryPage.categories.townHouse.items.item1.title", "Mẫu nhà phố 1"),
       description: t("promptLibraryPage.categories.townHouse.items.item1.description", "Prompt mẫu nhà phố kiến trúc hiện đại 1"),
@@ -849,59 +839,64 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
       return renderPromptDetail();
     }
 
-    let currentItems: PromptItem[] = [];
-    let currentTitle = "";
-    let currentDesc = "";
-    let tag = "";
+    // ── Loading state ──
+    if (apiLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+          <svg className="animate-spin h-10 w-10 mb-4 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p className="text-sm">Đang tải thư viện...</p>
+        </div>
+      );
+    }
 
-    // 1. Try API data first — admin edits (images, titles, prompts) come from here
-    if (useApiData && selectedCategory) {
+    // ── Category detail view ──
+    if (selectedCategory) {
       const matchedCat = apiCategories.find(c => c.name === selectedCategory);
-      if (matchedCat) {
-        const apiItems = apiPrompts
-          .filter(p => p.categoryId === matchedCat.id)
-          .map(p => ({
-            id: p.id,
-            title: p.title,
-            description: p.content ? p.content.substring(0, 80) + '...' : '',
-            imageUrl: p.thumbnail || 'https://placehold.co/400x300/1e293b/64748b?text=No+Image',
-            defaultPrompt: p.locked ? '' : p.content,
-            tier: p.tier,
-            locked: p.locked,
-          }));
 
-        if (apiItems.length > 0) {
-          currentItems = apiItems;
-          currentTitle = matchedCat.name;
-          currentDesc = matchedCat.description || '';
-          tag = matchedCat.name.toUpperCase();
-        }
+      // Category was deleted from DB — go back gracefully
+      if (!matchedCat) {
+        return (
+          <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+            <p className="text-sm mb-4">Danh mục không tồn tại hoặc đã bị xóa.</p>
+            <button onClick={() => setSelectedCategory(null)} className="text-orange-400 hover:text-orange-300 underline text-sm">
+              ← Quay lại thư viện
+            </button>
+          </div>
+        );
       }
-    }
 
-    // 2. Fallback to hardcoded arrays when API has no data for this category
-    if (currentItems.length === 0 && selectedCategory) {
-      if (selectedCategory === 'Nhà Phố') {
-        currentItems = nhaPhoItems;
-        currentTitle = t("promptLibraryPage.categories.townHouse.title", "Nhà Phố");
-        currentDesc = t("promptLibraryPage.categories.townHouse.description", "Khám phá các mẫu thiết kế nhà phố hiện đại, tối ưu diện tích.");
-        tag = "NHÀ";
-      } else if (selectedCategory === 'Biệt Thự') {
-        currentItems = bietThuItems;
-        currentTitle = t("promptLibraryPage.categories.villa.title", "Biệt Thự");
-        currentDesc = t("promptLibraryPage.categories.villa.description", "Các công trình biệt thự đẳng cấp, sân vườn và phong cách tân cổ điển.");
-        tag = "BIỆT THỰ";
-      } else if (selectedCategory === 'Nội Thất') {
-        currentItems = noiThatItems;
-        currentTitle = t("promptLibraryPage.categories.interior.title", "Nội Thất");
-        currentDesc = t("promptLibraryPage.categories.interior.description", "Ý tưởng không gian sống tinh tế từ phòng khách đến phòng ngủ.");
-        tag = "NỘI THẤT";
-      } else {
-        tag = selectedCategory.toUpperCase();
+      const currentItems: PromptItem[] = apiPrompts
+        .filter(p => p.categoryId === matchedCat.id)
+        .map(p => ({
+          id: p.id,
+          title: p.title,
+          description: p.content ? p.content.substring(0, 80) + '...' : '',
+          imageUrl: p.thumbnail || 'https://placehold.co/400x300/1e293b/64748b?text=No+Image',
+          defaultPrompt: p.locked ? '' : p.content,
+          tier: p.tier,
+          locked: p.locked,
+        }));
+
+      const currentTitle = matchedCat.name;
+      const currentDesc = matchedCat.description || '';
+      const tag = matchedCat.name.toUpperCase();
+
+      if (currentItems.length === 0) {
+        return (
+          <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+            <div className="flex items-center gap-2 text-sm mb-6">
+              <button onClick={() => setSelectedCategory(null)} className="hover:text-white transition-colors">{t('promptLibraryPage.backToLibrary', 'Thư viện')}</button>
+              <span>/</span>
+              <span className="text-white font-bold uppercase">{currentTitle}</span>
+            </div>
+            <p className="text-sm">Danh mục này chưa có prompt nào. Vui lòng thêm trong Admin Panel.</p>
+          </div>
+        );
       }
-    }
 
-    if (selectedCategory && currentItems.length > 0) {
       return (
         <div className="max-w-7xl mx-auto w-full">
           <div className="mb-8 animate-fade-in">
@@ -982,33 +977,16 @@ const PromptLibraryPage: React.FC<PromptLibraryPageProps> = ({ onNavigate }) => 
           </div>
         </div>
       );
-    }
+    } // end selectedCategory block
 
-    // Build display cards: hardcoded 3 categories first, then API-only extras
-    // For hardcoded categories, prefer API thumbnail if admin updated it
-    const getApiThumbnail = (categoryName: string): string | null => {
-      if (!useApiData) return null;
-      const cat = apiCategories.find(c => c.name === categoryName);
-      if (!cat) return null;
-      return apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || null;
-    };
 
-    const enrichedLibraryCards = libraryCards.map(card => ({
-      ...card,
-      imageUrl: getApiThumbnail(card.title) || card.imageUrl,
+    // ── Build category cards exclusively from DB (API) ──
+    const displayCards = apiCategories.map(cat => ({
+      title: cat.name,
+      description: cat.description || '',
+      imageUrl: apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail
+        || 'https://placehold.co/600x400/1e293b/64748b?text=' + encodeURIComponent(cat.name),
     }));
-
-    const hardcodedTitles = libraryCards.map(c => c.title);
-    const apiOnlyCards = (useApiData && apiCategories.length > 0)
-      ? apiCategories
-          .filter(cat => !hardcodedTitles.includes(cat.name)) // skip duplicates
-          .map(cat => ({
-            title: cat.name,
-            description: cat.description || '',
-            imageUrl: apiPrompts.find(p => p.categoryId === cat.id)?.thumbnail || 'https://placehold.co/600x400/1e293b/64748b?text=' + encodeURIComponent(cat.name),
-          }))
-      : [];
-    const displayCards = [...enrichedLibraryCards, ...apiOnlyCards];
 
 
     return (
