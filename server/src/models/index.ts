@@ -8,6 +8,10 @@ import PromptCategory from './PromptCategory';
 import Prompt from './Prompt';
 import PricingPackage from './PricingPackage';
 import PaymentOrder from './PaymentOrder';
+import LandingSlide from './LandingSlide';
+import ShowcaseTab from './ShowcaseTab';
+import FeatureCard from './FeatureCard';
+import BlogPost from './BlogPost';
 
 // Associations
 User.hasMany(UsageLog, { foreignKey: 'userId', as: 'usageLogs' });
@@ -33,6 +37,10 @@ const db = {
   Prompt,
   PricingPackage,
   PaymentOrder,
+  LandingSlide,
+  ShowcaseTab,
+  FeatureCard,
+  BlogPost,
 };
 
 export default db;

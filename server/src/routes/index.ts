@@ -9,7 +9,9 @@ import purchaseRoutes from './purchaseRoutes';
 import paymentRoutes from './paymentRoutes';
 import { getPricing } from '../controllers/adminController';
 import { legacyGenerateContent, legacyGenerateContentStream } from '../controllers/legacyController';
+import { getLandingData } from '../controllers/landingController';
 import { authMiddleware } from '../middlewares/authMiddleware';
+
 
 const router = Router();
 
@@ -26,6 +28,9 @@ router.get('/health', (_req: Request, res: Response) => {
 
 // Public pricing endpoint (no auth required)
 router.get('/pricing', getPricing);
+
+// Public landing data endpoint (no auth required)
+router.get('/landing-data', getLandingData);
 
 // Legacy endpoints — backward compatible with current f9 frontend (no auth)
 router.post('/generate-content', legacyGenerateContent);

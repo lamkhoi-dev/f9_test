@@ -30,6 +30,27 @@ import {
 const LanguageContext = createContext<{lang: 'vi' | 'en', setLang: (l: 'vi' | 'en') => void, t: any}>({ lang: 'vi', setLang: () => {}, t: {} });
 export const useLanguage = () => useContext(LanguageContext);
 
+interface LandingSlideData { id: string; imageUrl: string; altText: string; }
+interface ShowcaseTabData { id: string; tabKey: string; titleVi: string; titleEn: string; descriptionVi: string; descriptionEn: string; originalImageUrl: string; renderImageUrls: string[]; }
+interface FeatureCardData { id: string; cardKey: string; titleVi: string; titleEn: string; descriptionVi: string; descriptionEn: string; beforeImageUrl: string; afterImageUrl: string; extraImageUrls: string[]; }
+interface BlogPostData { id: string; imageUrl: string; tagVi: string; tagEn: string; titleVi: string; titleEn: string; excerptVi: string; excerptEn: string; }
+interface LandingData { slides: LandingSlideData[]; showcaseTabs: ShowcaseTabData[]; featureCards: FeatureCardData[]; blogPosts: BlogPostData[]; }
+
+const LandingDataContext = createContext<LandingData | null>(null);
+export const useLandingData = () => useContext(LandingDataContext);
+
+export const LandingDataProvider = ({ children }: { children: React.ReactNode }) => {
+  const [data, setData] = useState<LandingData | null>(null);
+  useEffect(() => {
+    const base = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_API_BASE_URL || '/api';
+    fetch(`${base}/landing-data`)
+      .then(r => r.json())
+      .then(j => { if (j.success) setData(j.data); })
+      .catch(() => {});
+  }, []);
+  return <LandingDataContext.Provider value={data}>{children}</LandingDataContext.Provider>;
+};
+
 const translations = {
   vi: {
     nav: ["Trang Chủ", "Tính Năng", "Khám Phá", "Thư Viện"],
@@ -328,30 +349,26 @@ function Hero() {
   );
 }
 
+const FALLBACK_SLIDES = [
+  { id: '1', imageUrl: "https://images.unsplash.com/photo-1628102491629-77858ab57fae?auto=format&fit=crop&w=1200&q=80", altText: 'Slide 1' },
+  { id: '2', imageUrl: "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1200&q=80", altText: 'Slide 2' },
+  { id: '3', imageUrl: "https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=1200&q=80", altText: 'Slide 3' },
+  { id: '4', imageUrl: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80", altText: 'Slide 4' },
+  { id: '5', imageUrl: "https://images.unsplash.com/photo-1510627489-b251ce0711fa?auto=format&fit=crop&w=1200&q=80", altText: 'Slide 5' },
+];
+
 function HeroSlider() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const images = [
-    "https://images.unsplash.com/photo-1628102491629-77858ab57fae?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1510627489-b251ce0711fa?auto=format&fit=crop&w=1200&q=80"
-  ];
+  const landingData = useLandingData();
+  const slides = (landingData?.slides?.length ? landingData.slides : FALLBACK_SLIDES);
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
-  };
+  const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % slides.length);
+  const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
 
   React.useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000);
+    const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [slides.length]);
 
   return (
     <section className="py-8 px-4 max-w-[1600px] mx-auto overflow-hidden mb-10">
@@ -373,10 +390,10 @@ function HeroSlider() {
 
         {/* Slider Track */}
         <div className="relative w-full h-full flex items-center justify-center">
-          {images.map((img, idx) => {
+          {slides.map((slide, idx) => {
             let offset = idx - currentIndex;
-            if (offset < -2) offset += images.length;
-            if (offset > 2) offset -= images.length;
+            if (offset < -2) offset += slides.length;
+            if (offset > 2) offset -= slides.length;
 
             const isActive = offset === 0;
             const isPrev = offset === -1;
@@ -425,7 +442,7 @@ function HeroSlider() {
                 }}
               >
                 <div className={`absolute inset-0 bg-[#0f1524] transition-opacity duration-500 ${isActive ? 'opacity-0' : 'opacity-60'}`}></div>
-                <img src={img} alt={`Slide ${idx}`} className="w-full h-full object-cover" />
+                <img src={slide.imageUrl} alt={slide.altText || `Slide ${idx + 1}`} className="w-full h-full object-cover" />
               </div>
             );
           })}
@@ -433,7 +450,7 @@ function HeroSlider() {
 
         {/* Pagination Dots */}
         <div className="absolute -bottom-6 left-0 right-0 flex justify-center gap-2 z-20">
-          {images.map((_, idx) => (
+          {slides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
@@ -556,45 +573,21 @@ function HowItWorks() {
 function ShowcaseTabs() {
   const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState(0);
-  
-  const tabs = [
-    {
-      id: 'architecture',
-      title: t.showcaseTabs[0],
-      description: lang === 'vi' ? "Tạo ảnh render chân thực từ bản vẽ tay hoặc ảnh chụp mô hình SketchUp 3D." : "Create realistic renders from hand drawings or 3D SketchUp model screenshots.",
-      originalImg: "https://images.unsplash.com/photo-1628102491629-77858ab57fae?auto=format&fit=crop&w=800&q=80",
-      renders: [
-        "https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1510627489-b251ce0711fa?auto=format&fit=crop&w=400&q=80"
-      ]
-    },
-    {
-      id: 'interior',
-      title: t.showcaseTabs[1],
-      description: lang === 'vi' ? "Biến không gian trống thành các concept nội thất đa dạng phong cách." : "Turn empty spaces into interior concepts with diverse styles.",
-      originalImg: "https://images.unsplash.com/photo-1523217582562-5ec804b4d6df?auto=format&fit=crop&w=800&q=80",
-      renders: [
-        "https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1493809842364-4bf803b9ad1b?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80"
-      ]
-    },
-    {
-      id: 'landscape',
-      title: t.showcaseTabs[2],
-      description: lang === 'vi' ? "Render mặt bằng tổng thể với cây xanh, ánh sáng và vật liệu chân thực." : "Render master plans with realistic greenery, lighting, and materials.",
-      originalImg: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80",
-      renders: [
-        "https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1542361345-89e58247f2d5?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80",
-        "https://images.unsplash.com/photo-1448630360428-14433d9ca9d9?auto=format&fit=crop&w=400&q=80"
-      ]
-    }
+  const landingData = useLandingData();
+
+  const FALLBACK_TABS = [
+    { id: 'architecture', tabKey: 'architecture', titleVi: 'Kiến Trúc', titleEn: 'Architecture', descriptionVi: 'Tạo ảnh render chân thực từ bản vẽ tay hoặc ảnh chụp mô hình SketchUp 3D.', descriptionEn: 'Create realistic renders from hand drawings or 3D SketchUp model screenshots.', originalImageUrl: 'https://images.unsplash.com/photo-1628102491629-77858ab57fae?auto=format&fit=crop&w=800&q=80', renderImageUrls: ['https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1510627489-b251ce0711fa?auto=format&fit=crop&w=400&q=80'] },
+    { id: 'interior', tabKey: 'interior', titleVi: 'Nội Thất', titleEn: 'Interior', descriptionVi: 'Biến không gian trống thành các concept nội thất đa dạng phong cách.', descriptionEn: 'Turn empty spaces into interior concepts with diverse styles.', originalImageUrl: 'https://images.unsplash.com/photo-1523217582562-5ec804b4d6df?auto=format&fit=crop&w=800&q=80', renderImageUrls: ['https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1493809842364-4bf803b9ad1b?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80'] },
+    { id: 'landscape', tabKey: 'landscape', titleVi: 'Cảnh Quan', titleEn: 'Landscape', descriptionVi: 'Render mặt bằng tổng thể với cây xanh, ánh sáng và vật liệu chân thực.', descriptionEn: 'Render master plans with realistic greenery, lighting, and materials.', originalImageUrl: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80', renderImageUrls: ['https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1542361345-89e58247f2d5?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1448630360428-14433d9ca9d9?auto=format&fit=crop&w=400&q=80'] },
   ];
+  const apiTabs = landingData?.showcaseTabs?.length ? landingData.showcaseTabs : FALLBACK_TABS;
+  const tabs = apiTabs.map(tab => ({
+    id: tab.tabKey,
+    title: lang === 'vi' ? tab.titleVi : tab.titleEn,
+    description: lang === 'vi' ? tab.descriptionVi : tab.descriptionEn,
+    originalImg: tab.originalImageUrl,
+    renders: tab.renderImageUrls || [],
+  }));
 
   return (
     <section className="py-10 px-4 max-w-[1600px] mx-auto">
@@ -641,6 +634,19 @@ function ShowcaseTabs() {
 
 function AdvancedFeaturesBento() {
   const { lang, t } = useLanguage();
+  const landingData = useLandingData();
+
+  const FC_FALLBACK = {
+    editing:      { beforeImageUrl: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=800&q=80', afterImageUrl: 'https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=800&q=80', extraImageUrls: [] },
+    mixing:       { beforeImageUrl: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80', afterImageUrl: 'https://images.unsplash.com/photo-1493809842364-4bf803b9ad1b?auto=format&fit=crop&w=800&q=80', extraImageUrls: [] },
+    perspectives: { beforeImageUrl: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=800&q=80', afterImageUrl: '', extraImageUrls: ['https://images.unsplash.com/photo-1628102491629-77858ab57fae?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=400&q=80','https://images.unsplash.com/photo-1510627489-b251ce0711fa?auto=format&fit=crop&w=400&q=80'] },
+  };
+  const cards = landingData?.featureCards || [];
+  const fc = (key: string) => cards.find(c => c.cardKey === key) || (FC_FALLBACK as any)[key];
+  const editing = fc('editing');
+  const mixing = fc('mixing');
+  const perspectives = fc('perspectives');
+
   return (
     <section className="py-10 px-4 max-w-[1600px] mx-auto">
       <div className="text-center mb-10">
@@ -658,10 +664,10 @@ function AdvancedFeaturesBento() {
             <p className="text-gray-400 text-sm mb-6">{t.adv[2]}</p>
             <div className="grid grid-cols-2 gap-4 h-[200px] md:h-[250px]">
               <div className="relative rounded-xl overflow-hidden bg-[#232d45]">
-                <ZoomableImage src="https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=800&q=80" alt="Before" className="w-full h-full object-cover" label={lang === 'vi' ? "TRƯỚC" : "BEFORE"} />
+                <ZoomableImage src={editing?.beforeImageUrl || FC_FALLBACK.editing.beforeImageUrl} alt="Before" className="w-full h-full object-cover" label={lang === 'vi' ? "TRƯỚC" : "BEFORE"} />
               </div>
               <div className="relative rounded-xl overflow-hidden bg-[#232d45]">
-                <ZoomableImage src="https://images.unsplash.com/photo-1502005229762-cf1b2da7c5d6?auto=format&fit=crop&w=800&q=80" alt="After" className="w-full h-full object-cover" label={lang === 'vi' ? "SAU" : "AFTER"} />
+                <ZoomableImage src={editing?.afterImageUrl || FC_FALLBACK.editing.afterImageUrl} alt="After" className="w-full h-full object-cover" label={lang === 'vi' ? "SAU" : "AFTER"} />
               </div>
             </div>
           </div>
@@ -671,10 +677,10 @@ function AdvancedFeaturesBento() {
             <p className="text-gray-400 text-sm mb-6">{t.adv[4]}</p>
             <div className="grid grid-cols-2 gap-4 h-[200px] md:h-[250px]">
               <div className="relative rounded-xl overflow-hidden bg-[#232d45]">
-                <ZoomableImage src="https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80" alt="Before" className="w-full h-full object-cover" label={lang === 'vi' ? "GỐC" : "ORIGINAL"} />
+                <ZoomableImage src={mixing?.beforeImageUrl || FC_FALLBACK.mixing.beforeImageUrl} alt="Before" className="w-full h-full object-cover" label={lang === 'vi' ? "GỐC" : "ORIGINAL"} />
               </div>
               <div className="relative rounded-xl overflow-hidden bg-[#232d45]">
-                <ZoomableImage src="https://images.unsplash.com/photo-1493809842364-4bf803b9ad1b?auto=format&fit=crop&w=800&q=80" alt="After" className="w-full h-full object-cover" label="MIX" />
+                <ZoomableImage src={mixing?.afterImageUrl || FC_FALLBACK.mixing.afterImageUrl} alt="After" className="w-full h-full object-cover" label="MIX" />
               </div>
             </div>
           </div>
@@ -686,16 +692,11 @@ function AdvancedFeaturesBento() {
           <p className="text-gray-400 text-sm mb-6">{t.adv[6]}</p>
           
           <div className="relative rounded-xl overflow-hidden bg-[#232d45] mb-4 h-[200px]">
-            <ZoomableImage src="https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=800&q=80" alt="Original" className="w-full h-full object-cover" label={lang === 'vi' ? "ẢNH GỐC" : "ORIGINAL"} />
+            <ZoomableImage src={perspectives?.beforeImageUrl || FC_FALLBACK.perspectives.beforeImageUrl} alt="Original" className="w-full h-full object-cover" label={lang === 'vi' ? "ẢNH GỐC" : "ORIGINAL"} />
           </div>
           
           <div className="grid grid-cols-2 gap-3 flex-1">
-            {[
-              "https://images.unsplash.com/photo-1628102491629-77858ab57fae?auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1613490908692-50849c323ee8?auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=400&q=80",
-              "https://images.unsplash.com/photo-1510627489-b251ce0711fa?auto=format&fit=crop&w=400&q=80"
-            ].map((img, idx) => (
+            {(perspectives?.extraImageUrls?.length ? perspectives.extraImageUrls : FC_FALLBACK.perspectives.extraImageUrls).map((img: string, idx: number) => (
               <div key={idx} className="relative rounded-xl overflow-hidden bg-[#232d45]">
                 <ZoomableImage src={img} alt={`Perspective ${idx + 1}`} className="w-full h-full object-cover" />
               </div>
@@ -1520,8 +1521,18 @@ const blogPosts = [
 
 function BlogPage({ setActivePage }: { setActivePage: (p: string) => void }) {
   const { lang } = useLanguage();
+  const landingData = useLandingData();
   const currentLang = lang as 'vi' | 'en';
   const [visiblePosts, setVisiblePosts] = useState(10);
+
+  // Use API posts if available, else fall back to hardcoded
+  const posts = (landingData?.blogPosts?.length ? landingData.blogPosts : blogPosts).map((p: any) => ({
+    image:   p.imageUrl   ?? p.image,
+    tag:     p.tagVi      ? { vi: p.tagVi, en: p.tagEn } : p.tag,
+    tagLogo: p.tagLogo    ?? false,
+    title:   p.titleVi    ? { vi: p.titleVi, en: p.titleEn } : p.title,
+    excerpt: p.excerptVi  ? { vi: p.excerptVi, en: p.excerptEn } : p.excerpt,
+  }));
 
   return (
     <div className="pt-16 min-h-screen bg-[#070a13]">
@@ -1552,7 +1563,7 @@ function BlogPage({ setActivePage }: { setActivePage: (p: string) => void }) {
       {/* Blog Grid */}
       <section className="py-12 px-4 max-w-[1200px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
-          {blogPosts.slice(0, visiblePosts).map((post, idx) => (
+          {posts.slice(0, visiblePosts).map((post, idx) => (
             <div 
               key={idx} 
               onClick={() => {
@@ -1600,7 +1611,7 @@ function BlogPage({ setActivePage }: { setActivePage: (p: string) => void }) {
           ))}
         </div>
         
-        {visiblePosts < blogPosts.length && (
+        {visiblePosts < posts.length && (
           <div className="mt-16 flex justify-center">
             <button 
               onClick={() => setVisiblePosts(prev => prev + 10)}
@@ -1909,6 +1920,7 @@ export default function LandingPage() {
   const [activePage, setActivePage] = useState<string>('home');
 
   return (
+    <LandingDataProvider>
     <LanguageProvider>
       <div className="min-h-screen bg-[#0f1524] font-sans selection:bg-orange-500/30 relative">
         <ScrollToTop />
@@ -1943,5 +1955,6 @@ export default function LandingPage() {
         <Footer setActivePage={setActivePage} />
       </div>
     </LanguageProvider>
+    </LandingDataProvider>
   );
 }
