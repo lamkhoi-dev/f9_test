@@ -2531,7 +2531,6 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
         setIsTransforming(true);
         setTransformError(null);
         try {
-            await apiClient.deductInstantCredit(basePrice, `Image Preprocessing`);
             const inputBase64 = await blobToBase64(file);
             const response = await apiClient.generateContent({
                 model: 'gemini-2.5-flash-image',
@@ -2546,6 +2545,10 @@ Finally, combine all the suggestions into one copiable paragraph suitable for di
 
             const imagePart = response.candidates?.[0]?.content?.parts?.find(part => part.inlineData);
             if (imagePart && imagePart.inlineData) {
+                // Deduct credit ONLY after successful transformation
+                await apiClient.deductInstantCredit(basePrice, `Image Preprocessing`);
+                refreshUser();
+
                 const resultBase64 = imagePart.inlineData.data;
                 const mimeType = imagePart.inlineData.mimeType;
                 const resultUrl = `data:${mimeType};base64,${resultBase64}`;

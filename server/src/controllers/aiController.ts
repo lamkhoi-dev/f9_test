@@ -206,6 +206,7 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
       // Explicitly extract text for the frontend (which expects response.data.text)
       const text = result?.candidates?.[0]?.content?.parts?.find((p: any) => p.text)?.text || "";
       console.log(`✅ Analysis complete (${text.length} chars)`);
+      if (usage.usageLogId) await UsageService.finalizeUsage(usage.usageLogId, result);
       res.json({ success: true, text, data: result });
       return;
     }
@@ -481,6 +482,12 @@ export const generateImage = async (req: AuthRequest, res: Response) => {
     if (hasImageParts) {
       // Cannot use Gommo for img2img — all SDK paths failed
       console.error(`❌ All SDK paths failed and Gommo cannot handle image input. Aborting.`);
+      
+      // Ensure we refund the credits since we're aborting here
+      if (usage.usageLogId) {
+        await UsageService.failUsage(usage.usageLogId, 'All SDK paths failed and Gommo cannot handle image input');
+      }
+
       res.status(500).json({ 
         success: false, 
         message: 'Không thể tạo ảnh lúc này. Tất cả AI models đều thất bại. Vui lòng thử lại sau hoặc liên hệ admin.' 
