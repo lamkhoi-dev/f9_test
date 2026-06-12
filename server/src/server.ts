@@ -117,9 +117,7 @@ const start = async () => {
           console.log('📦 Default packages seeded: STARTER, PRO, ULTRA');
         }
 
-        // Seed default prompt library (3 categories + 24 prompts)
-        const { seedPromptLibrary } = await import('./seedPrompts');
-        await seedPromptLibrary();
+        // Prompt library is managed via Admin Panel — no auto-seeding here
 
         // Seed default landing content (only if tables are empty)
         const LandingSlide = (await import('./models/LandingSlide')).default;
