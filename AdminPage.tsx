@@ -14,6 +14,7 @@ import { PencilIcon } from './components/icons/PencilIcon';
 import { PlusIcon } from './components/icons/PlusIcon';
 import { TrashIcon } from './components/icons/TrashIcon';
 import { BookOpenIcon } from './components/icons/BookOpenIcon';
+import { GlobeAltIcon } from './components/icons/GlobeAltIcon';
 import { ToastContainer, useToast } from './components/Toast';
 
 interface AdminUser {
@@ -33,7 +34,7 @@ interface AdminPageProps {
   onNavigate: (page: string) => void;
 }
 
-type AdminTab = 'users' | 'pricing' | 'keys' | 'stats' | 'prompts' | 'packages' | 'orders';
+type AdminTab = 'users' | 'pricing' | 'keys' | 'stats' | 'prompts' | 'packages' | 'orders' | 'landing';
 
 interface PromptCategory {
   id: string;
@@ -155,6 +156,28 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
   const [categoryForm, setCategoryForm] = useState({ name: '', description: '', sortOrder: 0, isActive: true });
   const [promptCategoryFilter, setPromptCategoryFilter] = useState<string>('__all__');
 
+  // --- Landing Page State ---
+  const [landingSlides, setLandingSlides] = useState<any[]>([]);
+  const [landingShowcaseTabs, setLandingShowcaseTabs] = useState<any[]>([]);
+  const [landingFeatureCards, setLandingFeatureCards] = useState<any[]>([]);
+  const [landingBlogPosts, setLandingBlogPosts] = useState<any[]>([]);
+  const [landingSubTab, setLandingSubTab] = useState<'slides' | 'showcase' | 'features' | 'blog'>('slides');
+  const [showSlideModal, setShowSlideModal] = useState(false);
+  const [editingSlide, setEditingSlide] = useState<any | null>(null);
+  const [slideForm, setSlideForm] = useState({ imageUrl: '', altText: '', sortOrder: 0, isActive: true });
+  const [showShowcaseModal, setShowShowcaseModal] = useState(false);
+  const [editingShowcaseTab, setEditingShowcaseTab] = useState<any | null>(null);
+  const [showcaseForm, setShowcaseForm] = useState({ titleVi: '', titleEn: '', descriptionVi: '', descriptionEn: '', originalImageUrl: '', renderImageUrls: [] as string[], isActive: true });
+  const [showcaseRenderUrlInput, setShowcaseRenderUrlInput] = useState('');
+  const [showFeatureModal, setShowFeatureModal] = useState(false);
+  const [editingFeatureCard, setEditingFeatureCard] = useState<any | null>(null);
+  const [featureForm, setFeatureForm] = useState({ titleVi: '', titleEn: '', descriptionVi: '', descriptionEn: '', beforeImageUrl: '', afterImageUrl: '', extraImageUrls: [] as string[] });
+  const [featureExtraUrlInput, setFeatureExtraUrlInput] = useState('');
+  const [showBlogModal, setShowBlogModal] = useState(false);
+  const [editingBlogPost, setEditingBlogPost] = useState<any | null>(null);
+  const [blogForm, setBlogForm] = useState({ imageUrl: '', tagVi: '', tagEn: '', titleVi: '', titleEn: '', excerptVi: '', excerptEn: '', sortOrder: 0, isActive: true });
+  const [landingImageUploading, setLandingImageUploading] = useState(false);
+
   // --- Fetchers ---
   const fetchUsers = async (pageNum: number = 1) => {
     setIsLoading(true);
@@ -255,6 +278,117 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchLandingData = async () => {
+    setIsLoading(true);
+    try {
+      const [slides, showcase, features, blog] = await Promise.all([
+        apiClient.get('/admin/landing/slides'),
+        apiClient.get('/admin/landing/showcase-tabs'),
+        apiClient.get('/admin/landing/feature-cards'),
+        apiClient.get('/admin/landing/blog-posts'),
+      ]);
+      setLandingSlides(slides.data.data || []);
+      setLandingShowcaseTabs(showcase.data.data || []);
+      setLandingFeatureCards(features.data.data || []);
+      setLandingBlogPosts(blog.data.data || []);
+    } catch (e: any) {
+      toast.error('Lỗi khi tải dữ liệu landing page');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const uploadLandingImage = async (file: File): Promise<string | null> => {
+    setLandingImageUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await apiClient.post('/admin/landing/upload-image', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return res.data.url as string;
+    } catch (e: any) {
+      toast.error('Upload ảnh thất bại: ' + (e.response?.data?.error || e.message));
+      return null;
+    } finally {
+      setLandingImageUploading(false);
+    }
+  };
+
+  const handleSaveSlide = async () => {
+    if (!slideForm.imageUrl) { toast.warning('Vui lòng chọn ảnh!'); return; }
+    try {
+      if (editingSlide) {
+        await apiClient.put(`/admin/landing/slides/${editingSlide.id}`, slideForm);
+        toast.success('Cập nhật slide thành công!');
+      } else {
+        await apiClient.post('/admin/landing/slides', slideForm);
+        toast.success('Thêm slide thành công!');
+      }
+      setShowSlideModal(false);
+      setEditingSlide(null);
+      setSlideForm({ imageUrl: '', altText: '', sortOrder: 0, isActive: true });
+      fetchLandingData();
+    } catch (e: any) { toast.error(e.response?.data?.error || 'Lỗi khi lưu slide'); }
+  };
+
+  const handleDeleteSlide = async (id: string) => {
+    if (!confirm('Xóa slide này?')) return;
+    try {
+      await apiClient.delete(`/admin/landing/slides/${id}`);
+      toast.success('Đã xóa slide!');
+      fetchLandingData();
+    } catch (e: any) { toast.error(e.response?.data?.error || 'Lỗi khi xóa slide'); }
+  };
+
+  const handleSaveShowcaseTab = async () => {
+    if (!editingShowcaseTab) return;
+    try {
+      await apiClient.put(`/admin/landing/showcase-tabs/${editingShowcaseTab.id}`, showcaseForm);
+      toast.success('Cập nhật showcase tab thành công!');
+      setShowShowcaseModal(false);
+      setEditingShowcaseTab(null);
+      fetchLandingData();
+    } catch (e: any) { toast.error(e.response?.data?.error || 'Lỗi khi lưu showcase tab'); }
+  };
+
+  const handleSaveFeatureCard = async () => {
+    if (!editingFeatureCard) return;
+    try {
+      await apiClient.put(`/admin/landing/feature-cards/${editingFeatureCard.id}`, featureForm);
+      toast.success('Cập nhật feature card thành công!');
+      setShowFeatureModal(false);
+      setEditingFeatureCard(null);
+      fetchLandingData();
+    } catch (e: any) { toast.error(e.response?.data?.error || 'Lỗi khi lưu feature card'); }
+  };
+
+  const handleSaveBlogPost = async () => {
+    if (!blogForm.titleVi || !blogForm.imageUrl) { toast.warning('Vui lòng nhập tiêu đề và ảnh!'); return; }
+    try {
+      if (editingBlogPost) {
+        await apiClient.put(`/admin/landing/blog-posts/${editingBlogPost.id}`, blogForm);
+        toast.success('Cập nhật bài viết thành công!');
+      } else {
+        await apiClient.post('/admin/landing/blog-posts', blogForm);
+        toast.success('Thêm bài viết thành công!');
+      }
+      setShowBlogModal(false);
+      setEditingBlogPost(null);
+      setBlogForm({ imageUrl: '', tagVi: '', tagEn: '', titleVi: '', titleEn: '', excerptVi: '', excerptEn: '', sortOrder: 0, isActive: true });
+      fetchLandingData();
+    } catch (e: any) { toast.error(e.response?.data?.error || 'Lỗi khi lưu bài viết'); }
+  };
+
+  const handleDeleteBlogPost = async (id: string) => {
+    if (!confirm('Xóa bài viết này?')) return;
+    try {
+      await apiClient.delete(`/admin/landing/blog-posts/${id}`);
+      toast.success('Đã xóa bài viết!');
+      fetchLandingData();
+    } catch (e: any) { toast.error(e.response?.data?.error || 'Lỗi khi xóa bài viết'); }
   };
 
   const handleSavePackage = async () => {
@@ -405,6 +539,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     else if (activeTab === 'prompts') { fetchPromptCategories(); fetchAdminPrompts(); }
     else if (activeTab === 'packages') fetchPaymentPackages();
     else if (activeTab === 'orders') fetchOrders();
+    else if (activeTab === 'landing') fetchLandingData();
   }, [isAdmin, activeTab]);
 
   // --- Handlers ---
@@ -532,6 +667,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
     { key: 'prompts', label: 'Thư viện Prompt', icon: <BookOpenIcon className="w-4 h-4" /> },
     { key: 'packages', label: 'Gói nạp Credit', icon: <CurrencyIcon className="w-4 h-4" /> },
     { key: 'orders', label: 'Đơn hàng (SePay)', icon: <WalletIcon className="w-4 h-4" /> },
+    { key: 'landing', label: 'Landing Page', icon: <GlobeAltIcon className="w-4 h-4" /> },
   ];
 
   const renderTabContent = () => {
@@ -1426,6 +1562,232 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
       );
     }
 
+    // --- LANDING TAB ---
+    if (activeTab === 'landing') {
+      const landingSubTabs = [
+        { key: 'slides', label: 'Hero Slides' },
+        { key: 'showcase', label: 'Explore Tabs' },
+        { key: 'features', label: 'Feature Cards' },
+        { key: 'blog', label: 'Blog Posts' },
+      ] as const;
+
+      return (
+        <div className="p-6 lg:p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <GlobeAltIcon className="w-5 h-5 text-orange-400" />
+            <h2 className="text-xl font-bold text-white">Quản lý Landing Page</h2>
+          </div>
+
+          {/* Sub-tabs */}
+          <div className="flex gap-1 mb-6 bg-[#111827] p-1 rounded-xl border border-gray-800 w-fit">
+            {landingSubTabs.map(st => (
+              <button
+                key={st.key}
+                onClick={() => setLandingSubTab(st.key)}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  landingSubTab === st.key
+                    ? 'bg-orange-500 text-white shadow'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+
+          {/* === SLIDES === */}
+          {landingSubTab === 'slides' && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-gray-400">Ảnh slider xuất hiện trên hero section của trang chủ</p>
+                <button
+                  onClick={() => { setEditingSlide(null); setSlideForm({ imageUrl: '', altText: '', sortOrder: 0, isActive: true }); setShowSlideModal(true); }}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg"
+                >
+                  <PlusIcon className="w-4 h-4" /> Thêm Slide
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {landingSlides.length === 0 && (
+                  <p className="text-gray-500 text-sm col-span-3">Chưa có slide nào.</p>
+                )}
+                {landingSlides.map(slide => (
+                  <div key={slide.id} className="bg-[#111827] border border-gray-800 rounded-xl overflow-hidden">
+                    <img src={slide.imageUrl} alt={slide.altText} className="w-full h-40 object-cover" onError={(e: any) => { e.target.src = ''; e.target.className = 'w-full h-40 bg-gray-800'; }} />
+                    <div className="p-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-white text-xs font-semibold truncate max-w-[160px]">{slide.altText || '(không có mô tả)'}</p>
+                          <p className="text-gray-500 text-[10px] mt-0.5">Thứ tự: {slide.sortOrder} • {slide.isActive ? <span className="text-green-400">Hiện</span> : <span className="text-red-400">Ẩn</span>}</p>
+                        </div>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={() => { setEditingSlide(slide); setSlideForm({ imageUrl: slide.imageUrl, altText: slide.altText || '', sortOrder: slide.sortOrder, isActive: slide.isActive }); setShowSlideModal(true); }}
+                            className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30"
+                          ><PencilIcon className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => handleDeleteSlide(slide.id)} className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30">
+                            <TrashIcon className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* === SHOWCASE TABS (Explore) === */}
+          {landingSubTab === 'showcase' && (
+            <div>
+              <p className="text-sm text-gray-400 mb-4">Các tab "Explore" hiển thị mẫu render trên landing page. Chỉnh sửa nội dung và ảnh cho từng tab.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {landingShowcaseTabs.map(tab => {
+                  const renders = (() => { try { return Array.isArray(tab.renderImageUrls) ? tab.renderImageUrls : JSON.parse(tab.renderImageUrls || '[]'); } catch { return []; } })();
+                  return (
+                    <div key={tab.id} className="bg-[#111827] border border-gray-800 rounded-xl p-4">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <p className="text-orange-400 text-xs font-bold uppercase tracking-wider">{tab.tabKey}</p>
+                          <p className="text-white font-semibold text-sm mt-0.5">{tab.titleVi}</p>
+                          <p className="text-gray-400 text-xs mt-0.5 line-clamp-2">{tab.descriptionVi}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setEditingShowcaseTab(tab);
+                            setShowcaseForm({
+                              titleVi: tab.titleVi || '', titleEn: tab.titleEn || '',
+                              descriptionVi: tab.descriptionVi || '', descriptionEn: tab.descriptionEn || '',
+                              originalImageUrl: tab.originalImageUrl || '',
+                              renderImageUrls: renders,
+                              isActive: tab.isActive ?? true,
+                            });
+                            setShowcaseRenderUrlInput('');
+                            setShowShowcaseModal(true);
+                          }}
+                          className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 ml-2 flex-shrink-0"
+                        ><PencilIcon className="w-3.5 h-3.5" /></button>
+                      </div>
+                      {tab.originalImageUrl && (
+                        <img src={tab.originalImageUrl} alt="original" className="w-full h-28 object-cover rounded-lg border border-gray-700" onError={(e: any) => { e.target.style.display = 'none'; }} />
+                      )}
+                      <p className="text-gray-600 text-[10px] mt-2">{renders.length} ảnh render</p>
+                    </div>
+                  );
+                })}
+                {landingShowcaseTabs.length === 0 && <p className="text-gray-500 text-sm">Chưa có tab nào (cần seed database).</p>}
+              </div>
+            </div>
+          )}
+
+          {/* === FEATURE CARDS === */}
+          {landingSubTab === 'features' && (
+            <div>
+              <p className="text-sm text-gray-400 mb-4">Các thẻ tính năng hiển thị trên landing page. Chỉnh sửa tiêu đề, mô tả và ảnh before/after.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {landingFeatureCards.map(card => {
+                  const extras = (() => { try { return Array.isArray(card.extraImageUrls) ? card.extraImageUrls : JSON.parse(card.extraImageUrls || '[]'); } catch { return []; } })();
+                  return (
+                    <div key={card.id} className="bg-[#111827] border border-gray-800 rounded-xl p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="text-orange-400 text-xs font-bold uppercase tracking-wider">{card.cardKey}</p>
+                          <p className="text-white font-semibold text-sm mt-0.5">{card.titleVi}</p>
+                          <p className="text-gray-400 text-xs mt-0.5 line-clamp-2">{card.descriptionVi}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setEditingFeatureCard(card);
+                            setFeatureForm({
+                              titleVi: card.titleVi || '', titleEn: card.titleEn || '',
+                              descriptionVi: card.descriptionVi || '', descriptionEn: card.descriptionEn || '',
+                              beforeImageUrl: card.beforeImageUrl || '', afterImageUrl: card.afterImageUrl || '',
+                              extraImageUrls: extras,
+                            });
+                            setFeatureExtraUrlInput('');
+                            setShowFeatureModal(true);
+                          }}
+                          className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 ml-2 flex-shrink-0"
+                        ><PencilIcon className="w-3.5 h-3.5" /></button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 mt-2">
+                        {card.beforeImageUrl && <img src={card.beforeImageUrl} alt="before" className="w-full h-20 object-cover rounded-lg border border-gray-700" onError={(e: any) => { e.target.style.display = 'none'; }} />}
+                        {card.afterImageUrl && <img src={card.afterImageUrl} alt="after" className="w-full h-20 object-cover rounded-lg border border-gray-700" onError={(e: any) => { e.target.style.display = 'none'; }} />}
+                      </div>
+                      {extras.length > 0 && <p className="text-gray-600 text-[10px] mt-1.5">{extras.length} ảnh thêm</p>}
+                    </div>
+                  );
+                })}
+                {landingFeatureCards.length === 0 && <p className="text-gray-500 text-sm">Chưa có feature card nào (cần seed database).</p>}
+              </div>
+            </div>
+          )}
+
+          {/* === BLOG POSTS === */}
+          {landingSubTab === 'blog' && (
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-sm text-gray-400">Bài viết / insight hiển thị trên landing page</p>
+                <button
+                  onClick={() => { setEditingBlogPost(null); setBlogForm({ imageUrl: '', tagVi: '', tagEn: '', titleVi: '', titleEn: '', excerptVi: '', excerptEn: '', sortOrder: 0, isActive: true }); setShowBlogModal(true); }}
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white text-sm font-bold rounded-lg"
+                >
+                  <PlusIcon className="w-4 h-4" /> Thêm bài viết
+                </button>
+              </div>
+              <div className="bg-[#111827] border border-gray-800 rounded-xl overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-800">
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Ảnh</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Tiêu đề (VI)</th>
+                      <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Tag</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Thứ tự</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Trạng thái</th>
+                      <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-800/50">
+                    {landingBlogPosts.length === 0 ? (
+                      <tr><td colSpan={6} className="px-4 py-12 text-center text-gray-500">Chưa có bài viết nào.</td></tr>
+                    ) : landingBlogPosts.map(post => (
+                      <tr key={post.id} className="hover:bg-white/[0.02]">
+                        <td className="px-4 py-3">
+                          {post.imageUrl ? <img src={post.imageUrl} alt={post.titleVi} className="w-14 h-10 object-cover rounded-lg border border-gray-700" onError={(e: any) => { e.target.style.display = 'none'; }} /> : <div className="w-14 h-10 bg-gray-800 rounded-lg" />}
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-white font-medium text-sm line-clamp-1">{post.titleVi}</p>
+                          <p className="text-gray-500 text-xs line-clamp-1 mt-0.5">{post.excerptVi}</p>
+                        </td>
+                        <td className="px-4 py-3 text-gray-400 text-xs">{post.tagVi}</td>
+                        <td className="px-4 py-3 text-center text-gray-400 text-xs">{post.sortOrder}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${post.isActive ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                            {post.isActive ? 'Hiện' : 'Ẩn'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <div className="flex items-center justify-center gap-1.5">
+                            <button
+                              onClick={() => { setEditingBlogPost(post); setBlogForm({ imageUrl: post.imageUrl || '', tagVi: post.tagVi || '', tagEn: post.tagEn || '', titleVi: post.titleVi || '', titleEn: post.titleEn || '', excerptVi: post.excerptVi || '', excerptEn: post.excerptEn || '', sortOrder: post.sortOrder, isActive: post.isActive }); setShowBlogModal(true); }}
+                              className="p-1.5 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30"
+                            ><PencilIcon className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => handleDeleteBlogPost(post.id)} className="p-1.5 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30">
+                              <TrashIcon className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
     // --- USERS TAB (fallback) ---
     return (
       <div className="p-6 lg:p-8">
@@ -2179,6 +2541,293 @@ const AdminPage: React.FC<AdminPageProps> = ({ onNavigate }) => {
               >
                 {editingPrompt ? 'Cập nhật' : 'Tạo mới'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- SLIDE MODAL --- */}
+      {showSlideModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center" onClick={() => setShowSlideModal(false)}>
+          <div className="bg-[#111827] border border-gray-700 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-white text-lg font-bold mb-4">{editingSlide ? 'Sửa Slide' : 'Thêm Slide mới'}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Ảnh Slide</label>
+                {slideForm.imageUrl && (
+                  <img src={slideForm.imageUrl} alt="preview" className="w-full h-32 object-cover rounded-lg border border-gray-700 mb-2" onError={(e: any) => { e.target.style.display = 'none'; }} />
+                )}
+                <label className="flex items-center justify-center w-full h-10 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-orange-500/60 transition-colors bg-[#0b1120]">
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const url = await uploadLandingImage(file);
+                    if (url) setSlideForm(f => ({ ...f, imageUrl: url }));
+                  }} />
+                  <span className="text-xs text-gray-400">{landingImageUploading ? 'Đang upload...' : '📁 Chọn ảnh để upload'}</span>
+                </label>
+                <input type="text" value={slideForm.imageUrl} onChange={e => setSlideForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="hoặc nhập URL ảnh..." className="mt-2 w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Mô tả alt</label>
+                <input type="text" value={slideForm.altText} onChange={e => setSlideForm(f => ({ ...f, altText: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" placeholder="Mô tả ảnh..." />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Thứ tự</label>
+                  <input type="number" value={slideForm.sortOrder} onChange={e => setSlideForm(f => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trạng thái</label>
+                  <select value={slideForm.isActive ? 'true' : 'false'} onChange={e => setSlideForm(f => ({ ...f, isActive: e.target.value === 'true' }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none">
+                    <option value="true">✅ Hiện</option>
+                    <option value="false">❌ Ẩn</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowSlideModal(false)} className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-bold text-sm">Hủy</button>
+              <button onClick={handleSaveSlide} disabled={landingImageUploading} className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white rounded-xl font-bold text-sm">{editingSlide ? 'Cập nhật' : 'Tạo mới'}</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- SHOWCASE TAB MODAL --- */}
+      {showShowcaseModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center" onClick={() => setShowShowcaseModal(false)}>
+          <div className="bg-[#111827] border border-gray-700 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-white text-lg font-bold mb-1">Sửa Showcase Tab</h3>
+            <p className="text-orange-400 text-xs font-bold uppercase tracking-wider mb-4">{editingShowcaseTab?.tabKey}</p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề (VI)</label>
+                  <input type="text" value={showcaseForm.titleVi} onChange={e => setShowcaseForm(f => ({ ...f, titleVi: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề (EN)</label>
+                  <input type="text" value={showcaseForm.titleEn} onChange={e => setShowcaseForm(f => ({ ...f, titleEn: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Mô tả (VI)</label>
+                  <textarea value={showcaseForm.descriptionVi} onChange={e => setShowcaseForm(f => ({ ...f, descriptionVi: e.target.value }))} rows={3} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none resize-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Mô tả (EN)</label>
+                  <textarea value={showcaseForm.descriptionEn} onChange={e => setShowcaseForm(f => ({ ...f, descriptionEn: e.target.value }))} rows={3} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none resize-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Ảnh gốc (Original)</label>
+                {showcaseForm.originalImageUrl && <img src={showcaseForm.originalImageUrl} alt="orig" className="w-full h-28 object-cover rounded-lg border border-gray-700 mb-2" onError={(e: any) => { e.target.style.display = 'none'; }} />}
+                <label className="flex items-center justify-center w-full h-10 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-orange-500/60 transition-colors bg-[#0b1120]">
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const url = await uploadLandingImage(file);
+                    if (url) setShowcaseForm(f => ({ ...f, originalImageUrl: url }));
+                  }} />
+                  <span className="text-xs text-gray-400">{landingImageUploading ? 'Đang upload...' : '📁 Upload ảnh gốc'}</span>
+                </label>
+                <input type="text" value={showcaseForm.originalImageUrl} onChange={e => setShowcaseForm(f => ({ ...f, originalImageUrl: e.target.value }))} placeholder="hoặc nhập URL..." className="mt-2 w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Ảnh Render (danh sách)</label>
+                <div className="flex gap-2 mb-2">
+                  <input type="text" value={showcaseRenderUrlInput} onChange={e => setShowcaseRenderUrlInput(e.target.value)} placeholder="URL ảnh render..." className="flex-1 bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                  <label className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold rounded-lg cursor-pointer">
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const url = await uploadLandingImage(file);
+                      if (url) setShowcaseForm(f => ({ ...f, renderImageUrls: [...f.renderImageUrls, url] }));
+                    }} />
+                    Upload
+                  </label>
+                  <button onClick={() => { if (showcaseRenderUrlInput.trim()) { setShowcaseForm(f => ({ ...f, renderImageUrls: [...f.renderImageUrls, showcaseRenderUrlInput.trim()] })); setShowcaseRenderUrlInput(''); } }} className="px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded-lg">Thêm</button>
+                </div>
+                <div className="space-y-1 max-h-28 overflow-y-auto bg-[#0b1120] p-2 rounded-lg border border-gray-700">
+                  {showcaseForm.renderImageUrls.length === 0 ? <p className="text-gray-600 text-xs italic">Chưa có ảnh render</p> : showcaseForm.renderImageUrls.map((url, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-gray-400 truncate max-w-[300px]">{url}</span>
+                      <button onClick={() => setShowcaseForm(f => ({ ...f, renderImageUrls: f.renderImageUrls.filter((_, idx) => idx !== i) }))} className="text-red-400 hover:text-red-500 font-bold ml-2 flex-shrink-0">Xóa</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trạng thái</label>
+                <select value={showcaseForm.isActive ? 'true' : 'false'} onChange={e => setShowcaseForm(f => ({ ...f, isActive: e.target.value === 'true' }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none">
+                  <option value="true">✅ Hiển thị</option>
+                  <option value="false">❌ Ẩn</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowShowcaseModal(false)} className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-bold text-sm">Hủy</button>
+              <button onClick={handleSaveShowcaseTab} disabled={landingImageUploading} className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white rounded-xl font-bold text-sm">Cập nhật</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- FEATURE CARD MODAL --- */}
+      {showFeatureModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center" onClick={() => setShowFeatureModal(false)}>
+          <div className="bg-[#111827] border border-gray-700 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-white text-lg font-bold mb-1">Sửa Feature Card</h3>
+            <p className="text-orange-400 text-xs font-bold uppercase tracking-wider mb-4">{editingFeatureCard?.cardKey}</p>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề (VI)</label>
+                  <input type="text" value={featureForm.titleVi} onChange={e => setFeatureForm(f => ({ ...f, titleVi: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề (EN)</label>
+                  <input type="text" value={featureForm.titleEn} onChange={e => setFeatureForm(f => ({ ...f, titleEn: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Mô tả (VI)</label>
+                  <textarea value={featureForm.descriptionVi} onChange={e => setFeatureForm(f => ({ ...f, descriptionVi: e.target.value }))} rows={3} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none resize-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Mô tả (EN)</label>
+                  <textarea value={featureForm.descriptionEn} onChange={e => setFeatureForm(f => ({ ...f, descriptionEn: e.target.value }))} rows={3} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none resize-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wider">Ảnh Before</label>
+                  {featureForm.beforeImageUrl && <img src={featureForm.beforeImageUrl} alt="before" className="w-full h-20 object-cover rounded-lg border border-gray-700 mb-2" onError={(e: any) => { e.target.style.display = 'none'; }} />}
+                  <label className="flex items-center justify-center w-full h-9 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-orange-500/60 bg-[#0b1120]">
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      const url = await uploadLandingImage(file);
+                      if (url) setFeatureForm(f => ({ ...f, beforeImageUrl: url }));
+                    }} />
+                    <span className="text-xs text-gray-400">Upload</span>
+                  </label>
+                  <input type="text" value={featureForm.beforeImageUrl} onChange={e => setFeatureForm(f => ({ ...f, beforeImageUrl: e.target.value }))} placeholder="URL ảnh before..." className="mt-1.5 w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-xs focus:border-orange-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-2 uppercase tracking-wider">Ảnh After</label>
+                  {featureForm.afterImageUrl && <img src={featureForm.afterImageUrl} alt="after" className="w-full h-20 object-cover rounded-lg border border-gray-700 mb-2" onError={(e: any) => { e.target.style.display = 'none'; }} />}
+                  <label className="flex items-center justify-center w-full h-9 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-orange-500/60 bg-[#0b1120]">
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      const url = await uploadLandingImage(file);
+                      if (url) setFeatureForm(f => ({ ...f, afterImageUrl: url }));
+                    }} />
+                    <span className="text-xs text-gray-400">Upload</span>
+                  </label>
+                  <input type="text" value={featureForm.afterImageUrl} onChange={e => setFeatureForm(f => ({ ...f, afterImageUrl: e.target.value }))} placeholder="URL ảnh after..." className="mt-1.5 w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-xs focus:border-orange-500 focus:outline-none" />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Ảnh thêm (Extra)</label>
+                <div className="flex gap-2 mb-2">
+                  <input type="text" value={featureExtraUrlInput} onChange={e => setFeatureExtraUrlInput(e.target.value)} placeholder="URL ảnh extra..." className="flex-1 bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                  <label className="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-xs font-bold rounded-lg cursor-pointer">
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      const url = await uploadLandingImage(file);
+                      if (url) setFeatureForm(f => ({ ...f, extraImageUrls: [...f.extraImageUrls, url] }));
+                    }} />
+                    Upload
+                  </label>
+                  <button onClick={() => { if (featureExtraUrlInput.trim()) { setFeatureForm(f => ({ ...f, extraImageUrls: [...f.extraImageUrls, featureExtraUrlInput.trim()] })); setFeatureExtraUrlInput(''); } }} className="px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold rounded-lg">Thêm</button>
+                </div>
+                <div className="space-y-1 max-h-24 overflow-y-auto bg-[#0b1120] p-2 rounded-lg border border-gray-700">
+                  {featureForm.extraImageUrls.length === 0 ? <p className="text-gray-600 text-xs italic">Chưa có ảnh extra</p> : featureForm.extraImageUrls.map((url, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-gray-400 truncate max-w-[300px]">{url}</span>
+                      <button onClick={() => setFeatureForm(f => ({ ...f, extraImageUrls: f.extraImageUrls.filter((_, idx) => idx !== i) }))} className="text-red-400 hover:text-red-500 font-bold ml-2 flex-shrink-0">Xóa</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowFeatureModal(false)} className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-bold text-sm">Hủy</button>
+              <button onClick={handleSaveFeatureCard} disabled={landingImageUploading} className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white rounded-xl font-bold text-sm">Cập nhật</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* --- BLOG POST MODAL --- */}
+      {showBlogModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center" onClick={() => setShowBlogModal(false)}>
+          <div className="bg-[#111827] border border-gray-700 rounded-2xl p-6 w-full max-w-lg mx-4 shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <h3 className="text-white text-lg font-bold mb-4">{editingBlogPost ? 'Sửa bài viết' : 'Thêm bài viết mới'}</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Ảnh bài viết</label>
+                {blogForm.imageUrl && <img src={blogForm.imageUrl} alt="preview" className="w-full h-28 object-cover rounded-lg border border-gray-700 mb-2" onError={(e: any) => { e.target.style.display = 'none'; }} />}
+                <label className="flex items-center justify-center w-full h-10 border border-dashed border-gray-600 rounded-lg cursor-pointer hover:border-orange-500/60 bg-[#0b1120]">
+                  <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                    const file = e.target.files?.[0]; if (!file) return;
+                    const url = await uploadLandingImage(file);
+                    if (url) setBlogForm(f => ({ ...f, imageUrl: url }));
+                  }} />
+                  <span className="text-xs text-gray-400">{landingImageUploading ? 'Đang upload...' : '📁 Upload ảnh'}</span>
+                </label>
+                <input type="text" value={blogForm.imageUrl} onChange={e => setBlogForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="hoặc nhập URL..." className="mt-2 w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tag (VI)</label>
+                  <input type="text" value={blogForm.tagVi} onChange={e => setBlogForm(f => ({ ...f, tagVi: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" placeholder="Kiến trúc..." />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tag (EN)</label>
+                  <input type="text" value={blogForm.tagEn} onChange={e => setBlogForm(f => ({ ...f, tagEn: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" placeholder="Architecture..." />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề (VI)</label>
+                  <input type="text" value={blogForm.titleVi} onChange={e => setBlogForm(f => ({ ...f, titleVi: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Tiêu đề (EN)</label>
+                  <input type="text" value={blogForm.titleEn} onChange={e => setBlogForm(f => ({ ...f, titleEn: e.target.value }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trích dẫn (VI)</label>
+                  <textarea value={blogForm.excerptVi} onChange={e => setBlogForm(f => ({ ...f, excerptVi: e.target.value }))} rows={3} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none resize-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trích dẫn (EN)</label>
+                  <textarea value={blogForm.excerptEn} onChange={e => setBlogForm(f => ({ ...f, excerptEn: e.target.value }))} rows={3} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none resize-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Thứ tự</label>
+                  <input type="number" value={blogForm.sortOrder} onChange={e => setBlogForm(f => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none" />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-400 mb-1 uppercase tracking-wider">Trạng thái</label>
+                  <select value={blogForm.isActive ? 'true' : 'false'} onChange={e => setBlogForm(f => ({ ...f, isActive: e.target.value === 'true' }))} className="w-full bg-[#0b1120] border border-gray-700 rounded-lg px-3 py-2 text-white text-sm focus:border-orange-500 focus:outline-none">
+                    <option value="true">✅ Hiển thị</option>
+                    <option value="false">❌ Ẩn</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => setShowBlogModal(false)} className="flex-1 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-bold text-sm">Hủy</button>
+              <button onClick={handleSaveBlogPost} disabled={landingImageUploading} className="flex-1 py-2.5 bg-orange-500 hover:bg-orange-600 disabled:bg-gray-600 text-white rounded-xl font-bold text-sm">{editingBlogPost ? 'Cập nhật' : 'Tạo mới'}</button>
             </div>
           </div>
         </div>
