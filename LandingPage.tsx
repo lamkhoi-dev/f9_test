@@ -42,8 +42,8 @@ export const useLandingData = () => useContext(LandingDataContext);
 export const LandingDataProvider = ({ children }: { children: React.ReactNode }) => {
   const [data, setData] = useState<LandingData | null>(null);
   useEffect(() => {
-    const base = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_API_BASE_URL || '/api';
-    fetch(`${base}/landing-data`)
+    const base = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_API_BASE_URL || '';
+    fetch(`${base}/api/landing-data`)
       .then(r => r.json())
       .then(j => { if (j.success) setData(j.data); })
       .catch(() => {});
